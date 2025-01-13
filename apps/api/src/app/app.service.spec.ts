@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+
 import { AppService } from './app.service';
 
 describe('AppService', () => {
@@ -14,7 +15,7 @@ describe('AppService', () => {
 
   describe('getData', () => {
     it('should return "Hello API"', () => {
-      expect(service.getData()).toEqual({message: 'Hello API'});
+      expect(service.getData()).toEqual({ message: 'Hello API' });
     });
   });
 });
