@@ -1,0 +1,9 @@
+export enum ConfigKeys {
+  JWT_SECRET = 'JWT_SECRET',
+  JWT_EXP = 'JWT_EXP',
+  PORT = 'PORT',
+  NODE_ENV = 'NODE_ENV',
+  DATABASE = 'DATABASE',
+  FRONTEND_URL = 'FRONTEND_URL',
+  PINO_LOG_LEVEL = 'PINO_LOG_LEVEL',
+}

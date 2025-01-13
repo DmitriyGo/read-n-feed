@@ -1,0 +1,11 @@
+model UserLibraryEntry {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  bookId    String   @map("book_id")
+  status    String   @default("not_started")
+  progress  Int      @default(0)
+  addedAt   DateTime @default(now()) @map("added_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("user_library_entry")
+}

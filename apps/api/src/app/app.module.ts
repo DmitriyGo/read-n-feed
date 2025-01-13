@@ -1,11 +1,18 @@
 import { Module } from '@nestjs/common';
+import { DataAccessModule } from '@read-n-feed/data-access';
+import { AuthModule } from '@read-n-feed/infrastructure';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ApiConfigModule } from './config/config.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ApiConfigModule.forRoot({ global: true }),
+    LoggerModule.forRoot({ global: true }),
+    DataAccessModule,
+    AuthModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
