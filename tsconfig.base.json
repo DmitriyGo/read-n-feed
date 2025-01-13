@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@read-n-feed/data-access": ["libs/data-access/src/index.ts"],
+      "@read-n-feed/shared": ["libs/shared/src/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]
