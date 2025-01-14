@@ -1,11 +1,12 @@
-import { UserLibraryEntry } from './library.entity';
+import { LibraryEntry } from './library.entity';
 
 export class LibraryDomainService {
-  updateProgress(libraryEntry: UserLibraryEntry, newProgress: number): UserLibraryEntry {
-    if (newProgress < 0) throw new Error('Progress cannot be negative');
+  addBookToLibrary(userId: string, bookId: string, existingEntries: LibraryEntry[]): LibraryEntry {
+    const alreadyExists = existingEntries.some((entry) => entry.bookId === bookId && entry.userId === userId);
+    if (alreadyExists) {
+      throw new Error('Book is already in the user library.');
+    }
 
-    libraryEntry.progress = newProgress;
-    libraryEntry.updatedAt = new Date();
-    return libraryEntry;
+    return new LibraryEntry(/* id */ crypto.randomUUID(), userId, bookId);
   }
 }
