@@ -4,7 +4,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
@@ -19,7 +19,8 @@
       "@read-n-feed/data-access": ["libs/data-access/src/index.ts"],
       "@read-n-feed/domain": ["libs/domain/src/index.ts"],
       "@read-n-feed/infrastructure": ["libs/infrastructure/src/index.ts"],
-      "@read-n-feed/shared": ["libs/shared/src/index.ts"]
+      "@read-n-feed/shared": ["libs/shared/src/index.ts"],
+      "@web/*": ["apps/web/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
