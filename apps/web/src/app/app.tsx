@@ -1,25 +1,18 @@
-import { Route, Routes, Link } from 'react-router-dom';
+import { Routes, Route as RouteComponent } from 'react-router-dom';
+
+import { Layout } from '../components/common/layout';
+import { Route } from '../constants';
+import { HomePage, SignInPage, SignUpPage } from '../pages';
 
 export function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <div>
-            This is the generated root route.{' '}
-            <Link to="/page-2">Click here for page 2.</Link>
-          </div>
-        }
-      />
-      <Route
-        path="/page-2"
-        element={
-          <div>
-            <Link to="/">Click here to go back to root page.</Link>
-          </div>
-        }
-      />
+      <RouteComponent path={Route.Home} element={<Layout />}>
+        <RouteComponent index element={<HomePage />} />
+
+        <RouteComponent path={Route.SignIn} element={<SignInPage />} />
+        <RouteComponent path={Route.SignUp} element={<SignUpPage />} />
+      </RouteComponent>
     </Routes>
   );
 }
