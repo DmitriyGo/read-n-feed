@@ -1,6 +1,6 @@
 import { Link, Outlet } from 'react-router-dom';
 
-import { Route } from '../../../constants';
+import { Route } from '../../../constants/routes';
 
 export const Layout = () => {
   return (
