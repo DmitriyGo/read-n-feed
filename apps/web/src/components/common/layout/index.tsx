@@ -1,7 +1,8 @@
 import { Link, Outlet } from 'react-router-dom';
 
-import { Route } from '../../../constants/routes';
 import { ModalManager } from '../modal-manager';
+
+import { Route } from '@/constants';
 
 export const Layout = () => {
   return (

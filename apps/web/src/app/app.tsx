@@ -1,6 +1,6 @@
 import { Routes, Route as RouteComponent } from 'react-router-dom';
 
-import { Layout } from '@/components/common/layout';
+import { Layout } from '@/components/common';
 import { Route } from '@/constants';
 import { HomePage, SignInPage, SignUpPage } from '@/pages';
 
