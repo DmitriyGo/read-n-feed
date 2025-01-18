@@ -1,7 +1,7 @@
 import { Dispatch, ReactElement } from 'react';
 import { create } from 'zustand';
 
-type ModalModeInfo = {
+export type ModalModeInfo = {
   component: ReactElement;
   width?: number;
   height?: number;

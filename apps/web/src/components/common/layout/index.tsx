@@ -1,6 +1,7 @@
 import { Link, Outlet } from 'react-router-dom';
 
 import { Route } from '../../../constants/routes';
+import { ModalManager } from '../modal-manager';
 
 export const Layout = () => {
   return (
@@ -18,6 +19,9 @@ export const Layout = () => {
           </li>
         </ul>
       </nav>
+
+      <ModalManager />
+
       <Outlet />
     </>
   );
