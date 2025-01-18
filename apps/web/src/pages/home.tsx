@@ -1,3 +1,4 @@
+import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
 import { Button } from '@/components/ui';
 import { useModalStore } from '@/store/modal-store';
 
@@ -5,7 +6,7 @@ export const HomePage = () => {
   const { setMode } = useModalStore();
 
   return (
-    <div className="dark">
+    <div>
       <p>HomePage</p>
       <Button
         variant="destructive"
@@ -16,13 +17,25 @@ export const HomePage = () => {
         SignIn
       </Button>
       <Button
-        variant="destructive"
+        variant="default"
         onClick={() => {
           setMode('SignUp');
         }}
       >
         SignUp
       </Button>
+
+      <Section>
+        <Section.Header>Header</Section.Header>
+        <Section.Content>Content</Section.Content>
+        <Section.Footer>Footer</Section.Footer>
+      </Section>
+
+      <BaseTooltip content="Loading...">
+        <Button className="" variant="secondary">
+          <ComponentLoader />
+        </Button>
+      </BaseTooltip>
     </div>
   );
 };
