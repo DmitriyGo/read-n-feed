@@ -15,7 +15,8 @@ export class LoggerModule {
         PinoLoggerModule.forRootAsync({
           inject: [ApiConfigService],
           useFactory: async (appConfig: ApiConfigService) => {
-            const isProduction = appConfig.get(ConfigKeys.NODE_ENV) === 'production';
+            const isProduction =
+              appConfig.get(ConfigKeys.NODE_ENV) === 'production';
 
             return {
               pinoHttp: [
@@ -46,7 +47,8 @@ export class LoggerModule {
                       return { level: label.toUpperCase() };
                     },
                   },
-                  timestamp: () => `,"time":"${new Date(Date.now()).toISOString()}"`,
+                  timestamp: () =>
+                    `,"time":"${new Date(Date.now()).toISOString()}"`,
                   genReqId: (req, res) => {
                     const existingID = req.id || req.headers['x-request-id'];
                     if (existingID) {

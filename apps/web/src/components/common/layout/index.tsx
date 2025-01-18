@@ -5,7 +5,7 @@ import { Route } from '../../../constants/routes';
 export const Layout = () => {
   return (
     <>
-      <nav className="w-full bg-slate-500 py-4">
+      <nav className="w-full bg-card py-4 text-white">
         <ul className="flex w-full justify-evenly flex-row gap-4">
           <li>
             <Link to={Route.Home}>Home</Link>

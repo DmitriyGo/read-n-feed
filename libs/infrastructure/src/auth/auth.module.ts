@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { RegisterUserUseCase } from '@read-n-feed/application';
-import { DataAccessModule, PrismaUserRepository } from '@read-n-feed/data-access';
+import {
+  DataAccessModule,
+  PrismaUserRepository,
+} from '@read-n-feed/data-access';
 
 import { AuthController } from './auth.controller';
 
