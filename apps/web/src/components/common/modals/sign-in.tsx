@@ -68,7 +68,9 @@ export function SignInModal() {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="w-full">
+          Log In
+        </Button>
       </form>
     </Form>
   );

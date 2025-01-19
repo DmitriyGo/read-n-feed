@@ -2,7 +2,7 @@ import { Routes, Route as RouteComponent } from 'react-router-dom';
 
 import { Layout } from '@/components/common';
 import { Route } from '@/constants';
-import { HomePage, SignInPage, SignUpPage } from '@/pages';
+import { HomePage, ProfilePage } from '@/pages';
 
 export function App() {
   return (
@@ -10,8 +10,7 @@ export function App() {
       <RouteComponent path={Route.Home} element={<Layout />}>
         <RouteComponent index element={<HomePage />} />
 
-        <RouteComponent path={Route.SignIn} element={<SignInPage />} />
-        <RouteComponent path={Route.SignUp} element={<SignUpPage />} />
+        <RouteComponent path={Route.Profile} element={<ProfilePage />} />
       </RouteComponent>
     </Routes>
   );

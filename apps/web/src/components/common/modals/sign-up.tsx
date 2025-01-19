@@ -45,8 +45,6 @@ export function SignUpModal() {
     },
   });
 
-  console.log(form.formState.errors);
-
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
@@ -100,7 +98,9 @@ export function SignUpModal() {
 
         <FormMessage />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="w-full">
+          Sign Up
+        </Button>
       </form>
     </Form>
   );
