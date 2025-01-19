@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui';
-import { ModalModeInfo, useModalStore } from '@/store/modal-store';
+import { ModalModeInfo, useModalStore } from '@/store';
 
 export const ModalManager = () => {
   const { mode, setMode } = useModalStore();

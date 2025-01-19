@@ -1,6 +1,6 @@
 import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
 import { Button } from '@/components/ui';
-import { useModalStore } from '@/store/modal-store';
+import { useModalStore } from '@/store';
 
 export const HomePage = () => {
   const { setMode } = useModalStore();

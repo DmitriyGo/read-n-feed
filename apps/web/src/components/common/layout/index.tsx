@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 
-import { ModalManager } from '../modal-manager';
 import { Header } from './header';
+import { ModalManager } from '../modal-manager';
 
 export const Layout = () => {
   return (

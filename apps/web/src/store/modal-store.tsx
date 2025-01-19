@@ -1,6 +1,8 @@
 import { Dispatch, ReactElement } from 'react';
 import { create } from 'zustand';
 
+import { SignInModal, SignUpModal } from '@/components/common/modals';
+
 export type ModalModeInfo = {
   component: ReactElement;
   width?: number;
@@ -9,10 +11,10 @@ export type ModalModeInfo = {
 
 const ModalInfos = {
   SignIn: {
-    component: <p>SignIn</p>,
+    component: <SignInModal />,
   },
   SignUp: {
-    component: <p>SingUp</p>,
+    component: <SignUpModal />,
   },
 } satisfies Record<string, ModalModeInfo>;
 
