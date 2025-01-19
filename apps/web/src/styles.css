@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -70,4 +66,68 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+}
+
+@keyframes rotate-div-rev {
+  0% {
+    transform: rotate(0deg);
+    background-position: 0% 50%;
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes rotate-div {
+  0% {
+    transform: rotate(0deg);
+    background-position: 0% 50%;
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-spinner {
+  animation: rotate-div-rev 2.5s linear infinite;
+  background-image: conic-gradient(
+    from 0 at 50% 50%,
+    #d1f93d 0deg,
+    #39953c 144deg,
+    #101b25 288deg,
+    #13131f 360deg
+  );
+}
+
+.loader-spinner-sm {
+  animation: rotate-div 1.5s linear infinite;
+  background-image: conic-gradient(
+    from 0 at 50% 50%,
+    #2f130f 0deg,
+    #734108 144deg,
+    #ffd300 288deg,
+    #feb904 360deg
+  );
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: gray transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
 }
