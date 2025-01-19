@@ -32,7 +32,7 @@ export const HomePage = () => {
       </Section>
 
       <BaseTooltip content="Loading...">
-        <Button className="" variant="secondary">
+        <Button className="mx-8" variant="secondary">
           <ComponentLoader />
         </Button>
       </BaseTooltip>

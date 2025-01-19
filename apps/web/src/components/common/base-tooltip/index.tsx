@@ -38,9 +38,6 @@ export const BaseTooltip = ({
           <Slot
             tabIndex={0}
             className={cn(className, 'w-fit')}
-            onClick={() => {
-              setOpen(!open);
-            }}
             onMouseEnter={() => {
               setOpen(true);
             }}
