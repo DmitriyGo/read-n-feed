@@ -1,4 +1,9 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { UserAlreadyExistsError } from '@read-n-feed/application';
 import { Observable, throwError } from 'rxjs';

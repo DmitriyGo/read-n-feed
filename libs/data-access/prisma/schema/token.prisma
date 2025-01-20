@@ -1,0 +1,15 @@
+model Token {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  userAgent String?  @map("user_agent")
+  exp       DateTime
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, userAgent], name: "idx_token_user_agent")
+  @@map("token")
+}

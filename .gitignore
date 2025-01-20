@@ -45,3 +45,8 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 .yarn/install-state.gz
+
+.env
+!.env.example
+
+secrets/

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { DataAccessModule } from '@read-n-feed/data-access';
-import { AuthModule } from '@read-n-feed/infrastructure';
 
+import { AuthModule } from './auth/auth.module';
 import { ApiConfigModule } from './config/config.module';
 import { LoggerModule } from './logger/logger.module';
 
