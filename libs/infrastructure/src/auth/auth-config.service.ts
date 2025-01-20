@@ -1,4 +1,3 @@
-// libs/infrastructure/src/auth/auth-config.service.ts
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
