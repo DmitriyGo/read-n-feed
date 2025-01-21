@@ -1,61 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { User as DbUser } from '@prisma/client';
-import { UserRepositoryPort } from '@read-n-feed/application';
-import { User } from '@read-n-feed/domain';
+import { IUserRepository, User } from '@read-n-feed/domain';
 
 import { PrismaService } from './prisma.service';
 
 @Injectable()
-export class PrismaUserRepository implements UserRepositoryPort {
+export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(user: User): Promise<User> {
-    const created = await this.prisma.user.create({
-      data: {
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        role: user.role,
+  async findByEmail(email: string): Promise<User | null> {
+    const userModel = await this.prisma.user.findUnique({ where: { email } });
+    if (!userModel) return null;
+    return new User({ ...userModel });
+  }
+
+  async findById(userId: string): Promise<User | null> {
+    const userModel = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!userModel) return null;
+    return new User({ ...userModel });
+  }
+
+  async save(user: User): Promise<User> {
+    // The "props" might have domain-only fields
+    const props = (user as any).props; // or create a "toPrimitives()" method in your entity
+    const upserted = await this.prisma.user.upsert({
+      where: { id: props.id },
+      update: {
+        ...props,
+      },
+      create: {
+        ...props,
       },
     });
-    return this.toDomain(created);
-  }
-
-  async findUserById(id: string): Promise<User | null> {
-    const found = await this.prisma.user.findUnique({ where: { id } });
-    return found ? this.toDomain(found) : null;
-  }
-
-  async findUserByEmail(email: string): Promise<User | null> {
-    const found = await this.prisma.user.findUnique({ where: { email } });
-    return found ? this.toDomain(found) : null;
-  }
-
-  async updateUser(user: User): Promise<User> {
-    const updated = await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        email: user.email,
-        password: user.password,
-        role: user.role,
-        updatedAt: new Date(),
-      },
-    });
-    return this.toDomain(updated);
-  }
-
-  async deleteUser(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id } });
-  }
-
-  private toDomain(prismaUser: DbUser): User {
-    return new User(
-      prismaUser.id,
-      prismaUser.email,
-      prismaUser.password,
-      prismaUser.role,
-      prismaUser.createdAt,
-      prismaUser.updatedAt,
-    );
+    return new User({ ...upserted });
   }
 }
