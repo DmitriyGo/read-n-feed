@@ -13,13 +13,33 @@ export class PrismaTokenRepository implements ITokenRepository {
     return new Token({ ...tokenModel });
   }
 
+  async findByUserIdAndUserAgent(
+    userId: string,
+    userAgent: string,
+  ): Promise<Token | null> {
+    const tokenModel = await this.prisma.token.findUnique({
+      where: {
+        userId_userAgent: { userId, userAgent },
+      },
+    });
+    if (!tokenModel) return null;
+    return new Token({ ...tokenModel });
+  }
+
   async upsert(token: Token): Promise<Token> {
     const props = (token as any).props;
+
     const upserted = await this.prisma.token.upsert({
-      where: { token: props.token },
+      where: {
+        userId_userAgent: {
+          userId: props.userId,
+          userAgent: props.userAgent || '',
+        },
+      },
       update: {
+        token: props.token,
         exp: props.exp,
-        // etc
+        updatedAt: props.updatedAt,
       },
       create: {
         ...props,

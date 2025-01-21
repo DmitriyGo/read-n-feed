@@ -10,6 +10,6 @@ model Token {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId, userAgent], name: "idx_token_user_agent")
+  @@unique([userId, userAgent])
   @@map("token")
 }
