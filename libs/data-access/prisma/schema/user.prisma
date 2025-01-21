@@ -1,8 +1,53 @@
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum Provider {
+  LOCAL
+  GOOGLE
+  FACEBOOK
+  GITHUB
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+  PLUS
+  ENTERPRISE
+}
+
+enum ReadingFormat {
+  PDF
+  EPUB
+  FB2
+  MOBI
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
-  password  String
-  role      String   @default("user")
+  password  String?
+  provider  Provider @default(LOCAL)
+  roles     Role[]   @default([])
+  isBlocked Boolean  @default(false)
+
+  // Profile
+  username  String?
+  firstName String? @map("first_name")
+  lastName  String? @map("last_name")
+  avatarUrl String? @map("avatar_url")
+
+  preferredLanguage String?
+
+  subscriptionPlan      SubscriptionPlan @default(FREE) @map("subscription_plan")
+  subscriptionExpiresAt DateTime?        @map("subscription_expires_at")
+
+  metadata Json?
+
+  tokens Token[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

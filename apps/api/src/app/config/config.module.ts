@@ -11,7 +11,8 @@ export class ApiConfigModule {
       module: ApiConfigModule,
       imports: [
         ConfigModule.forRoot({
-          validate: (v: Record<string, unknown>) => EnvironmentValidationSchema.parse(v),
+          validate: (v: Record<string, unknown>) =>
+            EnvironmentValidationSchema.parse(v),
         }),
       ],
       providers: [ApiConfigService],

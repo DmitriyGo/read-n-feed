@@ -1,7 +1,11 @@
-import { INestApplication, Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  INestApplication,
+  Logger,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { DomainExceptionFilter, DomainExceptionInterceptor } from '@read-n-feed/infrastructure';
 import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
 
 import { AppModule } from './app/app.module';
@@ -26,8 +30,6 @@ async function bootstrap() {
   app.useLogger(await app.get(PinoLogger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
-  app.useGlobalFilters(new DomainExceptionFilter());
-  app.useGlobalInterceptors(new DomainExceptionInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -45,8 +47,12 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
-  Logger.log(`🚀 Swagger is running on: http://localhost:${port}/${globalPrefix}/swagger`);
+  Logger.log(
+    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
+  );
+  Logger.log(
+    `🚀 Swagger is running on: http://localhost:${port}/${globalPrefix}/swagger`,
+  );
 }
 
 bootstrap();

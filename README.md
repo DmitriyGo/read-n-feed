@@ -1,22 +1,20 @@
 # ReadNFeed
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+# Local Development
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+Generate secrets for local development and provide them in the `.env` file.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
-
-## Finish your CI setup
-
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/kHG6QIMQAI)
-
+```bash
+openssl genrsa -out jwtRS256.key 2048
+openssl rsa -in jwtRS256.key -pubout -out jwtRS256.key.pub
+```
 
 ## Run tasks
 
 To run the dev server for your app, use:
 
 ```sh
-npx nx serve api
+yarn serve:api
 ```
 
 To create a production bundle:

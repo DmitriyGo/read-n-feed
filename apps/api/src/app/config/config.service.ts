@@ -8,8 +8,11 @@ import { EnvironmentValidation } from './config.schema';
 export class ApiConfigService {
   constructor(public readonly configService: ConfigService) {}
 
-  public get<K extends keyof EnvironmentValidation>(propertyPath: K): EnvironmentValidation[K] {
-    const value = this.configService.get<EnvironmentValidation[K]>(propertyPath);
+  public get<K extends keyof EnvironmentValidation>(
+    propertyPath: K,
+  ): EnvironmentValidation[K] {
+    const value =
+      this.configService.get<EnvironmentValidation[K]>(propertyPath);
 
     if (!isDefined(value)) {
       throw new Error(`Invalid schema provided for ${propertyPath}`);
