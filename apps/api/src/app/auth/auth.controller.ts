@@ -9,16 +9,16 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
 import { AuthUseCase, LoginDto, RegisterDto } from '@read-n-feed/application';
+import { AuthCookieOptionsService } from '@read-n-feed/infrastructure';
 import { Request, Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  private readonly isDev: boolean;
-
-  constructor(private readonly authUseCase: AuthUseCase) {
-    this.isDev = process.env.NODE_ENV !== 'production';
-  }
+  constructor(
+    private readonly authUseCase: AuthUseCase,
+    private readonly authCookieOptions: AuthCookieOptionsService,
+  ) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -40,13 +40,11 @@ export class AuthController {
       userAgent,
     );
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: !this.isDev,
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
-      path: '/',
-    });
+    res.cookie(
+      'refreshToken',
+      refreshToken,
+      this.authCookieOptions.getDefaultCookieOptions(),
+    );
 
     return res.status(HttpStatus.OK).json({ accessToken });
   }
@@ -61,7 +59,7 @@ export class AuthController {
   })
   async refresh(@Req() req: Request, @Res() res: Response) {
     let refreshToken: string | undefined = req.cookies?.refreshToken;
-    if (this.isDev && !refreshToken) {
+    if (this.authCookieOptions.isDevelopment && !refreshToken) {
       refreshToken = req.headers['x-refresh-token'] as string;
     }
 
@@ -70,13 +68,11 @@ export class AuthController {
     const { accessToken, refreshToken: newRefreshToken } =
       await this.authUseCase.refreshTokens(refreshToken, userAgent);
 
-    res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: true,
-      secure: !this.isDev,
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      path: '/',
-    });
+    res.cookie(
+      'refreshToken',
+      newRefreshToken,
+      this.authCookieOptions.getDefaultCookieOptions(),
+    );
 
     return res.status(HttpStatus.OK).json({ accessToken });
   }
@@ -85,7 +81,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout user' })
   async logout(@Req() req: Request, @Res() res: Response) {
     let refreshToken: string | undefined = req.cookies?.refreshToken;
-    if (this.isDev && !refreshToken) {
+    if (this.authCookieOptions.isDevelopment && !refreshToken) {
       refreshToken = req.headers['x-refresh-token'] as string;
     }
 
@@ -93,12 +89,10 @@ export class AuthController {
       await this.authUseCase.logout(refreshToken);
     }
 
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      secure: !this.isDev,
-      sameSite: 'strict',
-      path: '/',
-    });
+    res.clearCookie(
+      'refreshToken',
+      this.authCookieOptions.getDefaultCookieOptions(),
+    );
     return res.status(HttpStatus.OK).send({ success: true });
   }
 }
