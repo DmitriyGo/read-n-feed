@@ -1,9 +1,15 @@
 import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
 import { Button } from '@/components/ui';
+import { ApiRoute } from '@/constants';
+import { axiosSecure } from '@/lib';
 import { useModalStore } from '@/store';
 
 export const HomePage = () => {
   const { setMode } = useModalStore();
+
+  const handleLogOut = async () => {
+    await axiosSecure.post(ApiRoute.Auth.Logout);
+  };
 
   return (
     <div>
@@ -36,6 +42,10 @@ export const HomePage = () => {
           <ComponentLoader />
         </Button>
       </BaseTooltip>
+
+      <Button onClick={handleLogOut} className="mx-8" variant="secondary">
+        LogOut
+      </Button>
     </div>
   );
 };
