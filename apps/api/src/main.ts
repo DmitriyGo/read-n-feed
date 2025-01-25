@@ -6,10 +6,6 @@ import {
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {
-  DomainExceptionFilter,
-  DomainExceptionInterceptor,
-} from '@read-n-feed/infrastructure';
 import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
 
 import { AppModule } from './app/app.module';
@@ -44,6 +40,11 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    credentials: true,
+  });
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

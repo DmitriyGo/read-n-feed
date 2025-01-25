@@ -2,17 +2,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Input } from '@/components/ui';
-import { Button } from '@/components/ui/button';
 import {
+  Button,
+  Input,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { useSignUp } from '@/hooks/write/sign-up';
+} from '@/components/ui';
+import { useSignUp } from '@/hooks';
 
 const formSchema = z
   .object({
