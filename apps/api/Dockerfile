@@ -1,10 +1,20 @@
 # --------------------------------------------------
 # 1) Base image
 # --------------------------------------------------
-FROM node:22-alpine AS base
-RUN corepack enable \
-  && apk add --no-cache openssl libc6-compat \
-  && apk update
+FROM node:22-slim AS base
+
+# Install build essentials + OpenSSL
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    g++ \
+    make \
+    openssl \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# Enable corepack
+RUN corepack enable
 
 # --------------------------------------------------
 # 2) Builder stage
@@ -12,44 +22,54 @@ RUN corepack enable \
 FROM base AS builder
 WORKDIR /app
 
-# Copy the minimal Nx config & Yarn files first so we can install
+# 1. Copy minimal config for dependency install
 COPY package.json yarn.lock .yarnrc.yml nx.json tsconfig.base.json ./
 
-# If you have no workspace.json and rely on project.json in each folder:
-# do NOT copy them individually. We'll copy the entire apps/ and libs/ next.
-# That way Nx sees the correct structure in one pass.
+# 2. Force native rebuild from source (no prebuilt binaries)
+ENV npm_config_build_from_source=true
 
+# 3. Install dependencies
 RUN yarn install --frozen-lockfile
 
-# Now copy the rest of the source code
+# 4. Copy the rest of your repository
 COPY . .
 
-# Reset Nx cache if necessary
-RUN npx nx reset || true
-
-# If you need to generate Prisma before building:
+# 5. Generate Prisma client
 RUN npx prisma generate --schema=libs/data-access/prisma/schema
 
-# Build the API
+# 6. Build the API with Nx
 RUN yarn nx build api --configuration production --verbose
 
 # --------------------------------------------------
 # 3) Runner stage
 # --------------------------------------------------
-FROM base AS runner
+FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nestjs \
-  && adduser --system --uid 1001 nestjs
+# Install OpenSSL and create user
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openssl && \
+    rm -rf /var/lib/apt/lists/* && \
+    groupadd -g 1001 nestjs && \
+    useradd -u 1001 -g nestjs -s /bin/bash -m nestjs
+
+# Enable corepack system-wide
+RUN corepack enable
+
+# Copy package manager config first
+COPY --from=builder --chown=nestjs:nestjs /app/package.json ./
+COPY --from=builder --chown=nestjs:nestjs /app/yarn.lock ./
+COPY --from=builder --chown=nestjs:nestjs /app/.yarnrc.yml ./
+
+# Prepare Yarn version
 USER nestjs
+RUN corepack prepare
 
-# Copy build artifacts
-COPY --from=builder /app/dist/apps/api ./dist/apps/api
-COPY --from=builder /app/node_modules ./node_modules
+# Copy application files
+COPY --from=builder --chown=nestjs:nestjs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nestjs /app/dist/apps/api ./dist/apps/api
+COPY --from=builder --chown=nestjs:nestjs /app/libs/data-access/prisma/migrations ./libs/data-access/prisma/migrations
+COPY --from=builder --chown=nestjs:nestjs /app/libs/data-access/prisma/schema ./libs/data-access/prisma/schema
 
-# Copy Prisma/migrations if needed at runtime
-COPY libs/data-access/prisma/schema ./libs/data-access/prisma/schema
-COPY libs/data-access/prisma/migrations ./libs/data-access/prisma/migrations
-
-CMD ["sh","-c","yarn prisma migrate deploy --schema=libs/data-access/prisma/schema && node dist/apps/api/main.js"]
+# Final command
+CMD ["sh", "-c", "yarn prisma migrate deploy --schema=libs/data-access/prisma/schema && node dist/apps/api/main.js"]
