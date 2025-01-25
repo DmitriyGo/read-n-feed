@@ -36,7 +36,7 @@ export function SignInModal() {
   });
 
   const onSubmit = async (values: SingInFormSchema) => {
-    signIn({
+    await signIn({
       email: values.email,
       password: values.password,
     });
