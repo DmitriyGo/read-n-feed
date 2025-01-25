@@ -1,5 +1,3 @@
-'use client';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useSignUp } from '@/hooks/write/sign-up';
 
 const formSchema = z
   .object({
@@ -35,8 +34,12 @@ const formSchema = z
     path: ['passwordRepeat'],
   });
 
+type SignUpFormSchema = z.infer<typeof formSchema>;
+
 export function SignUpModal() {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const { mutateAsync: signUp } = useSignUp();
+
+  const form = useForm<SignUpFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -45,9 +48,12 @@ export function SignUpModal() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: SignUpFormSchema) => {
+    signUp({
+      email: values.email,
+      password: values.password,
+    });
+  };
 
   return (
     <Form {...form}>

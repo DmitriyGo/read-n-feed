@@ -1,5 +1,3 @@
-'use client';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useSignIn } from '@/hooks/write/sign-in';
 
 const formSchema = z.object({
   email: z.string().nonempty('Email cannot be empty').email('Incorrect email'),
@@ -23,8 +22,12 @@ const formSchema = z.object({
     .min(8, 'Length of the password cannot be less than 8'),
 });
 
+type SingInFormSchema = z.infer<typeof formSchema>;
+
 export function SignInModal() {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const { mutateAsync: signIn } = useSignIn();
+
+  const form = useForm<SingInFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -32,9 +35,12 @@ export function SignInModal() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: SingInFormSchema) => {
+    signIn({
+      email: values.email,
+      password: values.password,
+    });
+  };
 
   return (
     <Form {...form}>
