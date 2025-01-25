@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - apps/api/.env
+
+  database:
+    container_name: read-n-feed
+    image: bitnami/postgresql:16.4.0
+    network_mode: host
+    environment:
+      POSTGRESQL_DATABASE: read-n-feed
+      POSTGRESQL_USERNAME: api
+      POSTGRESQL_PASSWORD: password
+    volumes:
+      - read_n_feed:/bitnami/postgresql
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  read_n_feed:

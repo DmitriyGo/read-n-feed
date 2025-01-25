@@ -6,14 +6,11 @@
     "serve:web": "nx serve web",
     "build:web": "nx build web",
     "serve:api": "nx serve api",
+    "build:api": "nx build api",
     "lint:api": "nx lint api",
     "lint:api:fix": "nx lint api --fix",
     "lint:web": "nx lint web",
-    "lint:web:fix": "nx lint web --fix",
-    "build:api": "nx build api",
-    "db:migration:generate": "npx drizzle-kit generate --config ./libs/database/src/drizzle/drizzle.config.ts",
-    "db:migration:run": "npx drizzle-kit migrate --config ./libs/database/src/drizzle/drizzle.config.ts",
-    "db:seed:tasks": "ts-node libs/database/src/drizzle/seeders/task.ts"
+    "lint:web:fix": "nx lint web --fix"
   },
   "private": true,
   "dependencies": {
