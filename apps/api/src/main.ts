@@ -6,10 +6,6 @@ import {
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {
-  DomainExceptionFilter,
-  DomainExceptionInterceptor,
-} from '@read-n-feed/infrastructure';
 import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
 
 import { AppModule } from './app/app.module';
@@ -18,6 +14,7 @@ function setupSwagger<T>(app: INestApplication<T>, prefix: string) {
   const config = new DocumentBuilder()
     .setTitle('Read-n-feed API')
     .setDescription('The API for GTS Digital Library')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${prefix}/swagger`, app, document);

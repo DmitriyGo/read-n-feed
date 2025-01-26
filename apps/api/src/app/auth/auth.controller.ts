@@ -12,6 +12,9 @@ import { AuthUseCase, LoginDto, RegisterDto } from '@read-n-feed/application';
 import { AuthCookieOptionsService } from '@read-n-feed/infrastructure';
 import { Request, Response } from 'express';
 
+import { Public } from './guards/public.decorator';
+
+@Public()
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {

@@ -1,7 +1,6 @@
 export type Provider = 'LOCAL' | 'GOOGLE' | 'FACEBOOK' | 'GITHUB';
 
-// Same for Role if needed:
-export type Role = 'USER' | 'ADMIN' | 'SUPERADMIN';
+export type UserRole = 'USER' | 'ADMIN' | 'SUPERADMIN';
 
 export type SubscriptionPlan = 'FREE' | 'PREMIUM' | 'PLUS' | 'ENTERPRISE';
 
@@ -10,10 +9,10 @@ export interface UserProps {
   email: string;
   password?: string | null;
   provider: Provider;
-  roles: Role[];
+  roles: UserRole[];
   isBlocked: boolean;
 
-  username?: string | null;
+  username: string;
   firstName?: string | null;
   lastName?: string | null;
   avatarUrl?: string | null;
@@ -45,12 +44,24 @@ export class User {
     return this.props.provider;
   }
 
-  // domain logic methods, e.g.:
   blockUser() {
     this.props.isBlocked = true;
   }
 
   unblockUser() {
     this.props.isBlocked = false;
+  }
+
+  updateProfile(partial: Partial<UserProps>) {
+    this.props.username = partial.username ?? this.props.username;
+    this.props.firstName = partial.firstName ?? this.props.firstName;
+    this.props.lastName = partial.lastName ?? this.props.lastName;
+    this.props.avatarUrl = partial.avatarUrl ?? this.props.avatarUrl;
+
+    this.props.updatedAt = new Date();
+  }
+
+  toPrimitives(): UserProps {
+    return { ...this.props };
   }
 }
