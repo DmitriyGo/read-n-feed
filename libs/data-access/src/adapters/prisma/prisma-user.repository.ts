@@ -22,16 +22,11 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async save(user: User): Promise<User> {
-    // The "props" might have domain-only fields
-    const props = (user as any).props; // or create a "toPrimitives()" method in your entity
+    const props = user.toPrimitives();
     const upserted = await this.prisma.user.upsert({
       where: { id: props.id },
-      update: {
-        ...props,
-      },
-      create: {
-        ...props,
-      },
+      update: { ...props },
+      create: { ...props },
     });
     return new User({ ...upserted });
   }
