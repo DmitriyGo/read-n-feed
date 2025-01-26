@@ -2,6 +2,7 @@ import { StringRecord } from '@/types';
 
 enum ApiControllers {
   Auth = 'auth',
+  Users = 'users',
 }
 
 export const ApiRoute = {
@@ -10,5 +11,10 @@ export const ApiRoute = {
     Login: `${ApiControllers.Auth}/login`,
     Logout: `${ApiControllers.Auth}/logout`,
     Refresh: `${ApiControllers.Auth}/refresh`,
+  },
+  Users: {
+    Me: `${ApiControllers.Users}/me`,
+    // Block: `${ApiControllers.Users}/block`,
+    // Unblock: `${ApiControllers.Users}/unblock`,
   },
 } satisfies Record<keyof typeof ApiControllers, StringRecord<string>>;

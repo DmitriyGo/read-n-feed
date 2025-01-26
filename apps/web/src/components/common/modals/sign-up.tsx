@@ -21,6 +21,12 @@ const formSchema = z
       .nonempty('Email cannot be empty')
       .email('Incorrect email')
       .trim(),
+    username: z
+      .string()
+      .nonempty('Username cannot be empty')
+      .min(3, 'Length of the username cannot be less than 3')
+      .max(20, 'Length of the username cannot be more than 20')
+      .trim(),
     password: z
       .string()
       .nonempty('Password cannot be empty')
@@ -72,6 +78,7 @@ export function SignUpModal() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
+      username: '',
       password: '',
       passwordRepeat: '',
       firstName: '',
@@ -83,6 +90,7 @@ export function SignUpModal() {
     await signUp({
       email: values.email,
       password: values.password,
+      username: values.username,
       ...(values.firstName && { firstName: values.firstName }),
       ...(values.lastName && { lastName: values.lastName }),
     });
@@ -99,6 +107,21 @@ export function SignUpModal() {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="your@email.com" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="john_doe" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -126,7 +149,7 @@ export function SignUpModal() {
           name="passwordRepeat"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Repeat password</FormLabel>
+              <FormLabel>Password Repeat</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="asdASD123!" {...field} />
               </FormControl>
@@ -140,7 +163,7 @@ export function SignUpModal() {
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First name</FormLabel>
+              <FormLabel>First Name</FormLabel>
               <FormControl>
                 <Input placeholder="John" {...field} />
               </FormControl>
@@ -154,7 +177,7 @@ export function SignUpModal() {
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last name</FormLabel>
+              <FormLabel>Last Name</FormLabel>
               <FormControl>
                 <Input placeholder="Doe" {...field} />
               </FormControl>

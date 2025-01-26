@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, Avatar } from '@/components/ui';
 import { useProfile } from '@/hooks/read/profile';
 
 export const ProfilePage = () => {
-  const { data: profileData, isLoading } = useProfile();
+  const { data, isLoading } = useProfile();
+  const profileData = data?.data;
 
   return (
     <Card>
@@ -21,6 +22,9 @@ export const ProfilePage = () => {
               alt="avatar"
               className="size-48"
             />
+
+            <p className="text-sm text-neutral-500">{profileData?.email}</p>
+            <p className="text-sm text-neutral-500">{profileData?.username}</p>
           </Conditional.False>
         </Conditional>
       </CardContent>
