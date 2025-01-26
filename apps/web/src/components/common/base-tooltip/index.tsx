@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib';
 
 interface BaseTooltipProps {
   content: ReactNode;

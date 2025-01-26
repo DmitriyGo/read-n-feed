@@ -10,7 +10,9 @@ export const Layout = () => {
 
       <ModalManager />
 
-      <Outlet />
+      <div className="container">
+        <Outlet />
+      </div>
     </>
   );
 };
