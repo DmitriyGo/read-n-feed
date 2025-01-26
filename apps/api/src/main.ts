@@ -14,6 +14,7 @@ function setupSwagger<T>(app: INestApplication<T>, prefix: string) {
   const config = new DocumentBuilder()
     .setTitle('Read-n-feed API')
     .setDescription('The API for GTS Digital Library')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${prefix}/swagger`, app, document);

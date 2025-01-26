@@ -36,10 +36,16 @@ export class AuthUseCase {
       id: uuidv4(),
       email: dto.email,
       password: hashedPass,
+      username: dto.username,
+      firstName: dto.firstName ?? null,
+      lastName: dto.lastName ?? null,
+      avatarUrl: dto.avatarUrl ?? null,
+
       provider: 'LOCAL',
       roles: ['USER'],
       isBlocked: false,
       subscriptionPlan: 'FREE',
+
       createdAt: new Date(),
       updatedAt: new Date(),
     });
