@@ -12,7 +12,7 @@ export interface UserProps {
   roles: UserRole[];
   isBlocked: boolean;
 
-  username?: string | null;
+  username: string;
   firstName?: string | null;
   lastName?: string | null;
   avatarUrl?: string | null;
@@ -53,6 +53,7 @@ export class User {
   }
 
   updateProfile(partial: Partial<UserProps>) {
+    this.props.username = partial.username ?? this.props.username;
     this.props.firstName = partial.firstName ?? this.props.firstName;
     this.props.lastName = partial.lastName ?? this.props.lastName;
     this.props.avatarUrl = partial.avatarUrl ?? this.props.avatarUrl;
