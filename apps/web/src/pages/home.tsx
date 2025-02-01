@@ -1,14 +1,15 @@
 import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
 import { Button } from '@/components/ui';
-import { ApiRoute } from '@/constants';
-import { axiosSecure } from '@/lib';
+import { useLogout } from '@/hooks/write/logout';
 import { useModalStore } from '@/store';
 
 export const HomePage = () => {
   const { setMode } = useModalStore();
 
+  const { mutateAsync: logout } = useLogout();
+
   const handleLogOut = async () => {
-    await axiosSecure.post(ApiRoute.Auth.Logout);
+    await logout();
   };
 
   return (

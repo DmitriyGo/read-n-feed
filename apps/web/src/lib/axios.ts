@@ -27,13 +27,13 @@ axiosSecure.interceptors.response.use(
   async (error) => {
     if (
       error.response?.status === 401 &&
-      error.response.data.message === 'TokenExpiredError'
+      error.response.config.url !== ApiRoute.Auth.Refresh
     ) {
       localStorage.removeItem(ACCESS_TOKEN);
 
       const {
         data: { accessToken },
-      } = await axiosBase.get<{ accessToken: string }>(ApiRoute.Auth.Refresh);
+      } = await axiosSecure.get<{ accessToken: string }>(ApiRoute.Auth.Refresh);
 
       localStorage.setItem(ACCESS_TOKEN, accessToken);
 

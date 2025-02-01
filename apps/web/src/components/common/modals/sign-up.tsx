@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui';
 import { useSignUp } from '@/hooks';
+import { useModalStore } from '@/store';
 
 const formSchema = z
   .object({
@@ -74,6 +75,8 @@ type SignUpFormSchema = z.infer<typeof formSchema>;
 export function SignUpModal() {
   const { mutateAsync: signUp } = useSignUp();
 
+  const { setMode } = useModalStore();
+
   const form = useForm<SignUpFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -87,13 +90,19 @@ export function SignUpModal() {
   });
 
   const onSubmit = async (values: SignUpFormSchema) => {
-    await signUp({
-      email: values.email,
-      password: values.password,
-      username: values.username,
-      ...(values.firstName && { firstName: values.firstName }),
-      ...(values.lastName && { lastName: values.lastName }),
-    });
+    try {
+      await signUp({
+        email: values.email,
+        password: values.password,
+        username: values.username,
+        ...(values.firstName && { firstName: values.firstName }),
+        ...(values.lastName && { lastName: values.lastName }),
+      });
+
+      setMode(null);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

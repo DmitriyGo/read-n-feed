@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui';
 import { useSignIn } from '@/hooks';
+import { useModalStore } from '@/store';
 
 const formSchema = z.object({
   email: z.string().nonempty('Email cannot be empty').email('Incorrect email'),
@@ -27,6 +28,8 @@ type SingInFormSchema = z.infer<typeof formSchema>;
 export function SignInModal() {
   const { mutateAsync: signIn } = useSignIn();
 
+  const { setMode } = useModalStore();
+
   const form = useForm<SingInFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,10 +39,16 @@ export function SignInModal() {
   });
 
   const onSubmit = async (values: SingInFormSchema) => {
-    await signIn({
-      email: values.email,
-      password: values.password,
-    });
+    try {
+      await signIn({
+        email: values.email,
+        password: values.password,
+      });
+
+      setMode(null);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

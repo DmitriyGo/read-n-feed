@@ -8,7 +8,7 @@ export const useProfile = () => {
   return useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      await delay(1000);
+      await delay(500);
 
       return axiosSecure.get<UserProps>(ApiRoute.Users.Me);
     },
