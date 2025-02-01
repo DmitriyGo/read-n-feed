@@ -1,1 +1,1 @@
-export const a = 0;
+export * from './get-profile';

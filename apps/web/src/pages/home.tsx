@@ -1,6 +1,6 @@
 import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
 import { Button } from '@/components/ui';
-import { useLogout } from '@/hooks/write/logout';
+import { useLogout } from '@/hooks/write';
 import { useModalStore } from '@/store';
 
 export const HomePage = () => {

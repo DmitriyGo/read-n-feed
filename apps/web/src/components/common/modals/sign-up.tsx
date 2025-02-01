@@ -12,7 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui';
-import { useSignUp } from '@/hooks';
+import { useSignUp } from '@/hooks/write';
 import { useModalStore } from '@/store';
 
 const formSchema = z
