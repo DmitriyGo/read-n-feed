@@ -1,4 +1,4 @@
-import { Conditional } from '@/components/common';
+import { PartiallyLoadedContent } from '@/components/common';
 import { Card, CardContent, CardHeader, Avatar, Badge } from '@/components/ui';
 import { useGetProfile } from '@/hooks/read';
 
@@ -7,77 +7,73 @@ export const ShowProfileInfo = () => {
   const profileData = data?.data;
 
   return (
-    <Card>
+    <Card className="[&:p]:text-sm">
       <CardHeader>
-        <h2 className="text-xl font-semibold">Your Profile</h2>
+        <h2 className="!text-xl font-semibold">Your Profile</h2>
       </CardHeader>
 
       <CardContent className="flex flex-row gap-4">
-        <Conditional condition={isLoading}>
-          <Conditional.True>True</Conditional.True>
+        <Avatar src={profileData?.avatarUrl} alt="avatar" className="size-48" />
 
-          <Conditional.False>
-            <Avatar
-              src={profileData?.avatarUrl}
-              alt="avatar"
-              className="size-48"
+        <Card>
+          <CardHeader>
+            <p>Essential data:</p>
+          </CardHeader>
+          <CardContent className="gap-2 flex flex-col">
+            <PartiallyLoadedContent
+              label="Email"
+              content={profileData?.email}
+            />
+            <PartiallyLoadedContent
+              label="Username"
+              content={profileData?.username}
+            />
+            <PartiallyLoadedContent
+              label="First Name"
+              content={profileData?.firstName}
+            />
+            <PartiallyLoadedContent
+              label="Last Name"
+              content={profileData?.lastName}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <p>Additional Data:</p>
+          </CardHeader>
+          <CardContent className="gap-2 flex flex-col">
+            <PartiallyLoadedContent
+              className="h-[22px]"
+              label="Status"
+              isLoading={isLoading}
+              content={
+                <Badge
+                  variant={
+                    profileData?.isBlocked === true ? 'destructive' : 'default'
+                  }
+                >
+                  {profileData?.isBlocked === true ? 'Blocked' : 'Not Blocked'}
+                </Badge>
+              }
             />
 
-            <Card>
-              <CardHeader>
-                <p>Essential data:</p>
-              </CardHeader>
-              <CardContent className="space-y-2 flex flex-col justify-center">
-                <p className="text-sm text-neutral-500">
-                  Email: {profileData?.email}
-                </p>
-                <p className="text-sm text-neutral-500">
-                  Username: {profileData?.username}
-                </p>
-                <p className="text-sm text-neutral-500">
-                  First Name: {profileData?.firstName ?? 'Not Given'}
-                </p>
-                <p className="text-sm text-neutral-500">
-                  Last Name {profileData?.lastName ?? 'Not Given'}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <p>Additional Data:</p>
-              </CardHeader>
-              <CardContent className="space-y-2 flex flex-col justify-center">
-                <div className="text-sm text-neutral-500">
-                  <p>Status:&nbsp;</p>
-                  <Badge
-                    variant={
-                      profileData?.isBlocked === true
-                        ? 'destructive'
-                        : 'default'
-                    }
-                  >
-                    {profileData?.isBlocked === true
-                      ? 'Blocked'
-                      : 'Not Blocked'}
-                  </Badge>
-                </div>
-
-                <div className="text-sm text-neutral-500">
-                  <p>Roles:&nbsp;</p>
-                  {profileData?.roles.map((role) => (
-                    <Badge
-                      key={role}
-                      variant={role === 'ADMIN' ? 'destructive' : 'default'}
-                    >
-                      {role}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </Conditional.False>
-        </Conditional>
+            <PartiallyLoadedContent
+              className="min-h-[22px]"
+              label="Roles"
+              isLoading={isLoading}
+              content={profileData?.roles.map((role) => (
+                <Badge
+                  key={role}
+                  variant={role === 'ADMIN' ? 'destructive' : 'default'}
+                >
+                  {role}
+                </Badge>
+              ))}
+            />
+          </CardContent>
+        </Card>
       </CardContent>
     </Card>
   );

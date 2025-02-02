@@ -16,10 +16,14 @@ export const useUpdateProfile = () => {
       await axiosSecure.patch<UserResponseDto>(ApiRoute.Users.Me, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QueryKey.GetProfile],
-        type: 'active',
-      });
+      setTimeout(
+        () =>
+          queryClient.invalidateQueries({
+            queryKey: [QueryKey.GetProfile],
+            type: 'active',
+          }),
+        500,
+      );
     },
     onError: (error) => {
       console.error(error);

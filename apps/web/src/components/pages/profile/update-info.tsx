@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui';
+import { useGetProfile } from '@/hooks/read';
 import { useUpdateProfile } from '@/hooks/write';
 
 const formSchema = z.object({
@@ -49,6 +50,7 @@ const formSchema = z.object({
 type UpdateProfileFormSchema = z.infer<typeof formSchema>;
 
 export const UpdateProfileInfo = () => {
+  const { isSuccess } = useGetProfile();
   const { mutateAsync: updateProfile } = useUpdateProfile();
 
   const form = useForm<UpdateProfileFormSchema>({
@@ -130,7 +132,7 @@ export const UpdateProfileInfo = () => {
             </Button>
 
             <Button
-              disabled={!form.formState.isDirty || !form.formState.isValid}
+              disabled={!(form.formState.isDirty && isSuccess)}
               type="submit"
               variant="outline"
               className="w-full"

@@ -9,7 +9,7 @@ export const useGetProfile = () => {
   return useQuery({
     queryKey: [QueryKey.GetProfile],
     queryFn: async () => {
-      await delay(500);
+      await delay(2000);
 
       return axiosSecure.get<UserResponseDto>(ApiRoute.Users.Me);
     },
