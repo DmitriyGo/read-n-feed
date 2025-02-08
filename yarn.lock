@@ -4342,6 +4342,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     react-hook-form: "npm:^7.54.2"
     react-router-dom: "npm:6.11.2"
+    react-toastify: "npm:^11.0.3"
     reflect-metadata: "npm:^0.1.13"
     rxjs: "npm:^7.8.0"
     tailwind-merge: "npm:^2.6.0"
@@ -15143,6 +15144,18 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/841938ff16d16a6b76895f4cb2e1fea957e5fe3b30febbf03a54892dae1c9153f2383e231dea0b3ba41192ad2f2849448fa859caccd288943bce32639e971bee
+  languageName: node
+  linkType: hard
+
+"react-toastify@npm:^11.0.3":
+  version: 11.0.3
+  resolution: "react-toastify@npm:11.0.3"
+  dependencies:
+    clsx: "npm:^2.1.1"
+  peerDependencies:
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  checksum: 10c0/23b989c6080bc5bf0eb0c1f7ed17bd53d067d9beb33baf93c520119cd69cf75c9f2d1ee524dfe6c8a2a5d326029772b576de00e018b379d03a0e37630b83adea
   languageName: node
   linkType: hard
 

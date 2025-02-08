@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import { toast } from 'react-toastify';
 
 import { ACCESS_TOKEN, ApiRoute } from '@/constants';
 import { env } from '@/env';
@@ -27,7 +28,11 @@ axiosSecure.interceptors.response.use(
   async (error) => {
     if (
       error.response?.status === 401 &&
-      error.response.config.url !== ApiRoute.Auth.Refresh
+      [
+        ApiRoute.Auth.Refresh,
+        ApiRoute.Auth.Register,
+        ApiRoute.Auth.Login,
+      ].every((route) => route !== error.response.config.url)
     ) {
       localStorage.removeItem(ACCESS_TOKEN);
 
@@ -42,6 +47,6 @@ axiosSecure.interceptors.response.use(
       return axiosSecure.request(error.config);
     }
 
-    return Promise.reject(error);
+    return Promise.reject(error.response.data.message);
   },
 );

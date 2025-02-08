@@ -20,12 +20,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload: { id: string; email: string; roles: string[] }) {
     const user = await this.userRepo.findById(payload.id);
+
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
+
     if (user['props'].isBlocked) {
       throw new UnauthorizedException('User is blocked');
     }
+
     return payload;
   }
 }

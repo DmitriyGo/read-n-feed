@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 import {
@@ -101,7 +102,7 @@ export function SignUpModal() {
 
       setMode(null);
     } catch (error) {
-      console.error(error);
+      toast.error(error as string);
     }
   };
 

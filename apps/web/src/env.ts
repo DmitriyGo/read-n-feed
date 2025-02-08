@@ -7,7 +7,7 @@ export const env = createEnv({
     VITE_API_URL: z
       .string()
       .optional()
-      .default('http://localhost:3000/api/v1/'),
+      .default('http://localhost:3001/api/v1/'),
   },
   runtimeEnv: import.meta.env,
 });
