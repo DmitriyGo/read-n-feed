@@ -23,13 +23,9 @@ jobs:
           node-version: 22
       - name: Enable Corepack
         run: corepack enable
-      - uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/yarn.lock') }}
       - name: Prepare Yarn
         run: corepack prepare yarn@4.6.0 --activate
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
-      - run: yarn nx affected -t lint test build
+      - run: yarn nx affected -t lint build

@@ -1,7 +1,11 @@
+import { ShowProfileInfo, UpdateProfileInfo } from '@/components/pages';
+
 export const ProfilePage = () => {
   return (
-    <div>
-      <p>ProfilePage</p>
-    </div>
+    <>
+      <ShowProfileInfo />
+
+      <UpdateProfileInfo />
+    </>
   );
 };
