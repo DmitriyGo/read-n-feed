@@ -1,4 +1,3 @@
-import { isNotEmpty } from 'class-validator';
 import { useNavigate } from 'react-router-dom';
 
 import { Conditional } from '../conditional';
@@ -14,6 +13,7 @@ import { Route } from '@/constants';
 import { useAuth } from '@/hooks';
 import { useGetProfile } from '@/hooks/read';
 import { useLogout } from '@/hooks/write';
+import { isNotEmpty } from '@/lib';
 import { useModalStore } from '@/store';
 
 export const Profile = () => {
