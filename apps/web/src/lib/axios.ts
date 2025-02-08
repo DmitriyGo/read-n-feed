@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import { toast } from 'react-toastify';
 
 import { ACCESS_TOKEN, ApiRoute } from '@/constants';
 import { env } from '@/env';
