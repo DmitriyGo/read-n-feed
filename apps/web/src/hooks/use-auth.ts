@@ -1,7 +1,5 @@
-import { useCallback, useLayoutEffect } from 'react';
+import { useCallback } from 'react';
 
-import { ACCESS_TOKEN, ApiRoute } from '@/constants';
-import { axiosSecure, isEmpty } from '@/lib';
 import { useAuthStore } from '@/store';
 
 export const useAuth = () => {
@@ -13,45 +11,17 @@ export const useAuth = () => {
     }
 
     setAccessToken(newAccessToken);
-    localStorage.setItem(ACCESS_TOKEN, newAccessToken);
-    setIsReady(false);
   };
 
   const clearAccessToken = useCallback(() => {
     setAccessToken(null);
-    localStorage.removeItem(ACCESS_TOKEN);
-    setIsReady(false);
-  }, [setAccessToken, setIsReady]);
-
-  useLayoutEffect(() => {
-    (async () => {
-      if (isReady) {
-        return;
-      }
-
-      const newAccessToken = localStorage.getItem(ACCESS_TOKEN);
-
-      if (isEmpty(newAccessToken)) {
-        setIsReady(true);
-        return;
-      }
-
-      setAccessToken(newAccessToken);
-
-      try {
-        await axiosSecure(ApiRoute.Users.Me);
-
-        setIsReady(true);
-      } catch {
-        clearAccessToken();
-      }
-    })();
-  }, [clearAccessToken, isReady, setAccessToken, setIsReady]);
+  }, [setAccessToken]);
 
   return {
     isReady,
     accessToken,
     handleSetAccessToken,
     clearAccessToken,
+    setIsReady,
   };
 };

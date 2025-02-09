@@ -1,4 +1,5 @@
 import { UserRole } from '@read-n-feed/domain';
+import { isDefined } from '@read-n-feed/shared';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -8,7 +9,6 @@ import { ModalManager } from '../modal-manager';
 import { Route } from '@/constants';
 import { useAuth } from '@/hooks';
 import { useGetProfile } from '@/hooks/read';
-import { isEmpty, isNotEmpty } from '@/lib';
 
 export const Layout = () => {
   return (
@@ -33,7 +33,7 @@ export const RequiresRoleLayout = ({ role }: { role: UserRole }) => {
   useEffect(() => {
     if (isReady && !isLoadingOrRefetching) {
       const hasRequiredRole =
-        isNotEmpty(profile) && isNotEmpty(profile.data.roles)
+        isDefined(profile) && isDefined(profile.data.roles)
           ? profile.data.roles.some((userRole) => userRole === role)
           : false;
 

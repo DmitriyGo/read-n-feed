@@ -1,3 +1,4 @@
+import { isDefined } from '@read-n-feed/shared';
 import { useNavigate } from 'react-router-dom';
 
 import { Conditional } from '../conditional';
@@ -13,7 +14,6 @@ import { Route } from '@/constants';
 import { useAuth } from '@/hooks';
 import { useGetProfile } from '@/hooks/read';
 import { useLogout } from '@/hooks/write';
-import { isNotEmpty } from '@/lib';
 import { useModalStore } from '@/store';
 
 export const Profile = () => {
@@ -40,7 +40,7 @@ export const Profile = () => {
         <Avatar src={data?.data.avatarUrl} />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col gap-4" align="end">
-        <Conditional condition={isNotEmpty(accessToken)}>
+        <Conditional condition={isDefined(accessToken)}>
           <Conditional.True>
             <Button onClick={handleSeeProfile}>See Profile</Button>
 

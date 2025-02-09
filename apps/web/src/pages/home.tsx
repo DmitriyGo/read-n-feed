@@ -1,6 +1,5 @@
 import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
 import { Button } from '@/components/ui';
-import { useLogout } from '@/hooks/write';
 
 export const HomePage = () => {
   return (

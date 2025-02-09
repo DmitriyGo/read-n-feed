@@ -1,7 +1,8 @@
 import Axios from 'axios';
 
-import { ACCESS_TOKEN, ApiRoute } from '@/constants';
+import { ApiRoute } from '@/constants';
 import { env } from '@/env';
+import { useAuthStore } from '@/store/auth-store';
 
 export const axiosBase = Axios.create({
   baseURL: env.VITE_API_URL,
@@ -13,7 +14,7 @@ export const axiosSecure = Axios.create({
 });
 
 axiosSecure.interceptors.request.use((config) => {
-  const accessToken = localStorage.getItem(ACCESS_TOKEN);
+  const accessToken = useAuthStore.getState().accessToken;
 
   if (accessToken) {
     config.headers.Authorization = accessToken;
@@ -33,13 +34,15 @@ axiosSecure.interceptors.response.use(
         ApiRoute.Auth.Login,
       ].every((route) => route !== error.response.config.url)
     ) {
-      localStorage.removeItem(ACCESS_TOKEN);
+      useAuthStore.getState().setAccessToken(null);
 
       const {
         data: { accessToken },
       } = await axiosSecure.get<{ accessToken: string }>(ApiRoute.Auth.Refresh);
 
-      localStorage.setItem(ACCESS_TOKEN, accessToken);
+      useAuthStore.getState().setAccessToken(accessToken);
+
+      console.log(1, useAuthStore.getState().accessToken);
 
       error.config.headers.Authorization = accessToken;
 
