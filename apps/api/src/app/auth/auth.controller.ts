@@ -4,14 +4,18 @@ import {
   Body,
   Req,
   Res,
-  Get,
+  HttpCode,
+  UseGuards,
+  UnauthorizedException,
   HttpStatus,
+  Get,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiHeader } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthUseCase, LoginDto, RegisterDto } from '@read-n-feed/application';
 import { AuthCookieOptionsService } from '@read-n-feed/infrastructure';
 import { Request, Response } from 'express';
 
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Public } from './guards/public.decorator';
 
 @Public()
@@ -31,16 +35,19 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Login user' })
   async login(
     @Body() dto: LoginDto,
     @Req() req: Request,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
     const userAgent = req.headers['user-agent'] || 'unknown';
+    const ipAddress = req.ip;
     const { accessToken, refreshToken } = await this.authUseCase.login(
       dto,
       userAgent,
+      ipAddress,
     );
 
     res.cookie(
@@ -49,27 +56,25 @@ export class AuthController {
       this.authCookieOptions.getDefaultCookieOptions(),
     );
 
-    return res.status(HttpStatus.OK).json({ accessToken });
+    return { accessToken };
   }
 
   @Get('refresh')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Refresh tokens' })
-  @ApiHeader({
-    name: 'x-refresh-token',
-    description:
-      'Refresh token for DEV only. In production, use HTTP-only cookies.',
-    required: false,
-  })
-  async refresh(@Req() req: Request, @Res() res: Response) {
-    let refreshToken: string | undefined = req.cookies?.refreshToken;
-    if (this.authCookieOptions.isDevelopment && !refreshToken) {
-      refreshToken = req.headers['x-refresh-token'] as string;
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token provided.');
     }
 
     const userAgent = req.headers['user-agent'] || 'unknown';
-
+    const ipAddress = req.ip;
     const { accessToken, refreshToken: newRefreshToken } =
-      await this.authUseCase.refreshTokens(refreshToken, userAgent);
+      await this.authUseCase.refreshTokens(refreshToken, userAgent, ipAddress);
 
     res.cookie(
       'refreshToken',
@@ -77,25 +82,39 @@ export class AuthController {
       this.authCookieOptions.getDefaultCookieOptions(),
     );
 
-    return res.status(HttpStatus.OK).json({ accessToken });
+    return { accessToken };
   }
 
-  @Get('logout')
-  @ApiOperation({ summary: 'Logout user' })
-  async logout(@Req() req: Request, @Res() res: Response) {
-    let refreshToken: string | undefined = req.cookies?.refreshToken;
-    if (this.authCookieOptions.isDevelopment && !refreshToken) {
-      refreshToken = req.headers['x-refresh-token'] as string;
+  @Post('logout')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token found.');
     }
 
-    if (refreshToken) {
-      await this.authUseCase.logout(refreshToken);
+    await this.authUseCase.logout(refreshToken, false);
+    res.clearCookie('refreshToken', { path: '/' });
+
+    return { message: 'Logged out successfully.' };
+  }
+
+  @Post('logout-all')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  async logoutAll(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token found.');
     }
 
-    res.clearCookie(
-      'refreshToken',
-      this.authCookieOptions.getDefaultCookieOptions(),
-    );
-    return res.status(HttpStatus.OK).send({ success: true });
+    await this.authUseCase.logout(refreshToken, true);
+    res.clearCookie('refreshToken', { path: '/' });
+
+    return { message: 'Logged out from all devices.' };
   }
 }

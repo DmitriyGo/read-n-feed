@@ -1,16 +1,14 @@
 import {
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  ITokenGenerator,
-  ITokenRepository,
-  IUserRepository,
-  Token,
-  User,
-} from '@read-n-feed/domain';
+import { ConfigService } from '@nestjs/config';
+import { IUserRepository, User } from '@read-n-feed/domain';
+import { ISessionRepository, Session } from '@read-n-feed/domain';
+import { ITokenGenerator } from '@read-n-feed/domain';
 import { compareSync, hashSync } from 'bcrypt';
 import { add } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,20 +20,21 @@ import { UserAlreadyExistsError } from '../exceptions/user-already-exists.error'
 @Injectable()
 export class AuthUseCase {
   constructor(
-    @Inject('IUserRepository') private readonly userRepo: IUserRepository,
-    @Inject('ITokenRepository') private readonly tokenRepo: ITokenRepository,
     @Inject('ITokenGenerator') private readonly tokenGen: ITokenGenerator,
+    @Inject('IUserRepository') private readonly userRepo: IUserRepository,
+    @Inject('ISessionRepository')
+    private readonly sessionRepo: ISessionRepository,
+    private readonly config: ConfigService,
   ) {}
 
   async register(dto: RegisterDto): Promise<User> {
-    const existing = await this.userRepo.findByEmail(dto.email);
-    if (existing) throw new UserAlreadyExistsError(dto.email);
+    await this.ensureEmailIsUnique(dto.email);
 
-    const hashedPass = hashSync(dto.password, 12);
+    const hashedPassword = hashSync(dto.password, 12);
     const user = new User({
       id: uuidv4(),
       email: dto.email,
-      password: hashedPass,
+      password: hashedPassword,
       username: dto.username,
       firstName: dto.firstName ?? null,
       lastName: dto.lastName ?? null,
@@ -53,95 +52,178 @@ export class AuthUseCase {
     return this.userRepo.save(user);
   }
 
-  async login(
-    dto: LoginDto,
-    userAgent?: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.userRepo.findByEmail(dto.email);
-    if (!user || !user['props'].password) {
-      throw new UnauthorizedException('User not found or no password set.');
-    }
+  async login(dto: LoginDto, userAgent?: string, ipAddress?: string) {
+    const user = await this.validateUserCredentials(dto.email, dto.password);
 
-    if (user['props'].isBlocked) {
-      throw new UnauthorizedException('User is blocked.');
-    }
+    const accessToken = this.createAccessToken(user);
+    const refreshToken = await this.createSession(user, userAgent, ipAddress);
 
-    const passwordMatches = compareSync(dto.password, user['props'].password);
-    if (!passwordMatches) {
-      throw new UnauthorizedException('Wrong password.');
-    }
-
-    const accessToken =
-      'Bearer ' +
-      this.tokenGen.generateAccessToken({
-        id: user.id,
-        email: user.email,
-        roles: user['props'].roles,
-      });
-
-    const refreshToken = await this.generateRefreshToken(user.id, userAgent);
-
-    return { accessToken, refreshToken: refreshToken.token };
+    return { accessToken, refreshToken };
   }
 
   async refreshTokens(
-    oldRefreshToken: string,
+    refreshToken: string,
     userAgent?: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    const tokenEntity = await this.tokenRepo.findByToken(oldRefreshToken);
+    ipAddress?: string,
+  ) {
+    const { sessionId, rawSecret } = this.parseRefreshToken(refreshToken);
+    const session = await this.validateSession(sessionId, rawSecret);
 
-    if (!tokenEntity || tokenEntity.isExpired()) {
-      if (tokenEntity) {
-        await this.tokenRepo.deleteByToken(tokenEntity.token);
-      }
-      throw new TokenExpiredError();
+    const newRefreshToken = await this.rotateSessionToken(
+      session,
+      userAgent,
+      ipAddress,
+    );
+    const accessToken = await this.createAccessTokenFromSession(session);
+
+    return { accessToken, refreshToken: newRefreshToken };
+  }
+
+  async logout(refreshToken: string, logoutAll = false) {
+    const { sessionId } = this.parseRefreshToken(refreshToken);
+
+    if (logoutAll) {
+      const session = await this.sessionRepo.findById(sessionId);
+      if (!session) return;
+      await this.sessionRepo.deleteAllByUser(session.userId);
+      return;
     }
 
-    // remove the old token to rotate
-    await this.tokenRepo.deleteByToken(oldRefreshToken);
+    await this.sessionRepo.delete(sessionId);
+  }
 
-    const user = await this.userRepo.findById(tokenEntity.userId);
-    if (!user) {
-      throw new NotFoundException('User for this token not found.');
+  private async ensureEmailIsUnique(email: string) {
+    const existing = await this.userRepo.findByEmail(email);
+    if (existing) {
+      throw new UserAlreadyExistsError(email);
+    }
+  }
+
+  private async validateUserCredentials(
+    email: string,
+    password: string,
+  ): Promise<User> {
+    const user = await this.userRepo.findByEmail(email);
+    if (!user || !user['props'].password) {
+      throw new UnauthorizedException('Invalid email or password.');
     }
 
     if (user['props'].isBlocked) {
       throw new UnauthorizedException('User is blocked.');
     }
 
-    const newAccessToken =
+    if (!compareSync(password, user['props'].password)) {
+      throw new UnauthorizedException('Invalid email or password.');
+    }
+    return user;
+  }
+
+  private createAccessToken(user: User): string {
+    const jwtExp = this.config.getOrThrow<string>('JWT_EXP');
+    return (
       'Bearer ' +
-      this.tokenGen.generateAccessToken({
-        id: user.id,
-        email: user.email,
-        roles: user['props'].roles,
-      });
-
-    const newRefreshToken = await this.generateRefreshToken(user.id, userAgent);
-
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken.token };
+      this.tokenGen.generateAccessToken(
+        {
+          id: user.id,
+          email: user.email,
+          roles: user['props'].roles,
+        },
+        jwtExp,
+      )
+    );
   }
 
-  async logout(refreshToken: string): Promise<void> {
-    await this.tokenRepo.deleteByToken(refreshToken);
-  }
+  private async createSession(
+    user: User,
+    userAgent?: string,
+    ipAddress?: string,
+  ): Promise<string> {
+    const refreshDays = parseInt(
+      this.config.getOrThrow<string>('REFRESH_TOKEN_MAX_AGE_DAYS'),
+    );
+    const sessionExpiration = add(new Date(), { days: refreshDays });
 
-  private async generateRefreshToken(
-    userId: string,
-    userAgent = 'unknown',
-  ): Promise<Token> {
-    const exp = add(new Date(), { days: 30 });
+    const rawRefreshSecret = uuidv4();
+    const refreshTokenHash = hashSync(rawRefreshSecret, 10);
 
-    const token = new Token({
+    const session = new Session({
       id: uuidv4(),
-      token: uuidv4(), // actual token string
-      userId,
-      userAgent,
-      exp,
+      userId: user.id,
+      refreshTokenHash,
+      userAgent: userAgent ?? null,
+      ipAddress: ipAddress ?? null,
+      expiresAt: sessionExpiration,
+      revokedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
-    return this.tokenRepo.upsert(token);
+    await this.sessionRepo.create(session);
+
+    return session.id + '.' + rawRefreshSecret;
+  }
+
+  private parseRefreshToken(refreshToken: string) {
+    const parts = refreshToken.split('.');
+    if (parts.length !== 2) {
+      throw new UnauthorizedException('Invalid refresh token format.');
+    }
+    return { sessionId: parts[0], rawSecret: parts[1] };
+  }
+
+  private async validateSession(
+    sessionId: string,
+    rawSecret: string,
+  ): Promise<Session> {
+    const session = await this.sessionRepo.findById(sessionId);
+    if (!session || !session.isActive()) {
+      throw new TokenExpiredError();
+    }
+
+    if (!compareSync(rawSecret, session.refreshTokenHash)) {
+      session.revoke();
+      await this.sessionRepo.update(session);
+      throw new ForbiddenException('Refresh token reuse detected.');
+    }
+
+    return session;
+  }
+
+  private async rotateSessionToken(
+    session: Session,
+    userAgent?: string,
+    ipAddress?: string,
+  ): Promise<string> {
+    const newRawSecret = uuidv4();
+    const newHash = hashSync(newRawSecret, 10);
+    const refreshDays = parseInt(
+      this.config.getOrThrow<string>('REFRESH_TOKEN_MAX_AGE_DAYS'),
+    );
+    const newExpiration = add(new Date(), { days: refreshDays });
+
+    session.rotateToken(newHash, newExpiration);
+    if (userAgent) session['props'].userAgent = userAgent;
+    if (ipAddress) session['props'].ipAddress = ipAddress;
+    await this.sessionRepo.update(session);
+
+    return session.id + '.' + newRawSecret;
+  }
+
+  private async createAccessTokenFromSession(
+    session: Session,
+  ): Promise<string> {
+    const user = await this.userRepo.findById(session.userId);
+    if (!user) {
+      session.revoke();
+      await this.sessionRepo.update(session);
+      throw new NotFoundException('User not found.');
+    }
+    if (user['props'].isBlocked) {
+      session.revoke();
+      await this.sessionRepo.update(session);
+      throw new UnauthorizedException('User is blocked.');
+    }
+
+    return this.createAccessToken(user);
   }
 }
