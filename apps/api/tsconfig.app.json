@@ -4,8 +4,6 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": ["node"],
-    "module": "esnext",
-    "types": ["node"],
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
