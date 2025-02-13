@@ -6,9 +6,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IUserRepository, User } from '@read-n-feed/domain';
+import { IUserRepository, JwtPayload, User } from '@read-n-feed/domain';
 import { ISessionRepository, Session } from '@read-n-feed/domain';
 import { ITokenGenerator } from '@read-n-feed/domain';
+import { lookupLocation, parseUserAgent } from '@read-n-feed/shared';
 import { compareSync, hashSync } from 'bcrypt';
 import { add } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
@@ -55,25 +56,19 @@ export class AuthUseCase {
   async login(dto: LoginDto, userAgent?: string, ipAddress?: string) {
     const user = await this.validateUserCredentials(dto.email, dto.password);
 
-    const accessToken = this.createAccessToken(user);
     const refreshToken = await this.createSession(user, userAgent, ipAddress);
+    const sessionId = refreshToken.split('.')[0];
+
+    const accessToken = this.createAccessToken(user, sessionId);
 
     return { accessToken, refreshToken };
   }
 
-  async refreshTokens(
-    refreshToken: string,
-    userAgent?: string,
-    ipAddress?: string,
-  ) {
+  async refreshTokens(refreshToken: string) {
     const { sessionId, rawSecret } = this.parseRefreshToken(refreshToken);
     const session = await this.validateSession(sessionId, rawSecret);
 
-    const newRefreshToken = await this.rotateSessionToken(
-      session,
-      userAgent,
-      ipAddress,
-    );
+    const newRefreshToken = await this.rotateSessionToken(session);
     const accessToken = await this.createAccessTokenFromSession(session);
 
     return { accessToken, refreshToken: newRefreshToken };
@@ -118,19 +113,15 @@ export class AuthUseCase {
     return user;
   }
 
-  private createAccessToken(user: User): string {
+  private createAccessToken(user: User, sessionId: string): string {
     const jwtExp = this.config.getOrThrow<string>('JWT_EXP');
-    return (
-      'Bearer ' +
-      this.tokenGen.generateAccessToken(
-        {
-          id: user.id,
-          email: user.email,
-          roles: user['props'].roles,
-        },
-        jwtExp,
-      )
-    );
+    const payload: JwtPayload = {
+      id: user.id,
+      email: user.email,
+      roles: user['props'].roles,
+      sessionId,
+    };
+    return 'Bearer ' + this.tokenGen.generateAccessToken(payload, jwtExp);
   }
 
   private async createSession(
@@ -138,6 +129,18 @@ export class AuthUseCase {
     userAgent?: string,
     ipAddress?: string,
   ): Promise<string> {
+    const ua = userAgent || 'unknown';
+    const ip = ipAddress || 'unknown';
+
+    const existingSessions = await this.sessionRepo.findActiveByUserAndDevice(
+      user.id,
+      ua,
+      ip,
+    );
+    await Promise.all(
+      existingSessions.map((s) => this.sessionRepo.delete(s.id)),
+    );
+
     const refreshDays = parseInt(
       this.config.getOrThrow<string>('REFRESH_TOKEN_MAX_AGE_DAYS'),
     );
@@ -146,12 +149,17 @@ export class AuthUseCase {
     const rawRefreshSecret = uuidv4();
     const refreshTokenHash = hashSync(rawRefreshSecret, 10);
 
+    const location = ip !== 'unknown' ? lookupLocation(ip) : null;
+    const device = ua !== 'unknown' ? parseUserAgent(ua) : null;
+
     const session = new Session({
       id: uuidv4(),
       userId: user.id,
       refreshTokenHash,
-      userAgent: userAgent ?? null,
-      ipAddress: ipAddress ?? null,
+      userAgent: ua,
+      ipAddress: ip,
+      locationMetadata: location,
+      deviceType: device,
       expiresAt: sessionExpiration,
       revokedAt: null,
       createdAt: new Date(),
@@ -160,7 +168,19 @@ export class AuthUseCase {
 
     await this.sessionRepo.create(session);
 
-    return session.id + '.' + rawRefreshSecret;
+    return `${session.id}.${rawRefreshSecret}`;
+  }
+
+  async getUserSessions(userId: string): Promise<Session[]> {
+    return this.sessionRepo.findActiveByUser(userId);
+  }
+
+  async revokeSession(userId: string, sessionId: string): Promise<void> {
+    const session = await this.sessionRepo.findById(sessionId);
+    if (!session || session.userId !== userId) {
+      throw new NotFoundException('Session not found');
+    }
+    await this.sessionRepo.delete(sessionId);
   }
 
   private parseRefreshToken(refreshToken: string) {
@@ -189,11 +209,7 @@ export class AuthUseCase {
     return session;
   }
 
-  private async rotateSessionToken(
-    session: Session,
-    userAgent?: string,
-    ipAddress?: string,
-  ): Promise<string> {
+  private async rotateSessionToken(session: Session): Promise<string> {
     const newRawSecret = uuidv4();
     const newHash = hashSync(newRawSecret, 10);
     const refreshDays = parseInt(
@@ -202,11 +218,9 @@ export class AuthUseCase {
     const newExpiration = add(new Date(), { days: refreshDays });
 
     session.rotateToken(newHash, newExpiration);
-    if (userAgent) session['props'].userAgent = userAgent;
-    if (ipAddress) session['props'].ipAddress = ipAddress;
     await this.sessionRepo.update(session);
 
-    return session.id + '.' + newRawSecret;
+    return `${session.id}.${newRawSecret}`;
   }
 
   private async createAccessTokenFromSession(
@@ -223,7 +237,6 @@ export class AuthUseCase {
       await this.sessionRepo.update(session);
       throw new UnauthorizedException('User is blocked.');
     }
-
-    return this.createAccessToken(user);
+    return this.createAccessToken(user, session.id);
   }
 }

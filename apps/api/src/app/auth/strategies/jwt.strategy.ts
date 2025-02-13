@@ -1,7 +1,10 @@
 import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { IUserRepository } from '@read-n-feed/domain';
-import { ISessionRepository } from '@read-n-feed/domain';
+import {
+  IUserRepository,
+  ISessionRepository,
+  JwtPayload,
+} from '@read-n-feed/domain';
 import { AuthConfigService } from '@read-n-feed/infrastructure';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 
@@ -22,9 +25,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { id: string; email: string; sessionId: string }) {
+  async validate(payload: JwtPayload): Promise<JwtPayload> {
     const user = await this.userRepo.findById(payload.id);
-    if (!user) throw new UnauthorizedException('User not found.');
+    if (!user) {
+      throw new UnauthorizedException('User not found.');
+    }
 
     const session = await this.sessionRepo.findById(payload.sessionId);
     if (!session || !session.isActive()) {

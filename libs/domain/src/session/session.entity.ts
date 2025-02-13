@@ -1,3 +1,5 @@
+import { lookupLocation, parseUserAgent } from '@read-n-feed/shared';
+
 export interface SessionProps {
   id: string;
   userId: string;
@@ -6,6 +8,9 @@ export interface SessionProps {
   // Metadata about the device or environment
   userAgent?: string | null;
   ipAddress?: string | null;
+
+  locationMetadata?: string | null;
+  deviceType?: string | null;
 
   // Expiration or revocation
   expiresAt: Date;
@@ -56,6 +61,14 @@ export class Session {
 
   get updatedAt(): Date {
     return this.props.updatedAt;
+  }
+
+  get locationMetadata(): string | null | undefined {
+    return this.props.locationMetadata;
+  }
+
+  get deviceType(): string | null | undefined {
+    return this.props.deviceType;
   }
 
   /**

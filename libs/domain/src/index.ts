@@ -9,3 +9,4 @@ export * from './session/session.entity';
 export * from './session/session.repository.port';
 
 export * from './auth/token-generator.port';
+export * from './auth/jwt-payload.type';

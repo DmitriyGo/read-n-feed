@@ -15,7 +15,9 @@ export class PrismaSessionRepository implements ISessionRepository {
         userId: data.userId,
         refreshTokenHash: data.refreshTokenHash,
         userAgent: data.userAgent ?? null,
+        deviceType: data.deviceType ?? null,
         ipAddress: data.ipAddress ?? null,
+        locationMetadata: data.locationMetadata ?? null,
         expiresAt: data.expiresAt,
         revokedAt: data.revokedAt ?? null,
         createdAt: data.createdAt,
@@ -23,6 +25,24 @@ export class PrismaSessionRepository implements ISessionRepository {
       },
     });
     return this.toDomain(created);
+  }
+
+  async findActiveByUserAndDevice(
+    userId: string,
+    userAgent: string,
+    ipAddress: string,
+  ): Promise<Session[]> {
+    const now = new Date();
+    const records = await this.prisma.session.findMany({
+      where: {
+        userId,
+        userAgent,
+        ipAddress,
+        revokedAt: null,
+        expiresAt: { gt: now },
+      },
+    });
+    return records.map((r) => this.toDomain(r));
   }
 
   async findById(sessionId: string): Promise<Session | null> {
@@ -47,7 +67,9 @@ export class PrismaSessionRepository implements ISessionRepository {
       data: {
         refreshTokenHash: data.refreshTokenHash,
         userAgent: data.userAgent,
+        deviceType: data.deviceType,
         ipAddress: data.ipAddress,
+        locationMetadata: data.locationMetadata,
         expiresAt: data.expiresAt,
         revokedAt: data.revokedAt,
         updatedAt: data.updatedAt,
@@ -86,7 +108,9 @@ export class PrismaSessionRepository implements ISessionRepository {
       userId: record.userId,
       refreshTokenHash: record.refreshTokenHash,
       userAgent: record.userAgent,
+      deviceType: record.deviceType,
       ipAddress: record.ipAddress,
+      locationMetadata: record.locationMetadata,
       expiresAt: record.expiresAt,
       revokedAt: record.revokedAt,
       createdAt: record.createdAt,

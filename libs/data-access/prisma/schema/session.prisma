@@ -1,9 +1,12 @@
 model Session {
-  id               String  @id @default(cuid())
-  userId           String  @map("user_id")
-  userAgent        String? @map("user_address")
+  id               String @id @default(cuid())
+  userId           String @map("user_id")
+  refreshTokenHash String @map("refresh_token_hash")
+
+  userAgent        String? @map("user_agent")
+  deviceType       String? @map("device_type")
   ipAddress        String? @map("ip_address")
-  refreshTokenHash String  @map("refresh_token_hash")
+  locationMetadata String? @map("location_metadata")
 
   expiresAt DateTime  @map("expires_at")
   revokedAt DateTime? @map("revoked_at")
