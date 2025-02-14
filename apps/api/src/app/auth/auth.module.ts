@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthUseCase } from '@read-n-feed/application';
 import {
+  PrismaSessionRepository,
   PrismaUserRepository,
-  PrismaTokenRepository,
 } from '@read-n-feed/data-access';
 import {
   JwtRsaModule,
@@ -16,7 +17,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-  imports: [JwtRsaModule],
+  imports: [JwtRsaModule, ConfigModule],
   controllers: [AuthController],
   providers: [
     // Application Use Cases
@@ -28,8 +29,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       useClass: PrismaUserRepository,
     },
     {
-      provide: 'ITokenRepository',
-      useClass: PrismaTokenRepository,
+      provide: 'ISessionRepository',
+      useClass: PrismaSessionRepository,
     },
 
     // Token Generator

@@ -42,6 +42,7 @@
     "clsx": "^2.1.1",
     "cookie-parser": "^1.4.7",
     "date-fns": "^4.1.0",
+    "geoip-lite": "^1.4.10",
     "lucide-react": "^0.473.0",
     "nestjs-pino": "^4.2.0",
     "passport": "^0.7.0",
@@ -58,6 +59,7 @@
     "rxjs": "^7.8.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "ua-parser-js": "^2.0.2",
     "uuid": "^11.0.5",
     "zod": "^3.24.1",
     "zustand": "^5.0.3"
@@ -88,6 +90,7 @@
     "@testing-library/react": "15.0.6",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.8",
+    "@types/geoip-lite": "^1.4.4",
     "@types/jest": "^29.5.12",
     "@types/node": "~18.16.9",
     "@types/passport-jwt": "^4.0.1",

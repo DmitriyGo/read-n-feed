@@ -1,10 +1,11 @@
 import {
+  ClassSerializerInterceptor,
   INestApplication,
   Logger,
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
@@ -31,6 +32,7 @@ async function bootstrap() {
 
   app.useLogger(await app.get(PinoLogger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.useGlobalPipes(
     new ValidationPipe({

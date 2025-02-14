@@ -6,18 +6,15 @@ import { EnvironmentValidation } from './config.schema';
 
 @Injectable()
 export class ApiConfigService {
-  constructor(public readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
 
   public get<K extends keyof EnvironmentValidation>(
-    propertyPath: K,
+    key: K,
   ): EnvironmentValidation[K] {
-    const value =
-      this.configService.get<EnvironmentValidation[K]>(propertyPath);
-
+    const value = this.configService.get<EnvironmentValidation[K]>(key);
     if (!isDefined(value)) {
-      throw new Error(`Invalid schema provided for ${propertyPath}`);
+      throw new Error(`Missing config for ${String(key)}`);
     }
-
     return value;
   }
 }

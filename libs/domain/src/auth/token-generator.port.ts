@@ -1,4 +1,6 @@
+import { JwtPayload } from './jwt-payload.type';
+
 export interface ITokenGenerator {
-  generateAccessToken(payload: any, expiresIn?: string): string;
-  verifyAccessToken(token: string): any;
+  generateAccessToken(payload: JwtPayload, expiresIn?: string): string;
+  verifyAccessToken(token: string): JwtPayload;
 }
