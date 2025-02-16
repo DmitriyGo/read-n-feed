@@ -1,5 +1,3 @@
-import { lookupLocation, parseUserAgent } from '@read-n-feed/shared';
-
 export interface SessionProps {
   id: string;
   userId: string;

@@ -8,7 +8,7 @@ import { useAuthStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
 import { ApiRoute, Route } from '@/constants';
-import { HomePage, ProfilePage, NoFoundPage } from '@/pages';
+import { HomePage, ProfilePage, NoFoundPage, BookDetailsPage } from '@/pages';
 
 export function App() {
   const { isReady, setIsReady, clearAccessToken } = useAuth();
@@ -44,6 +44,11 @@ export function App() {
         <RouteComponent element={<RequiresRoleLayout role="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
         </RouteComponent>
+
+        <RouteComponent
+          path={Route.Book.Details}
+          element={<BookDetailsPage />}
+        />
 
         <RouteComponent path="*" element={<NoFoundPage />} />
       </RouteComponent>

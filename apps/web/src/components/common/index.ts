@@ -1,5 +1,6 @@
 export * from './base-tooltip';
 export * from './conditional';
+export * from './image';
 export * from './layout';
 export * from './loader';
 export * from './modal-manager';

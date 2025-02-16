@@ -15,7 +15,7 @@ export const PartiallyLoadedContent = ({
   isLoading?: boolean;
 }>) => {
   return (
-    <div className={cn('text-sm justify-start flex flex-row', className)}>
+    <div className={cn('text-inherit justify-start flex flex-row', className)}>
       <p>{label}:&nbsp;</p>
       {content && isLoading !== true ? (
         content
