@@ -5,6 +5,6 @@ export interface BookFileProps {
   bookId: string;
   format: BookFormat;
   filePath: string;
-  fileSize?: number; // in bytes
+  fileSize?: number | null; // in bytes
   createdAt: Date;
 }

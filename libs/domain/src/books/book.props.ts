@@ -6,7 +6,7 @@ export interface BookProps {
   publicationDate?: Date | null;
   publisher?: string | null;
   averageRating?: number | null;
-  totalLikes?: number;
+  totalLikes?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }

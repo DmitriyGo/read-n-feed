@@ -1,4 +1,7 @@
 import { BookFileProps } from './book-file.props';
+import { BookFormat } from './book-format.value-object';
+
+type BookFormatString = 'PDF' | 'EPUB' | 'FB2';
 
 export class BookFile {
   private props: BookFileProps;
@@ -15,7 +18,7 @@ export class BookFile {
     return this.props.bookId;
   }
 
-  get format() {
+  get format(): BookFormat {
     return this.props.format;
   }
 
@@ -27,7 +30,14 @@ export class BookFile {
     return this.props.fileSize;
   }
 
-  toPrimitives(): BookFileProps {
-    return { ...this.props };
+  get createdAt() {
+    return this.props.createdAt;
+  }
+
+  toPrimitives(): Omit<BookFileProps, 'format'> & { format: BookFormatString } {
+    return {
+      ...this.props,
+      format: this.props.format.value as BookFormatString,
+    };
   }
 }
