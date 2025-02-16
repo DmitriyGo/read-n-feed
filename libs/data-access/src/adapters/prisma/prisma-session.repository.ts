@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Session, SessionProps, ISessionRepository } from '@read-n-feed/domain';
+import { Session as SessionFromDb } from '@prisma/client';
+import { Session, ISessionRepository } from '@read-n-feed/domain';
 
 import { PrismaService } from './prisma.service';
 
@@ -102,20 +103,7 @@ export class PrismaSessionRepository implements ISessionRepository {
     return records.map((r) => this.toDomain(r));
   }
 
-  private toDomain(record: any): Session {
-    const props: SessionProps = {
-      id: record.id,
-      userId: record.userId,
-      refreshTokenHash: record.refreshTokenHash,
-      userAgent: record.userAgent,
-      deviceType: record.deviceType,
-      ipAddress: record.ipAddress,
-      locationMetadata: record.locationMetadata,
-      expiresAt: record.expiresAt,
-      revokedAt: record.revokedAt,
-      createdAt: record.createdAt,
-      updatedAt: record.updatedAt,
-    };
-    return new Session(props);
+  private toDomain(record: SessionFromDb): Session {
+    return new Session({ ...record });
   }
 }

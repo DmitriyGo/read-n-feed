@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { User as UserFromDb } from '@prisma/client';
 import { IUserRepository, User } from '@read-n-feed/domain';
 
 import { PrismaService } from './prisma.service';
@@ -8,17 +9,17 @@ export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByEmail(email: string): Promise<User | null> {
-    const userModel = await this.prisma.user.findUnique({ where: { email } });
-    if (!userModel) return null;
-    return new User({ ...userModel });
+    const record = await this.prisma.user.findUnique({ where: { email } });
+    if (!record) return null;
+    return this.toDomain(record);
   }
 
   async findById(userId: string): Promise<User | null> {
-    const userModel = await this.prisma.user.findUnique({
+    const record = await this.prisma.user.findUnique({
       where: { id: userId },
     });
-    if (!userModel) return null;
-    return new User({ ...userModel });
+    if (!record) return null;
+    return this.toDomain(record);
   }
 
   async save(user: User): Promise<User> {
@@ -28,6 +29,10 @@ export class PrismaUserRepository implements IUserRepository {
       update: { ...props },
       create: { ...props },
     });
-    return new User({ ...upserted });
+    return this.toDomain(upserted);
+  }
+
+  private toDomain(record: UserFromDb): User {
+    return new User({ ...record });
   }
 }
