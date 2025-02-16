@@ -1,0 +1,22 @@
+model Author {
+  id          String    @id @default(uuid())
+  name        String
+  bio         String?
+  dateOfBirth DateTime? @map("date_of_birth")
+  dateOfDeath DateTime? @map("date_of_death")
+
+  books BookAuthor[]
+
+  @@index([name])
+  @@map("author")
+}
+
+model BookAuthor {
+  bookId   String @map("book_id")
+  authorId String @map("author_id")
+  book     Book   @relation(fields: [bookId], references: [id])
+  author   Author @relation(fields: [authorId], references: [id])
+
+  @@id([bookId, authorId])
+  @@map("book_author")
+}

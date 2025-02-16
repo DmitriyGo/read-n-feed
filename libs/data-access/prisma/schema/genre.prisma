@@ -1,0 +1,17 @@
+model Genre {
+  id    String      @id @default(uuid())
+  name  String      @unique
+  books BookGenre[]
+
+  @@map("genre")
+}
+
+model BookGenre {
+  bookId  String @map("book_id")
+  genreId String @map("genre_id")
+  book    Book   @relation(fields: [bookId], references: [id])
+  genre   Genre  @relation(fields: [genreId], references: [id])
+
+  @@id([bookId, genreId])
+  @@map("book_genre")
+}

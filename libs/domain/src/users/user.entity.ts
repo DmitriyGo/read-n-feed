@@ -1,29 +1,4 @@
-export type Provider = 'LOCAL' | 'GOOGLE' | 'FACEBOOK' | 'GITHUB';
-
-export type UserRole = 'USER' | 'ADMIN' | 'SUPERADMIN';
-
-export type SubscriptionPlan = 'FREE' | 'PREMIUM' | 'PLUS' | 'ENTERPRISE';
-
-export interface UserProps {
-  id: string;
-  email: string;
-  password?: string | null;
-  provider: Provider;
-  roles: UserRole[];
-  isBlocked: boolean;
-
-  username: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  avatarUrl?: string | null;
-  subscriptionPlan: SubscriptionPlan;
-  subscriptionExpiresAt?: Date | null;
-  preferredLanguage?: string | null;
-  preferredReadingFormats?: string[];
-  metadata?: any;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { UserProps } from './user.props';
 
 export class User {
   private props: UserProps;
@@ -40,16 +15,26 @@ export class User {
     return this.props.email;
   }
 
-  get provider(): Provider {
+  get provider() {
     return this.props.provider;
+  }
+
+  get roles() {
+    return this.props.roles;
+  }
+
+  get isBlocked() {
+    return this.props.isBlocked;
   }
 
   blockUser() {
     this.props.isBlocked = true;
+    this.props.updatedAt = new Date();
   }
 
   unblockUser() {
     this.props.isBlocked = false;
+    this.props.updatedAt = new Date();
   }
 
   updateProfile(partial: Partial<UserProps>) {
@@ -57,7 +42,18 @@ export class User {
     this.props.firstName = partial.firstName ?? this.props.firstName;
     this.props.lastName = partial.lastName ?? this.props.lastName;
     this.props.avatarUrl = partial.avatarUrl ?? this.props.avatarUrl;
+    this.props.preferredLanguage =
+      partial.preferredLanguage ?? this.props.preferredLanguage;
+    this.props.preferredReadingFormats =
+      partial.preferredReadingFormats ?? this.props.preferredReadingFormats;
+    this.props.metadata = partial.metadata ?? this.props.metadata;
 
+    this.props.updatedAt = new Date();
+  }
+
+  setSubscription(plan: UserProps['subscriptionPlan'], expiresAt?: Date) {
+    this.props.subscriptionPlan = plan;
+    this.props.subscriptionExpiresAt = expiresAt ?? null;
     this.props.updatedAt = new Date();
   }
 
