@@ -9,3 +9,4 @@ export * from './books/book.use-case';
 export * from './books/dto/book.dto';
 
 export * from './comments/comment.use-case';
+export * from './comments/dto/comment.dto';

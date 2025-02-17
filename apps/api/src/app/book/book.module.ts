@@ -5,7 +5,6 @@ import { PrismaBookRepository } from '@read-n-feed/data-access';
 import { BookController } from './book.controller';
 
 @Module({
-  imports: [],
   controllers: [BookController],
   providers: [
     // Application Use Cases

@@ -6,6 +6,7 @@ import { BookModule } from './book/book.module';
 import { ApiConfigModule } from './config/config.module';
 import { LoggerModule } from './logger/logger.module';
 import { UserModule } from './user/user.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     UserModule,
     BookModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [],
