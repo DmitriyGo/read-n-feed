@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/aria-role */
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Routes, Route as RouteComponent } from 'react-router-dom';
 
 import { useAuth } from './hooks';
@@ -13,14 +13,16 @@ import { HomePage, ProfilePage, NoFoundPage, BookDetailsPage } from '@/pages';
 export function App() {
   const { isReady, setIsReady, clearAccessToken } = useAuth();
   const { setAccessToken } = useAuthStore();
+  const hasStarted = useRef(false);
 
   useLayoutEffect(() => {
     (async () => {
-      if (isReady) {
+      if (isReady || hasStarted.current) {
         return;
       }
 
       try {
+        hasStarted.current = true;
         const {
           data: { accessToken },
         } = await axiosSecure.get<{ accessToken: string }>(
