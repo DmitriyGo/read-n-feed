@@ -10,7 +10,12 @@
     "lint:api": "nx lint api",
     "lint:api:fix": "nx lint api --fix",
     "lint:web": "nx lint web",
-    "lint:web:fix": "nx lint web --fix"
+    "lint:web:fix": "nx lint web --fix",
+    "db:migration:dev": "yarn prisma migrate dev --schema ./libs/data-access/prisma/schema",
+    "db:migration:dev:reset": "yarn prisma migrate reset --schema ./libs/data-access/prisma/schema",
+    "db:migrate:deploy": "prisma migrate deploy --schema ./libs/data-access/prisma/schema",
+    "db:migrate:status": "prisma migrate status --schema ./libs/data-access/prisma/schema",
+    "db:generate": "prisma generate --schema ./libs/data-access/prisma/schema"
   },
   "private": true,
   "dependencies": {

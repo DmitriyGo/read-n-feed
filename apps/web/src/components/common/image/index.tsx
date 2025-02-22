@@ -14,8 +14,9 @@ export const Image = ({
   size,
   className,
   ...props
-}: Omit<HTMLProps<HTMLImageElement>, 'classID'> &
-  ({ size?: number } | { width?: number; height?: number })) => {
+}: Omit<HTMLProps<HTMLImageElement>, 'classID' | 'src'> & {
+  src: string | null | undefined;
+} & ({ size?: number } | { width?: number; height?: number })) => {
   const calculatedWidth = size ? `${size}px` : width ? `${width}px` : 'auto';
   const calculatedHeight = size ? `${size}px` : height ? `${height}px` : 'auto';
 
@@ -28,7 +29,7 @@ export const Image = ({
             height: calculatedHeight,
           }}
           className={cn('rounded-lg')}
-          src={src}
+          src={src ?? undefined}
           alt={alt ?? ''}
           {...props}
         />

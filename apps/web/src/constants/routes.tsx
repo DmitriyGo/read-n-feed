@@ -4,6 +4,7 @@ export const Route = {
   Profile: '/profile',
 
   Book: {
-    Details: '/book/:id',
+    Details: '/book/details',
+    Search: '/book/search',
   },
 } as const;

@@ -46,7 +46,7 @@ export function App() {
         </RouteComponent>
 
         <RouteComponent
-          path={Route.Book.Details}
+          path={`${Route.Book.Details}/:id`}
           element={<BookDetailsPage />}
         />
 
