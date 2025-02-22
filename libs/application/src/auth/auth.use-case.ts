@@ -15,8 +15,6 @@ import { add } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LoginDto, RegisterDto } from './auth.dto';
-import { TokenExpiredError } from '../exceptions/token-expired.error';
-import { UserAlreadyExistsError } from '../exceptions/user-already-exists.error';
 
 @Injectable()
 export class AuthUseCase {
@@ -90,7 +88,9 @@ export class AuthUseCase {
   private async ensureEmailIsUnique(email: string) {
     const existing = await this.userRepo.findByEmail(email);
     if (existing) {
-      throw new UserAlreadyExistsError(email);
+      throw new UnauthorizedException(
+        `User with email "${email}" already exists.`,
+      );
     }
   }
 
@@ -197,7 +197,7 @@ export class AuthUseCase {
   ): Promise<Session> {
     const session = await this.sessionRepo.findById(sessionId);
     if (!session || !session.isActive()) {
-      throw new TokenExpiredError();
+      throw new UnauthorizedException('Refresh token is expired or not found.');
     }
 
     if (!compareSync(rawSecret, session.refreshTokenHash)) {

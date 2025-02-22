@@ -1,0 +1,20 @@
+enum BookFormat {
+  PDF
+  EPUB
+  FB2
+  MOBI
+}
+
+model BookFile {
+  id       String     @id @default(uuid())
+  bookId   String     @map("book_id")
+  format   BookFormat
+  filePath String     @map("file_path")
+  fileSize Int?       @map("file_size")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  book Book @relation(fields: [bookId], references: [id])
+
+  @@map("book_file")
+}

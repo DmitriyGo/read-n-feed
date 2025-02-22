@@ -18,20 +18,13 @@ enum SubscriptionPlan {
   ENTERPRISE
 }
 
-enum ReadingFormat {
-  PDF
-  EPUB
-  FB2
-  MOBI
-}
-
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String?
   provider  Provider @default(LOCAL)
   roles     Role[]   @default([])
-  isBlocked Boolean  @default(false)
+  isBlocked Boolean  @default(false) @map("is_blocked")
 
   // Profile
   username  String  @unique
@@ -39,7 +32,7 @@ model User {
   lastName  String? @map("last_name")
   avatarUrl String? @map("avatar_url")
 
-  preferredLanguage String?
+  preferredLanguage String? @map("preferred_language")
 
   subscriptionPlan      SubscriptionPlan @default(FREE) @map("subscription_plan")
   subscriptionExpiresAt DateTime?        @map("subscription_expires_at")
@@ -48,8 +41,11 @@ model User {
 
   sessions Session[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  BookLike        BookLike[]
+  BookComment     BookComment[]
+  ReadingProgress ReadingProgress[]
 
   @@map("user")
 }

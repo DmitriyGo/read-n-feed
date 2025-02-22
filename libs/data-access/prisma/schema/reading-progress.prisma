@@ -1,0 +1,14 @@
+model ReadingProgress {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  bookId    String   @map("book_id")
+  progress  Float // 0..100
+  deviceId  String?  @map("device_id")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
+
+  @@unique([userId, bookId, deviceId])
+  @@map("reading_progress")
+}
