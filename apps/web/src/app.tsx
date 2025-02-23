@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/aria-role */
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { Routes, Route as RouteComponent } from 'react-router-dom';
 
 import { useAuth } from './hooks';
 import { axiosSecure } from './lib';
+import { BookSearchPage } from './pages/books/search';
 import { useAuthStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
@@ -42,7 +43,6 @@ export function App() {
     <Routes>
       <RouteComponent path={Route.Home} element={<Layout />}>
         <RouteComponent index element={<HomePage />} />
-
         <RouteComponent element={<RequiresRoleLayout role="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
         </RouteComponent>
@@ -51,6 +51,7 @@ export function App() {
           path={`${Route.Book.Details}/:id`}
           element={<BookDetailsPage />}
         />
+        <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
 
         <RouteComponent path="*" element={<NoFoundPage />} />
       </RouteComponent>

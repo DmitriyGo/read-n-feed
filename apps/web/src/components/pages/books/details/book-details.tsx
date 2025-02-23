@@ -22,11 +22,7 @@ export const BookDetails = ({ book }: { book: BookResponseDto }) => {
         />
 
         <div className="space-y-2">
-          {isDefined(book.description) ? (
-            <Description text={book.description} />
-          ) : (
-            <Skeleton className="h-[24px]" />
-          )}
+          <Description text={book.description} />
 
           {/* <Tags tags={book.tags} /> */}
 

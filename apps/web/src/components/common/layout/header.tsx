@@ -11,6 +11,9 @@ export const Header = () => {
         <li>
           <Link to={Route.Home}>Home</Link>
         </li>
+        <li>
+          <Link to={Route.Book.Search}>Catalogue</Link>
+        </li>
       </ul>
 
       <Profile />

@@ -18,9 +18,9 @@ export const PartiallyLoadedContent = ({
     <div className={cn('text-inherit justify-start flex flex-row', className)}>
       <p>{label}:&nbsp;</p>
       {content && isLoading !== true ? (
-        content
+        <p className="text-gray-400">{content}</p>
       ) : content === null && isLoading !== true ? (
-        'Not Given'
+        <p className="text-gray-400">Not Given</p>
       ) : (
         <Skeleton className="min-h-full min-w-20" />
       )}

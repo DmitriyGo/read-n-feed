@@ -29,6 +29,8 @@ import {
 } from '@read-n-feed/application';
 import { Book } from '@read-n-feed/domain';
 
+import { Public } from '../auth/guards/public.decorator';
+
 @ApiBearerAuth()
 @ApiTags('books')
 @Controller('books')
@@ -109,6 +111,7 @@ export class BookController {
     type: BookResponseDto,
     isArray: true,
   })
+  @Public()
   async searchBooks(
     @Query() query: SearchBooksDto,
   ): Promise<BookResponseDto[]> {

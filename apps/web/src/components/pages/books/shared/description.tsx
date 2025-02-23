@@ -1,17 +1,20 @@
+import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
+
+import { Skeleton } from '@/components/ui';
 
 export const Description = ({
   text,
   length = 300,
 }: {
-  text: string;
+  text?: string | null;
   length?: number;
 }) => {
   const [showMore, setShowMore] = useState(false);
 
-  const indexOfPreviousSpace = text.lastIndexOf(' ', length);
+  const indexOfPreviousSpace = text?.lastIndexOf(' ', length);
 
-  return (
+  return isDefined(text) ? (
     <p className="text-justify">
       <span>{showMore ? text : text.slice(0, indexOfPreviousSpace)}</span>
 
@@ -31,5 +34,7 @@ export const Description = ({
         </span>
       )}
     </p>
+  ) : (
+    <Skeleton className="h-[24px]" />
   );
 };
