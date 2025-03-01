@@ -9,7 +9,12 @@
     "types": ["vite/client", "vitest"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@read-n-feed/application": ["../../libs/application/src/index.ts"],
+      "@read-n-feed/data-access": ["../../libs/data-access/src/index.ts"],
+      "@read-n-feed/domain": ["../../libs/domain/src/index.ts"],
+      "@read-n-feed/infrastructure": ["../../libs/infrastructure/src/index.ts"],
+      "@read-n-feed/shared": ["../../libs/shared/src/index.ts"]
     }
   },
   "files": [],

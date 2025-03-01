@@ -1,11 +1,13 @@
 import {
+  ClassSerializerInterceptor,
   INestApplication,
   Logger,
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
 
 import { AppModule } from './app/app.module';
@@ -30,6 +32,7 @@ async function bootstrap() {
 
   app.useLogger(await app.get(PinoLogger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -41,6 +44,13 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.use(cookieParser());
+
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    credentials: true,
+  });
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

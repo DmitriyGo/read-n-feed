@@ -1,29 +1,10 @@
 import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
 import { Button } from '@/components/ui';
-import { useModalStore } from '@/store';
 
 export const HomePage = () => {
-  const { setMode } = useModalStore();
-
   return (
     <div>
       <p>HomePage</p>
-      <Button
-        variant="destructive"
-        onClick={() => {
-          setMode('SignIn');
-        }}
-      >
-        SignIn
-      </Button>
-      <Button
-        variant="default"
-        onClick={() => {
-          setMode('SignUp');
-        }}
-      >
-        SignUp
-      </Button>
 
       <Section>
         <Section.Header>Header</Section.Header>

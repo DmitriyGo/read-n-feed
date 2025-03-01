@@ -1,0 +1,20 @@
+model Session {
+  id               String @id @default(cuid())
+  userId           String @map("user_id")
+  refreshTokenHash String @map("refresh_token_hash")
+
+  userAgent        String? @map("user_agent")
+  deviceType       String? @map("device_type")
+  ipAddress        String? @map("ip_address")
+  locationMetadata String? @map("location_metadata")
+
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
