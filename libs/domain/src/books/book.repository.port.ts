@@ -31,7 +31,7 @@ export interface IBookRepository {
 
   // Search operations
   search(options: BookSearchOptions): Promise<Book[]>;
-  count(options: BookSearchOptions): Promise<number>; // New method for pagination
+  count(options: BookSearchOptions): Promise<number>;
   findMostLiked(limit: number): Promise<Book[]>;
   findRelatedBooks(
     bookId: string,
@@ -39,7 +39,7 @@ export interface IBookRepository {
     genreIds: string[],
     tagIds: string[],
     limit: number,
-  ): Promise<Book[]>; // New method for recommendations
+  ): Promise<Book[]>;
 
   // Author relationship methods
   addAuthors(bookId: string, authorIds: string[]): Promise<void>;
