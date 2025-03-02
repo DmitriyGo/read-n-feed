@@ -9,6 +9,7 @@ export * from './input';
 export * from './label';
 export * from './popover';
 export * from './radiogroup';
+export * from './select';
 export * from './skeleton';
 export * from './switch';
 export * from './tooltip';

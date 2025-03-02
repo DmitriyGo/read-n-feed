@@ -1,11 +1,15 @@
 /* eslint-disable jsx-a11y/aria-role */
 import { useLayoutEffect, useRef } from 'react';
-import { Routes, Route as RouteComponent } from 'react-router-dom';
+import {
+  Routes,
+  Route as RouteComponent,
+  useSearchParams,
+} from 'react-router-dom';
 
 import { useAuth } from './hooks';
 import { axiosSecure } from './lib';
 import { BookSearchPage } from './pages/books/search';
-import { useAuthStore } from './store';
+import { useAuthStore, useFilterStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
 import { ApiRoute, Route } from '@/constants';
@@ -14,6 +18,8 @@ import { HomePage, ProfilePage, NoFoundPage, BookDetailsPage } from '@/pages';
 export function App() {
   const { isReady, setIsReady, clearAccessToken } = useAuth();
   const { setAccessToken } = useAuthStore();
+  const { init } = useFilterStore();
+  const [searchParams] = useSearchParams();
   const hasStarted = useRef(false);
 
   useLayoutEffect(() => {
@@ -21,6 +27,8 @@ export function App() {
       if (isReady || hasStarted.current) {
         return;
       }
+
+      init(searchParams);
 
       try {
         hasStarted.current = true;
