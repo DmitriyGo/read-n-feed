@@ -371,6 +371,24 @@ export class BookUseCase {
     return this.bookRepo.hasLike(bookId, userId);
   }
 
+  async getBatchLikedStatus(
+    bookIds: string[],
+    userId?: string,
+  ): Promise<Map<string, boolean>> {
+    if (!userId || bookIds.length === 0) {
+      return new Map();
+    }
+
+    // Get all likes for these books by this user in a single query
+    const likes = await this.bookRepo.findManyLikes(bookIds, userId);
+
+    // Create a map of bookId -> liked status
+    const likedMap = new Map<string, boolean>();
+    likes.forEach((like) => likedMap.set(like.bookId, true));
+
+    return likedMap;
+  }
+
   // Validation and helper methods
   private async validateAuthors(authorIds: string[]): Promise<void> {
     for (const authorId of authorIds) {

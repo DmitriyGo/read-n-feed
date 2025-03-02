@@ -261,6 +261,12 @@ export class BookResponseDto {
   @ApiPropertyOptional()
   totalLikes?: number;
 
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Whether the current user has liked this book',
+  })
+  liked?: boolean;
+
   @ApiProperty()
   createdAt: Date;
 

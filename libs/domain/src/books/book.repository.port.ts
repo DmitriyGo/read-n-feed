@@ -63,5 +63,8 @@ export interface IBookRepository {
   addLike(bookId: string, userId: string): Promise<void>;
   removeLike(bookId: string, userId: string): Promise<void>;
   hasLike(bookId: string, userId: string): Promise<boolean>;
-  countLikes(bookId: string): Promise<number>;
+  findManyLikes(
+    bookIds: string[],
+    userId: string,
+  ): Promise<{ bookId: string }[]>;
 }

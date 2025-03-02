@@ -414,9 +414,18 @@ export class PrismaBookRepository implements IBookRepository {
     return !!like;
   }
 
-  async countLikes(bookId: string): Promise<number> {
-    return this.prisma.bookLike.count({
-      where: { bookId },
+  async findManyLikes(
+    bookIds: string[],
+    userId: string,
+  ): Promise<{ bookId: string }[]> {
+    return this.prisma.bookLike.findMany({
+      where: {
+        bookId: { in: bookIds },
+        userId,
+      },
+      select: {
+        bookId: true,
+      },
     });
   }
 

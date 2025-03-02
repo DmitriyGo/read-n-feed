@@ -71,12 +71,19 @@ export class BookController {
   })
   async searchBooks(
     @Query() query: SearchBooksDto,
+    @CurrentUser() user: JwtPayload,
   ): Promise<PaginatedBooksResponseDto> {
     this.logger.debug(
       `Searching books with criteria: ${JSON.stringify(query)}`,
     );
 
     const result = await this.bookUseCase.searchBooksWithPagination(query);
+    const bookIds = result.items.map((book) => book.id);
+
+    const likedStatusMap = await this.bookUseCase.getBatchLikedStatus(
+      bookIds,
+      user?.id,
+    );
 
     // Get relationship information for each book
     const enhancedItems = await Promise.all(
@@ -88,6 +95,7 @@ export class BookController {
 
           return {
             ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
             authors: relationships?.authors || [],
             genres: relationships?.genres || [],
             tags: relationships?.tags || [],
@@ -128,12 +136,23 @@ export class BookController {
   @ApiNotFoundResponse({ description: 'Book not found' })
   async getBook(
     @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
   ): Promise<BookResponseDto> {
     const result = await this.bookUseCase.getBookWithRelationships(id);
     if (!result) throw new NotFoundException(`Book with id=${id} not found`);
 
+    let liked = false;
+    if (user?.id) {
+      const likedMap = await this.bookUseCase.getBatchLikedStatus(
+        [id],
+        user.id,
+      );
+      liked = likedMap.has(id);
+    }
+
     return {
       ...this.toResponseDto(result.book),
+      liked,
       authors: result.authors,
       genres: result.genres,
       tags: result.tags,
@@ -520,7 +539,6 @@ export class BookController {
     return this.bookUseCase.getBookTags(id);
   }
 
-  // Like endpoints
   @Post(':id/like')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Like a book' })
@@ -549,22 +567,6 @@ export class BookController {
     @CurrentUser() user: JwtPayload,
   ): Promise<void> {
     await this.bookUseCase.unlikeBook(id, user.id);
-  }
-
-  @Get(':id/liked')
-  @ApiOperation({ summary: 'Check if current user has liked the book' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns whether user has liked the book',
-    type: BookLikeResponseDto,
-  })
-  @ApiNotFoundResponse({ description: 'Book not found' })
-  async hasUserLikedBook(
-    @Param('id', ParseUUIDPipe) id: string,
-    @CurrentUser() user: JwtPayload,
-  ): Promise<BookLikeResponseDto> {
-    const liked = await this.bookUseCase.hasUserLikedBook(id, user.id);
-    return { liked };
   }
 
   private toResponseDto(book: any): BookResponseDto {
