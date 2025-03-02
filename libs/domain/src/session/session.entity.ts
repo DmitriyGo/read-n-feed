@@ -51,16 +51,10 @@ export class Session {
     return this.props.deviceType;
   }
 
-  /**
-   * Revoke this session - sets revokedAt to 'now'.
-   */
   revoke() {
     this.props.revokedAt = new Date();
   }
 
-  /**
-   * Check if session is currently valid (not revoked & not expired).
-   */
   isActive(): boolean {
     const now = new Date();
     if (this.props.revokedAt) return false;
@@ -68,10 +62,6 @@ export class Session {
     return true;
   }
 
-  /**
-   * Update the refreshTokenHash (e.g., on rotation),
-   * and optionally extend expiresAt or update metadata.
-   */
   rotateToken(newHash: string, newExpiresAt?: Date) {
     this.props.refreshTokenHash = newHash;
     if (newExpiresAt) {

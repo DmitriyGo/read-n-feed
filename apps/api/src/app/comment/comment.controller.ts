@@ -101,9 +101,6 @@ export class CommentController {
     return this.toResponseDto(updated);
   }
 
-  /**
-   * Delete a comment by ID
-   */
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a comment by ID' })
   @ApiResponse({ status: 204, description: 'Comment deleted successfully' })
