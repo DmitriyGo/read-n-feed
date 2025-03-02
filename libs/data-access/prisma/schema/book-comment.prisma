@@ -1,0 +1,16 @@
+model BookComment {
+  id              String   @id @default(uuid())
+  bookId          String   @map("book_id")
+  userId          String   @map("user_id")
+  content         String
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  parentCommentId String?  @map("parent_comment_id")
+
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
+
+  @@index([bookId])
+  @@index([userId])
+  @@map("book_comment")
+}

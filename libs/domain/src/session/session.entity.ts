@@ -1,24 +1,4 @@
-import { lookupLocation, parseUserAgent } from '@read-n-feed/shared';
-
-export interface SessionProps {
-  id: string;
-  userId: string;
-  refreshTokenHash: string;
-
-  // Metadata about the device or environment
-  userAgent?: string | null;
-  ipAddress?: string | null;
-
-  locationMetadata?: string | null;
-  deviceType?: string | null;
-
-  // Expiration or revocation
-  expiresAt: Date;
-  revokedAt?: Date | null;
-
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { SessionProps } from './session.props';
 
 export class Session {
   private props: SessionProps;
@@ -71,16 +51,10 @@ export class Session {
     return this.props.deviceType;
   }
 
-  /**
-   * Revoke this session - sets revokedAt to 'now'.
-   */
   revoke() {
     this.props.revokedAt = new Date();
   }
 
-  /**
-   * Check if session is currently valid (not revoked & not expired).
-   */
   isActive(): boolean {
     const now = new Date();
     if (this.props.revokedAt) return false;
@@ -88,10 +62,6 @@ export class Session {
     return true;
   }
 
-  /**
-   * Update the refreshTokenHash (e.g., on rotation),
-   * and optionally extend expiresAt or update metadata.
-   */
   rotateToken(newHash: string, newExpiresAt?: Date) {
     this.props.refreshTokenHash = newHash;
     if (newExpiresAt) {

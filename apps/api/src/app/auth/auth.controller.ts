@@ -12,7 +12,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthUseCase, LoginDto, RegisterDto } from '@read-n-feed/application';
+import {
+  AuthUseCase,
+  LoginDto,
+  RegisterDto,
+  toUserResponseDto,
+  toSessionResponseDto,
+} from '@read-n-feed/application';
 import { JwtPayload } from '@read-n-feed/domain';
 import { AuthCookieOptionsService } from '@read-n-feed/infrastructure';
 import { Request, Response } from 'express';
@@ -34,7 +40,8 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   async register(@Body() dto: RegisterDto) {
-    return await this.authUseCase.register(dto);
+    const user = await this.authUseCase.register(dto);
+    return toUserResponseDto(user);
   }
 
   @Public()
@@ -126,7 +133,8 @@ export class AuthController {
   @Get('sessions')
   @ApiOperation({ summary: 'Get all active sessions' })
   async getSessions(@CurrentUser() user: JwtPayload) {
-    return this.authUseCase.getUserSessions(user.id);
+    const sessions = await this.authUseCase.getUserSessions(user.id);
+    return sessions.map((session) => toSessionResponseDto(session));
   }
 
   @Delete('sessions/:sessionId')
