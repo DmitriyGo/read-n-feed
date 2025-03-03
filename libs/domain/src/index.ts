@@ -16,6 +16,7 @@ export * from './books/book-file.props';
 export * from './books/book-file.entity';
 export * from './books/book-file.repository.port';
 export * from './books/book-format.value-object';
+export * from './books/file-storage.port';
 
 export * from './authors/author.props';
 export * from './authors/author.entity';
