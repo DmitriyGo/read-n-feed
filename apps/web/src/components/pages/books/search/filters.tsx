@@ -36,18 +36,6 @@ const formSchema = z.object({
 type SearchBooksFormData = z.infer<typeof formSchema>;
 
 export const SearchFilters = () => {
-  const {
-    updateFilter,
-    updateSortBy,
-    clearFilters,
-    clearSort,
-    saveFilters,
-    getFilter,
-    getSort,
-  } = useFilterStore();
-
-  const [searchParams, setSearchParams] = useSearchParams();
-
   const form = useForm<SearchBooksFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,6 +47,18 @@ export const SearchFilters = () => {
       sortOrder: undefined,
     },
   });
+
+  const {
+    updateFilter,
+    updateSortBy,
+    clearFilters,
+    clearSort,
+    saveFilters,
+    getFilter,
+    getSort,
+  } = useFilterStore();
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     form.setValue('title', getFilter(searchParams, 'title') ?? '');

@@ -4,5 +4,7 @@ export * from './image';
 export * from './layout';
 export * from './loader';
 export * from './modal-manager';
+export * from './modals';
+export * from './pagination';
 export * from './partially-loaded-content';
 export * from './section';

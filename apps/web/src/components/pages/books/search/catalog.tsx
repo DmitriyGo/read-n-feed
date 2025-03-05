@@ -1,7 +1,9 @@
 import { BookResponseDto } from '@read-n-feed/application';
+import { useState } from 'react';
 
 import { BookCard } from './book-card';
 
+import { Pagination, PerPage } from '@/components/common';
 import { Card } from '@/components/ui';
 
 const MOCK_BOOKS: BookResponseDto[] = [
@@ -49,11 +51,25 @@ const MOCK_BOOKS: BookResponseDto[] = [
 export const BookCatalog = () => {
   const books = MOCK_BOOKS;
 
+  const [perPage, setPerPage] = useState<PerPage>(10);
+  const [currentPage, setCurrentPage] = useState(1);
+
   return (
-    <Card className="flex flex-row w-full h-fit gap-4">
-      {books.map((book) => (
-        <BookCard key={book.id} book={book} />
-      ))}
-    </Card>
+    <div className="flex flex-col gap-4">
+      <Card className="flex flex-row w-full h-fit gap-4">
+        {books.map((book) => (
+          <BookCard key={book.id} book={book} />
+        ))}
+      </Card>
+
+      <Pagination
+        count={50}
+        currentPage={currentPage}
+        maxPages={50}
+        onPerPageChange={setPerPage}
+        perPage={perPage}
+        setCurrentPage={setCurrentPage}
+      />
+    </div>
   );
 };
