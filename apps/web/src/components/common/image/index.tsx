@@ -1,8 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { HTMLProps } from 'react';
 
-import { Conditional } from '../conditional';
-
 import { Skeleton } from '@/components/ui';
 import { cn } from '@/lib';
 
@@ -20,29 +18,23 @@ export const Image = ({
   const calculatedWidth = size ? `${size}px` : width ? `${width}px` : 'auto';
   const calculatedHeight = size ? `${size}px` : height ? `${height}px` : 'auto';
 
-  return (
-    <Conditional condition={isDefined(src)}>
-      <Conditional.True>
-        <img
-          style={{
-            width: calculatedWidth,
-            height: calculatedHeight,
-          }}
-          className={cn('rounded-lg')}
-          src={src ?? undefined}
-          alt={alt ?? ''}
-          {...props}
-        />
-      </Conditional.True>
-
-      <Conditional.False>
-        <Skeleton
-          style={{
-            width: calculatedWidth,
-            height: calculatedHeight,
-          }}
-        />
-      </Conditional.False>
-    </Conditional>
+  return isDefined(src) ? (
+    <img
+      style={{
+        width: calculatedWidth,
+        height: calculatedHeight,
+      }}
+      className={cn('rounded-lg', '', className)}
+      src={src ?? undefined}
+      alt={alt ?? ''}
+      {...props}
+    />
+  ) : (
+    <Skeleton
+      style={{
+        width: calculatedWidth,
+        height: calculatedHeight,
+      }}
+    />
   );
 };

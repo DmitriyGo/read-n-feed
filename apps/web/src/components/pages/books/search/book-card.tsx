@@ -15,8 +15,11 @@ import {
   TooltipTrigger,
 } from '@/components/ui';
 import { Route } from '@/constants';
+import { useBreakpoint } from '@/hooks/use-breakpoint';
 
 export const BookCard = ({ book }: { book: BookResponseDto }) => {
+  const isMd = useBreakpoint('md');
+
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -31,9 +34,7 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
             <Image
               src={book.coverImageUrl}
               alt={book.title}
-              width={155}
-              height={220}
-              className="object-cover"
+              className="object-cover !min-w-[130px] !h-[190px] md:!w-[155px] md:!h-[220px]"
             />
             <div className="flex flex-col justify-between">
               <h2 className="text-lg">{book.title}</h2>
@@ -47,12 +48,12 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
 
         <TooltipContent
           className="[all:unset]"
-          side="right"
+          side={isMd ? 'right' : 'bottom'}
           align="start"
           sideOffset={12}
           avoidCollisions
         >
-          <Card className="max-w-[450px]">
+          <Card className="max-w-[90vw] md:max-w-[450px]">
             <CardHeader>{book.title}</CardHeader>
             <CardContent>
               <Description text={book.description} />

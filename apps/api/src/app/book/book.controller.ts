@@ -26,7 +26,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  BookLikeResponseDto,
   BookResponseDto,
   BookUseCase,
   CreateBookDto,
@@ -37,9 +36,8 @@ import {
 import { JwtPayload } from '@read-n-feed/domain';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
-import { AdminOnly } from '../auth/guards/roles.decorator';
-
 import { Public } from '../auth/guards/public.decorator';
+import { AdminOnly } from '../auth/guards/roles.decorator';
 
 @ApiBearerAuth()
 @ApiTags('books')
