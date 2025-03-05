@@ -1,4 +1,7 @@
-import { BookResponseDto, SearchBooksDto } from '@read-n-feed/application';
+import {
+  PaginatedBooksResponseDto,
+  SearchBooksDto,
+} from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { useQuery } from '@tanstack/react-query';
 
@@ -14,9 +17,9 @@ export const useGetFilteredBooks = (searchData: SearchBooksDto) => {
   const urlParams = new URLSearchParams(clearObject(searchData));
 
   return useQuery({
-    queryKey: [QueryKey.GetBooksCatalog, accessToken],
+    queryKey: [QueryKey.GetBooksCatalog, accessToken, ...urlParams.values()],
     queryFn: async () => {
-      return axiosSecure.get<BookResponseDto[]>(
+      return axiosSecure.get<PaginatedBooksResponseDto>(
         `${ApiRoute.Books.Base}?${urlParams}`,
       );
     },

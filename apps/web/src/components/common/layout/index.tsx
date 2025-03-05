@@ -24,7 +24,7 @@ export const Layout = () => {
   );
 };
 
-export const RequiresRoleLayout = ({ role }: { role: UserRole }) => {
+export const RequiresRoleLayout = ({ userRole }: { userRole: UserRole }) => {
   const navigate = useNavigate();
   const { isReady } = useAuth();
   const { data: profile, isLoading, isRefetching } = useGetProfile();
@@ -34,14 +34,14 @@ export const RequiresRoleLayout = ({ role }: { role: UserRole }) => {
     if (isReady && !isLoadingOrRefetching) {
       const hasRequiredRole =
         isDefined(profile) && isDefined(profile.data.roles)
-          ? profile.data.roles.some((userRole) => userRole === role)
+          ? profile.data.roles.some((role) => role === userRole)
           : false;
 
       if (!hasRequiredRole) {
         navigate(Route.Home);
       }
     }
-  }, [isLoadingOrRefetching, isReady, navigate, profile, role]);
+  }, [isLoadingOrRefetching, isReady, navigate, profile, userRole]);
 
   return <Outlet />;
 };

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/aria-role */
 import { useLayoutEffect, useRef } from 'react';
 import {
   Routes,
@@ -51,7 +50,7 @@ export function App() {
     <Routes>
       <RouteComponent path={Route.Home} element={<Layout />}>
         <RouteComponent index element={<HomePage />} />
-        <RouteComponent element={<RequiresRoleLayout role="USER" />}>
+        <RouteComponent element={<RequiresRoleLayout userRole="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
         </RouteComponent>
 

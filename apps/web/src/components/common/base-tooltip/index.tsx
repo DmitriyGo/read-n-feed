@@ -53,7 +53,9 @@ export const BaseTooltip = ({
               }
 
               e.preventDefault();
-              e.key === 'Enter' && setOpen(!open);
+              if (e.key === 'Enter') {
+                setOpen(!open);
+              }
             }}
           >
             {children}

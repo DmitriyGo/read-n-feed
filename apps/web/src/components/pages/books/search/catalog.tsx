@@ -35,15 +35,14 @@ export const BookCatalog = () => {
     <div className="flex flex-col gap-4">
       <Card className="flex flex-row w-full h-fit gap-4">
         {isDefined(filteredBooks) &&
-          filteredBooks.map((filteredBook) => (
+          filteredBooks.items.map((filteredBook) => (
             <BookCard key={filteredBook.id} book={filteredBook} />
           ))}
       </Card>
 
       <Pagination
-        count={50}
         currentPage={currentPage}
-        maxPages={50}
+        maxPages={filteredBooks?.totalPages || 1}
         onPerPageChange={setPerPage}
         perPage={perPage}
         setCurrentPage={setCurrentPage}

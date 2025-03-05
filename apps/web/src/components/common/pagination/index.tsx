@@ -23,7 +23,6 @@ export const Pagination = ({
   currentPage,
   maxPages,
   setCurrentPage,
-  count,
   className,
 }: {
   perPage: PerPage;
@@ -31,7 +30,6 @@ export const Pagination = ({
   maxPages: number;
   currentPage: number;
   setCurrentPage: (value: number) => void;
-  count: number;
   className?: string;
 }) => {
   const handlePerPageChange = (value: PerPage) => {
