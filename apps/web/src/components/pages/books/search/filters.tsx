@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SearchBooksDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
@@ -47,21 +48,34 @@ export const SearchFilters = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const defaultValues: SearchBooksFormData = {
-    title: getFilter(searchParams, 'title') ?? '',
-    authorName: getFilter(searchParams, 'authorName') ?? '',
-    genreName: getFilter(searchParams, 'genreName') ?? '',
-    tagName: getFilter(searchParams, 'tagName') ?? '',
-    sortBy: getSort<'title' | 'createdAt' | 'publicationDate'>(searchParams)
-      ?.name,
-    sortOrder: getSort<'title' | 'createdAt' | 'publicationDate'>(searchParams)
-      ?.sortOrder,
-  };
-
   const form = useForm<SearchBooksFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: {
+      title: '',
+      authorName: '',
+      genreName: '',
+      tagName: '',
+      sortBy: undefined,
+      sortOrder: undefined,
+    },
   });
+
+  useEffect(() => {
+    form.setValue('title', getFilter(searchParams, 'title') ?? '');
+    form.setValue('authorName', getFilter(searchParams, 'authorName') ?? '');
+    form.setValue('genreName', getFilter(searchParams, 'genreName') ?? '');
+    form.setValue('tagName', getFilter(searchParams, 'tagName') ?? '');
+
+    form.setValue(
+      'sortBy',
+      getSort<'title' | 'createdAt' | 'publicationDate'>(searchParams)?.name,
+    );
+    form.setValue(
+      'sortOrder',
+      getSort<'title' | 'createdAt' | 'publicationDate'>(searchParams)
+        ?.sortOrder,
+    );
+  }, []);
 
   const onSubmit = (values: SearchBooksFormData) => {
     updateFilter({ name: 'title', value: values.title });
@@ -77,9 +91,6 @@ export const SearchFilters = () => {
     }
 
     saveFilters(setSearchParams);
-
-    const dataDto: SearchBooksDto = values;
-    console.log('Submitted data DTO:', dataDto);
   };
 
   const handleClear = () => {
@@ -90,7 +101,7 @@ export const SearchFilters = () => {
   };
 
   return (
-    <Card className="w-full h-[calc(100vh-98px)] p-4">
+    <Card className="w-full max-h-[calc(100vh-98px)] p-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

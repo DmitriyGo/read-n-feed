@@ -2,22 +2,32 @@ import { isDefined } from '@read-n-feed/shared';
 import { SetURLSearchParams } from 'react-router-dom';
 import { create } from 'zustand';
 
+type SortOrder = 'asc' | 'desc';
+
 type SortBy<TName extends string = string> = {
   name: TName;
-  sortOrder: 'asc' | 'desc';
+  sortOrder: SortOrder;
 };
 
-type FilterStore = {
-  filters: Record<string, string>;
-  sortBy?: SortBy;
+type Filters = Record<string, string>;
 
+type FilterState = {
+  filters: Filters;
+  sortBy?: SortBy;
+  currentPage: number;
+  maxPages: number;
+};
+
+type FilterActions = {
   init: (urlParams: URLSearchParams) => void;
+
+  setCurrentPage: (newCurrentPage: number) => void;
+  setMaxPages: (newMaxPages: number) => void;
 
   updateFilter: (newFilter: { name: string; value?: string }) => void;
   updateSortBy: (newSort: SortBy) => void;
   clearFilters: (setUrlParams: SetURLSearchParams) => void;
   clearSort: (setUrlParams: SetURLSearchParams) => void;
-
   saveFilters: (setUrlParams: SetURLSearchParams) => void;
 
   getFilter: (urlParams: URLSearchParams, name: string) => string | undefined;
@@ -26,123 +36,149 @@ type FilterStore = {
   ) => SortBy<TName> | undefined;
 };
 
-export const useFilterStore = create<FilterStore>((set, get) => ({
-  filters: {},
-  sortBy: undefined,
+const URL_PREFIX = {
+  FILTER: 'filter_',
+  SORT_BY: 'sort_by',
+  SORT_ORDER: 'sort_order',
+};
 
-  init(urlParams) {
-    set(() => {
-      const newFilters: Record<string, string> = {};
+const parseFilterKey = (key: string): string => {
+  return key.startsWith(URL_PREFIX.FILTER)
+    ? key.replace(URL_PREFIX.FILTER, '')
+    : key;
+};
 
-      Array.from(urlParams.entries()).forEach((param) => {
-        if (param[0].startsWith('filter_')) {
-          newFilters[param[0].replace('filter_', '')] = param[1];
-        }
+const createFilterKey = (name: string): string => {
+  return `${URL_PREFIX.FILTER}${name}`;
+};
+
+const isValidSortOrder = (order?: string): order is SortOrder => {
+  return order === 'asc' || order === 'desc';
+};
+
+export const useFilterStore = create<FilterState & FilterActions>(
+  (set, get) => ({
+    filters: {},
+    sortBy: undefined,
+    currentPage: 0,
+    maxPages: 0,
+
+    init(urlParams) {
+      set(({ getSort }) => {
+        const newFilters: Record<string, string> = {};
+
+        Array.from(urlParams.entries()).forEach(([key, value]) => {
+          if (key.startsWith(URL_PREFIX.FILTER)) {
+            newFilters[parseFilterKey(key)] = value;
+          }
+        });
+
+        const sortBy = getSort(urlParams);
+
+        return {
+          filters: newFilters,
+          sortBy,
+        };
       });
+    },
 
-      return {
-        filters: newFilters,
-      };
-    });
-  },
+    setCurrentPage(newCurrentPage) {
+      set({ currentPage: newCurrentPage });
+    },
 
-  updateFilter(filter) {
-    set(({ filters }) => {
-      const newFilters = {
-        ...filters,
-      };
+    setMaxPages(newMaxPages) {
+      set({ maxPages: newMaxPages });
+    },
 
-      if (!isDefined(filter.value) || filter.value === '') {
-        delete newFilters[filter.name];
-      } else {
-        newFilters[filter.name] = filter.value;
-      }
+    updateFilter({ name, value }) {
+      set(({ filters }) => {
+        const newFilters = { ...filters };
 
-      return {
-        filters: newFilters,
-      };
-    });
-  },
+        if (!isDefined(value) || value === '') {
+          delete newFilters[name];
+        } else {
+          newFilters[name] = value;
+        }
 
-  updateSortBy(newValues) {
-    set(() => ({
-      sortBy: newValues,
-    }));
-  },
+        return { filters: newFilters };
+      });
+    },
 
-  clearFilters(setUrlParams) {
-    set(({ filters }) => {
+    updateSortBy(newValues) {
+      set({ sortBy: newValues });
+    },
+
+    clearFilters(setUrlParams) {
+      const { filters } = get();
+
       setUrlParams((prevParams) => {
         Object.keys(filters).forEach((key) => {
-          prevParams.delete(`filter_${key}`);
+          prevParams.delete(createFilterKey(key));
         });
 
         return prevParams;
       });
 
-      return {
-        filters: {},
-      };
-    });
-  },
+      set({ filters: {} });
+    },
 
-  clearSort(setUrlParams) {
-    set(() => {
+    clearSort(setUrlParams) {
       setUrlParams((prevParams) => {
-        prevParams.delete('sort_by');
-        prevParams.delete('sort_order');
-
+        prevParams.delete(URL_PREFIX.SORT_BY);
+        prevParams.delete(URL_PREFIX.SORT_ORDER);
         return prevParams;
       });
 
-      return {
-        sortBy: undefined,
-      };
-    });
-  },
+      set({ sortBy: undefined });
+    },
 
-  saveFilters(setUrlParams) {
-    const { filters, sortBy } = get();
+    saveFilters(setUrlParams) {
+      const { filters, sortBy } = get();
 
-    setUrlParams(
-      (prevParams) => {
-        Object.entries(filters).forEach(([key, value]) => {
-          prevParams.set(`filter_${key}`, value);
-        });
+      setUrlParams(
+        (prevParams) => {
+          Array.from(prevParams.keys()).forEach((key) => {
+            if (key.startsWith(URL_PREFIX.FILTER)) {
+              prevParams.delete(key);
+            }
+          });
 
-        if (sortBy) {
-          prevParams.set('sort_by', sortBy.name);
-          prevParams.set('sort_order', sortBy.sortOrder);
-        } else {
-          prevParams.delete('sort_by');
-          prevParams.delete('sort_order');
-        }
+          Object.entries(filters).forEach(([key, value]) => {
+            if (isDefined(value) && value !== '') {
+              prevParams.set(createFilterKey(key), value);
+            }
+          });
 
-        return prevParams;
-      },
-      {
-        preventScrollReset: true,
-      },
-    );
-  },
+          if (sortBy) {
+            prevParams.set(URL_PREFIX.SORT_BY, sortBy.name);
+            prevParams.set(URL_PREFIX.SORT_ORDER, sortBy.sortOrder);
+          } else {
+            prevParams.delete(URL_PREFIX.SORT_BY);
+            prevParams.delete(URL_PREFIX.SORT_ORDER);
+          }
 
-  getFilter(urlParams, name) {
-    return urlParams.get(`filter_${name}`) ?? undefined;
-  },
+          return prevParams;
+        },
+        { preventScrollReset: true },
+      );
+    },
 
-  getSort<TName>(urlParams: URLSearchParams) {
-    const by = urlParams.get('sort_by') ?? undefined;
-    const order = urlParams.get('sort_order') ?? undefined;
+    getFilter(urlParams, name) {
+      return urlParams.get(createFilterKey(name)) ?? undefined;
+    },
 
-    if (order !== 'asc' && order !== 'desc' && isDefined(order)) {
-      throw Error('Invalid order value');
-    }
+    getSort<TName>(urlParams: URLSearchParams) {
+      const name = urlParams.get(URL_PREFIX.SORT_BY) ?? undefined;
+      const order = urlParams.get(URL_PREFIX.SORT_ORDER) ?? undefined;
 
-    return isDefined(by) && isDefined(order)
-      ? {
-          name: by as TName,
-          sortOrder: order,
-        }
-      : undefined;
-  },
-}));
+      if (isDefined(order) && !isValidSortOrder(order)) {
+        console.error(`Invalid sort order: ${order}`);
+        return undefined;
+      }
+
+      return isDefined(name) && isValidSortOrder(order)
+        ? { name: name as TName, sortOrder: order }
+        : undefined;
+    },
+  }),
+);
