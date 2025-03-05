@@ -10,7 +10,16 @@ export class PrismaBookFileRepository implements IBookFileRepository {
 
   async create(file: BookFile): Promise<void> {
     const data = file.toPrimitives();
-    await this.prisma.bookFile.create({ data });
+    await this.prisma.bookFile.create({
+      data: {
+        id: data.id,
+        bookId: data.bookId,
+        format: data.format,
+        filePath: data.filePath,
+        fileSize: data.fileSize,
+        createdAt: data.createdAt,
+      },
+    });
   }
 
   async findById(fileId: string): Promise<BookFile | null> {

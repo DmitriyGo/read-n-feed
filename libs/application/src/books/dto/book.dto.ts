@@ -8,6 +8,8 @@ import {
   IsPositive,
   IsInt,
   MaxLength,
+  IsArray,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateBookDto {
@@ -28,6 +30,7 @@ export class CreateBookDto {
 
   @ApiPropertyOptional({ description: 'Publication date (YYYY-MM-DD)' })
   @IsOptional()
+  @IsDateString()
   publicationDate?: Date | null;
 
   @ApiPropertyOptional({ description: 'Publisher name' })
@@ -39,6 +42,36 @@ export class CreateBookDto {
   @IsOptional()
   @IsNumber()
   averageRating?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'IDs of authors associated with this book',
+    type: [String],
+    example: ['550e8400-e29b-41d4-a716-446655440000'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID(4, { each: true })
+  authorIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'IDs of genres associated with this book',
+    type: [String],
+    example: ['550e8400-e29b-41d4-a716-446655440000'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID(4, { each: true })
+  genreIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'IDs of tags associated with this book',
+    type: [String],
+    example: ['550e8400-e29b-41d4-a716-446655440000'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID(4, { each: true })
+  tagIds?: string[];
 }
 
 export class UpdateBookDto {
@@ -78,6 +111,39 @@ export class UpdateBookDto {
   @IsInt()
   @IsPositive()
   totalLikes?: number;
+
+  @ApiPropertyOptional({
+    description:
+      'IDs of authors associated with this book (replaces existing authors)',
+    type: [String],
+    example: ['550e8400-e29b-41d4-a716-446655440000'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID(4, { each: true })
+  authorIds?: string[];
+
+  @ApiPropertyOptional({
+    description:
+      'IDs of genres associated with this book (replaces existing genres)',
+    type: [String],
+    example: ['550e8400-e29b-41d4-a716-446655440000'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID(4, { each: true })
+  genreIds?: string[];
+
+  @ApiPropertyOptional({
+    description:
+      'IDs of tags associated with this book (replaces existing tags)',
+    type: [String],
+    example: ['550e8400-e29b-41d4-a716-446655440000'],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID(4, { each: true })
+  tagIds?: string[];
 }
 
 export class SearchBooksDto {
@@ -91,15 +157,30 @@ export class SearchBooksDto {
   @IsString()
   authorName?: string;
 
+  @ApiPropertyOptional({ description: 'Author ID for exact match' })
+  @IsOptional()
+  @IsUUID(4)
+  authorId?: string;
+
   @ApiPropertyOptional({ description: 'Genre name for exact match' })
   @IsOptional()
   @IsString()
   genreName?: string;
 
+  @ApiPropertyOptional({ description: 'Genre ID for exact match' })
+  @IsOptional()
+  @IsUUID(4)
+  genreId?: string;
+
   @ApiPropertyOptional({ description: 'Tag label for exact match' })
   @IsOptional()
   @IsString()
   tagName?: string;
+
+  @ApiPropertyOptional({ description: 'Tag ID for exact match' })
+  @IsOptional()
+  @IsUUID(4)
+  tagId?: string;
 
   @ApiPropertyOptional({
     description: 'Page number for pagination',
@@ -131,6 +212,30 @@ export class SearchBooksDto {
   sortOrder?: 'asc' | 'desc' = 'desc';
 }
 
+export class AuthorInfo {
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  id: string;
+
+  @ApiProperty({ example: 'J.K. Rowling' })
+  name: string;
+}
+
+export class GenreInfo {
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  id: string;
+
+  @ApiProperty({ example: 'Fantasy' })
+  name: string;
+}
+
+export class TagInfo {
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  id: string;
+
+  @ApiProperty({ example: 'magic' })
+  label: string;
+}
+
 export class BookResponseDto {
   @ApiProperty()
   id: string;
@@ -156,9 +261,24 @@ export class BookResponseDto {
   @ApiPropertyOptional()
   totalLikes?: number;
 
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Whether the current user has liked this book',
+  })
+  liked?: boolean;
+
   @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiPropertyOptional({ type: [AuthorInfo] })
+  authors?: AuthorInfo[];
+
+  @ApiPropertyOptional({ type: [GenreInfo] })
+  genres?: GenreInfo[];
+
+  @ApiPropertyOptional({ type: [TagInfo] })
+  tags?: TagInfo[];
 }

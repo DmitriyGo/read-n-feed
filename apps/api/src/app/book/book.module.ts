@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { BookUseCase } from '@read-n-feed/application';
-import { PrismaBookRepository } from '@read-n-feed/data-access';
+import {
+  PrismaBookRepository,
+  PrismaAuthorRepository,
+  PrismaGenreRepository,
+  PrismaTagRepository,
+} from '@read-n-feed/data-access';
 
 import { BookController } from './book.controller';
 
@@ -14,6 +19,18 @@ import { BookController } from './book.controller';
     {
       provide: 'IBookRepository',
       useClass: PrismaBookRepository,
+    },
+    {
+      provide: 'IAuthorRepository',
+      useClass: PrismaAuthorRepository,
+    },
+    {
+      provide: 'IGenreRepository',
+      useClass: PrismaGenreRepository,
+    },
+    {
+      provide: 'ITagRepository',
+      useClass: PrismaTagRepository,
     },
   ],
 })

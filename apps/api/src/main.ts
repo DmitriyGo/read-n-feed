@@ -8,7 +8,9 @@ import {
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import * as express from 'express';
 import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
+import * as path from 'path';
 
 import { AppModule } from './app/app.module';
 
@@ -55,6 +57,14 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   setupSwagger(app, globalPrefix);
+
+  // Configure file upload limits
+  app.use(express.json({ limit: '100mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+
+  // Configure static file serving for uploads
+  const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+  app.use('/files', express.static(path.join(process.cwd(), uploadDir)));
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

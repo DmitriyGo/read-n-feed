@@ -17,12 +17,22 @@ export class LoggerModule {
           useFactory: async (appConfig: ApiConfigService) => {
             const isProduction =
               appConfig.get(ConfigKeys.NODE_ENV) === 'production';
+            let logLevel = appConfig.get(ConfigKeys.PINO_LOG_LEVEL);
+
+            if (!isProduction && logLevel === 'info') {
+              console.log(
+                'Overriding log level to "debug" in development environment',
+              );
+              logLevel = 'debug';
+            }
+
+            console.log(`Logger initialized with level: ${logLevel}`);
 
             return {
               pinoHttp: [
                 {
                   autoLogging: false,
-                  level: appConfig.get(ConfigKeys.PINO_LOG_LEVEL),
+                  level: logLevel,
                   transport: !isProduction
                     ? {
                         target: 'pino-pretty',
@@ -30,6 +40,9 @@ export class LoggerModule {
                           colorize: true,
                           translateTime: true,
                           ignore: 'pid,hostname',
+                          levelFirst: true,
+                          customLevels:
+                            'trace:10,debug:20,info:30,warn:40,error:50,fatal:60',
                         },
                       }
                     : undefined,
@@ -38,6 +51,12 @@ export class LoggerModule {
                       id: req.id,
                       method: req.method,
                       url: req.url,
+                      auth: req.headers?.authorization
+                        ? 'Bearer token present'
+                        : 'No auth header',
+                    }),
+                    res: (res) => ({
+                      statusCode: res.statusCode,
                     }),
                   },
                   formatters: {

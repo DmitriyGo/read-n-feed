@@ -1,0 +1,200 @@
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Param,
+  Body,
+  UploadedFile,
+  UseInterceptors,
+  ParseUUIDPipe,
+  Res,
+  HttpStatus,
+  HttpCode,
+  StreamableFile,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  BookFileUseCase,
+  CreateBookFileDto,
+  BookFileResponseDto,
+} from '@read-n-feed/application';
+import { JwtPayload } from '@read-n-feed/domain';
+import { Response } from 'express';
+
+import { CurrentUser } from '../auth/guards/current-user.decorator';
+import { AdminOnly } from '../auth/guards/roles.decorator';
+
+@ApiBearerAuth()
+@ApiTags('book-files')
+@Controller('book-files')
+export class BookFileController {
+  constructor(private readonly bookFileUseCase: BookFileUseCase) {}
+
+  @Post('upload')
+  @AdminOnly()
+  @ApiOperation({ summary: 'Upload a new book file' })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'The book file to upload',
+        },
+        bookId: {
+          type: 'string',
+          format: 'uuid',
+          description: 'The ID of the book this file belongs to',
+        },
+        format: {
+          type: 'string',
+          enum: ['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'],
+          description: 'Format of the book file',
+        },
+        fileSize: {
+          type: 'integer',
+          description: 'Size of the file in bytes (optional)',
+        },
+        originalFilename: {
+          type: 'string',
+          description: 'Original filename (optional)',
+        },
+      },
+      required: ['file', 'bookId', 'format'],
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Book file uploaded successfully',
+    type: BookFileResponseDto,
+  })
+  async uploadBookFile(
+    @Body() dto: CreateBookFileDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<BookFileResponseDto> {
+    if (!file) {
+      throw new Error('File is required');
+    }
+
+    return this.bookFileUseCase.uploadBookFile(
+      dto,
+      file.buffer,
+      file.mimetype,
+      file.originalname,
+    );
+  }
+
+  @Get('download/:id')
+  @ApiOperation({ summary: 'Download a book file' })
+  @ApiParam({ name: 'id', description: 'Book file ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the book file as a downloadable stream',
+  })
+  async downloadBookFile(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<StreamableFile> {
+    // Here you would add access control logic
+    // For example:
+    // if (!await this.hasDownloadPermission(user.id)) {
+    //   throw new ForbiddenException('Your subscription does not allow downloading');
+    // }
+
+    const { buffer, mimeType, filename } =
+      await this.bookFileUseCase.getBookFile(id);
+
+    res.set({
+      'Content-Type': mimeType,
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': buffer.length,
+    });
+
+    return new StreamableFile(buffer);
+  }
+
+  @Get('view/:id')
+  @ApiOperation({ summary: 'View a book file in the browser (if supported)' })
+  @ApiParam({ name: 'id', description: 'Book file ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the book file for in-browser viewing',
+  })
+  async viewBookFile(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<StreamableFile> {
+    const { buffer, mimeType, filename } =
+      await this.bookFileUseCase.getBookFile(id);
+
+    res.set({
+      'Content-Type': mimeType,
+      'Content-Disposition': 'inline',
+      'Content-Length': buffer.length,
+    });
+
+    return new StreamableFile(buffer);
+  }
+
+  @Get('url/:id')
+  @ApiOperation({ summary: 'Get a download URL for a book file' })
+  @ApiParam({ name: 'id', description: 'Book file ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the download URL',
+    schema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string' },
+      },
+    },
+  })
+  async getBookFileUrl(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<{ url: string }> {
+    const url = await this.bookFileUseCase.getBookFileUrl(id);
+    return { url };
+  }
+
+  @Delete(':id')
+  @AdminOnly()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a book file' })
+  @ApiParam({ name: 'id', description: 'Book file ID' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Book file deleted successfully',
+  })
+  async deleteBookFile(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.bookFileUseCase.deleteBookFile(id);
+  }
+
+  @Get('book/:bookId')
+  @ApiOperation({ summary: 'Get all files for a book' })
+  @ApiParam({ name: 'bookId', description: 'Book ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns all files for the specified book',
+    type: [BookFileResponseDto],
+  })
+  async getBookFiles(
+    @Param('bookId', ParseUUIDPipe) bookId: string,
+  ): Promise<BookFileResponseDto[]> {
+    return this.bookFileUseCase.findBookFiles(bookId);
+  }
+}

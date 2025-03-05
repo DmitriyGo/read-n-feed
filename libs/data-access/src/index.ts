@@ -1,5 +1,7 @@
 export * from './data-access.module';
 
+export * from './adapters/prisma/prisma.service';
+
 export * from './adapters/prisma/user.repository';
 export * from './adapters/prisma/session.repository';
 export * from './adapters/prisma/book.repository';

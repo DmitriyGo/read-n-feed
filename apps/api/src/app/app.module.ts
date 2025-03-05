@@ -2,11 +2,15 @@ import { Module } from '@nestjs/common';
 import { DataAccessModule } from '@read-n-feed/data-access';
 
 import { AuthModule } from './auth/auth.module';
+import { AuthorModule } from './author/author.module';
 import { BookModule } from './book/book.module';
-import { ApiConfigModule } from './config/config.module';
-import { LoggerModule } from './logger/logger.module';
-import { UserModule } from './user/user.module';
+import { BookFileModule } from './book-file/book-file.module';
 import { CommentModule } from './comment/comment.module';
+import { ApiConfigModule } from './config/config.module';
+import { GenreModule } from './genre/genre.module';
+import { LoggerModule } from './logger/logger.module';
+import { TagModule } from './tag/tag.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -16,7 +20,11 @@ import { CommentModule } from './comment/comment.module';
     AuthModule,
     UserModule,
     BookModule,
+    BookFileModule,
     CommentModule,
+    AuthorModule,
+    GenreModule,
+    TagModule,
   ],
   controllers: [],
   providers: [],

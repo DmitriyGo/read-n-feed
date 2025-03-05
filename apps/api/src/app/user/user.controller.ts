@@ -13,7 +13,7 @@ import {
 } from '@read-n-feed/application';
 import { Request } from 'express';
 
-import { Roles } from '../auth/guards/roles.decorator';
+import { AdminOnly } from '../auth/guards/roles.decorator';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -42,7 +42,7 @@ export class UserController {
     return toUserResponseDto(updated);
   }
 
-  @Roles('ADMIN')
+  @AdminOnly()
   @Post(':id/block')
   @ApiOperation({ summary: 'Block a user (admin-only)' })
   @ApiOkResponse({ type: UserResponseDto })
@@ -51,7 +51,7 @@ export class UserController {
     return toUserResponseDto(user);
   }
 
-  @Roles('ADMIN')
+  @AdminOnly()
   @Post(':id/unblock')
   @ApiOperation({ summary: 'Unblock a user (admin-only)' })
   @ApiOkResponse({ type: UserResponseDto })
