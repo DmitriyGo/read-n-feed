@@ -14,7 +14,7 @@ model Author {
 model BookAuthor {
   bookId   String @map("book_id")
   authorId String @map("author_id")
-  book     Book   @relation(fields: [bookId], references: [id])
+  book     Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
   author   Author @relation(fields: [authorId], references: [id])
 
   @@id([bookId, authorId])
