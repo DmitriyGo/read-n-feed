@@ -5,6 +5,7 @@ export * from './adapters/prisma/prisma.service';
 export * from './adapters/prisma/user.repository';
 export * from './adapters/prisma/session.repository';
 export * from './adapters/prisma/book.repository';
+export * from './adapters/prisma/book-request.repository';
 export * from './adapters/prisma/book-file.repository';
 export * from './adapters/prisma/book-like.repository';
 export * from './adapters/prisma/book-comment.repository';

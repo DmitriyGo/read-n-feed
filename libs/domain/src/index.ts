@@ -12,9 +12,15 @@ export * from './session/session.repository.port';
 export * from './books/book.props';
 export * from './books/book.entity';
 export * from './books/book.repository.port';
+
+export * from './books/book-request.props';
+export * from './books/book-request.entity';
+export * from './books/book-request.repository.port';
+
 export * from './books/book-file.props';
 export * from './books/book-file.entity';
 export * from './books/book-file.repository.port';
+
 export * from './books/book-format.value-object';
 export * from './books/file-storage.port';
 
