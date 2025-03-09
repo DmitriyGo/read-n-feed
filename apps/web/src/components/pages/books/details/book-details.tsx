@@ -1,41 +1,55 @@
 import { BookResponseDto } from '@read-n-feed/application';
-import { isDefined } from '@read-n-feed/shared';
 
+import { Badges } from '../shared/badges';
 import { Description } from '../shared/description';
 
 import { Image, PartiallyLoadedContent } from '@/components/common';
-import { Card, CardContent, CardHeader, Skeleton } from '@/components/ui';
+import { Card, CardContent, CardHeader } from '@/components/ui';
 
-export const BookDetails = ({ book }: { book: BookResponseDto }) => {
+export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
   return (
     <Card className="[&:p]:text-sm">
       <CardHeader>
-        <h2 className="!text-xl font-semibold">{book.title}</h2>
+        <PartiallyLoadedContent
+          as="h2"
+          className="!text-2xl font-semibold [&>*]:!text-white"
+          content={book?.title}
+        />
       </CardHeader>
 
       <CardContent className="flex flex-row gap-4">
         <Image
-          src={book.coverImageUrl}
-          alt={book.title}
+          src={book?.coverImageUrl}
+          alt={book?.title}
           width={175}
           height={250}
         />
 
         <div className="space-y-2">
-          <Description text={book.description} />
+          <Description text={book?.description} />
+          <Badges label="Tags" tags={book?.tags?.map((tag) => tag.label)} />
+          <Badges label="Genres" tags={book?.genres?.map((tag) => tag.name)} />
 
-          {/* <Tags tags={book.tags} /> */}
-
-          {/* <PartiallyLoadedContent
+          <PartiallyLoadedContent
             label="Authors"
-            content={book.authors.join(', ')}
-          /> */}
-          <PartiallyLoadedContent label="Publisher" content={book.publisher} />
-          {/* <PartiallyLoadedContent
+            content={book?.authors?.map((author) => author.name).join(', ')}
+          />
+          <PartiallyLoadedContent label="Publisher" content={book?.publisher} />
+          <PartiallyLoadedContent
             label="Published at"
-            content={new Date(book.publishedAt).toLocaleDateString()}
-          /> */}
-          {/* <PartiallyLoadedContent label="Page count" content={book.pages} /> */}
+            content={new Date(
+              String(book?.publicationDate),
+            ).toLocaleDateString()}
+          />
+          <PartiallyLoadedContent
+            label="Average Rating"
+            content={book?.averageRating}
+          />
+          <PartiallyLoadedContent
+            label="Total Likes"
+            content={book?.totalLikes}
+          />
+          <PartiallyLoadedContent label="Liked" content={book?.liked} />
         </div>
       </CardContent>
     </Card>

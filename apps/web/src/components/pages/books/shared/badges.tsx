@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { Conditional } from '@/components/common';
 import { Badge, Skeleton } from '@/components/ui';
 
-export const Tags = ({
+export const Badges = ({
   maxLength = 5,
   tags,
+  label,
 }: {
+  label?: string;
   tags?: string[];
   maxLength?: number;
 }) => {
@@ -15,7 +17,7 @@ export const Tags = ({
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
-      <p>Tags:</p>
+      {isDefined(label) && <p>{label}</p>}
 
       <Conditional condition={isDefined(tags)}>
         <Conditional.True>

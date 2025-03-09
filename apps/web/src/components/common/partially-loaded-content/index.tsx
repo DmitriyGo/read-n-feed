@@ -1,3 +1,4 @@
+import { isDefined } from '@read-n-feed/shared';
 import { ReactNode } from 'react';
 
 import { Skeleton } from '@/components/ui';
@@ -9,18 +10,22 @@ export const PartiallyLoadedContent = ({
   content,
   label,
   isLoading,
+  as,
 }: BaseComponentProps<{
   content?: ReactNode | null;
-  label: string;
+  label?: string;
   isLoading?: boolean;
+  as?: 'div' | 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }>) => {
+  const Slot = as ?? 'span';
+
   return (
     <div className={cn('text-inherit justify-start flex flex-row', className)}>
-      <p>{label}:&nbsp;</p>
+      {isDefined(label) && <Slot>{label}:&nbsp;</Slot>}
       {content && isLoading !== true ? (
-        <p className="text-gray-400">{content}</p>
+        <Slot className="text-gray-400">{content}</Slot>
       ) : content === null && isLoading !== true ? (
-        <p className="text-gray-400">Not Given</p>
+        <Slot className="text-gray-400">Not Given</Slot>
       ) : (
         <Skeleton className="min-h-full min-w-20" />
       )}

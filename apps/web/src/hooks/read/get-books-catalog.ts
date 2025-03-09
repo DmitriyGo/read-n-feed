@@ -2,7 +2,6 @@ import {
   PaginatedBooksResponseDto,
   SearchBooksDto,
 } from '@read-n-feed/application';
-import { isDefined } from '@read-n-feed/shared';
 import { useQuery } from '@tanstack/react-query';
 
 import { useAuth } from '../use-auth';
@@ -23,6 +22,5 @@ export const useGetFilteredBooks = (searchData: SearchBooksDto) => {
         `${ApiRoute.Books.Base}?${urlParams}`,
       );
     },
-    enabled: isDefined(accessToken),
   });
 };
