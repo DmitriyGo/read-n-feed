@@ -34,6 +34,10 @@ export class LocalFileStorageService implements IFileStorageService {
     return `${hash}${ext}`;
   }
 
+  generateChecksum(fileBuffer: Buffer): string {
+    return crypto.createHash('sha256').update(fileBuffer).digest('hex');
+  }
+
   async saveFile(
     fileBuffer: Buffer,
     originalFilename: string,

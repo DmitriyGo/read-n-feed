@@ -18,6 +18,34 @@ export class PrismaBookFileRepository implements IBookFileRepository {
         filePath: data.filePath,
         fileSize: data.fileSize,
         createdAt: data.createdAt,
+        // New fields
+        filename: data.filename,
+        mimeType: data.mimeType,
+        metadata: data.metadata
+          ? JSON.parse(JSON.stringify(data.metadata))
+          : null,
+        isValidated: data.isValidated,
+        checksum: data.checksum,
+      },
+    });
+  }
+
+  async update(file: BookFile): Promise<void> {
+    const data = file.toPrimitives();
+    await this.prisma.bookFile.update({
+      where: { id: data.id },
+      data: {
+        format: data.format,
+        filePath: data.filePath,
+        fileSize: data.fileSize,
+        // New fields
+        filename: data.filename,
+        mimeType: data.mimeType,
+        metadata: data.metadata
+          ? JSON.parse(JSON.stringify(data.metadata))
+          : null,
+        isValidated: data.isValidated,
+        checksum: data.checksum,
       },
     });
   }
@@ -41,10 +69,20 @@ export class PrismaBookFileRepository implements IBookFileRepository {
     await this.prisma.bookFile.delete({ where: { id: fileId } });
   }
 
+  async findByChecksum(checksum: string): Promise<BookFile[]> {
+    const records = await this.prisma.bookFile.findMany({
+      where: { checksum },
+    });
+    return records.map((r) => this.toDomain(r));
+  }
+
   private toDomain(record: BookFileFromDb): BookFile {
     return new BookFile({
       ...record,
       format: BookFormat.create(record.format),
+      metadata: record.metadata
+        ? (record.metadata as Record<string, any>)
+        : null,
     });
   }
 }

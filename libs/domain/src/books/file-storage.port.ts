@@ -7,4 +7,5 @@ export interface IFileStorageService {
   getFile(filePath: string): Promise<Buffer>;
   deleteFile(filePath: string): Promise<void>;
   getFileUrl(filePath: string): Promise<string>;
+  generateChecksum?(fileBuffer: Buffer): string;
 }

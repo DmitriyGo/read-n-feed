@@ -12,6 +12,7 @@ import {
   HttpStatus,
   HttpCode,
   StreamableFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -64,14 +65,6 @@ export class BookFileController {
           enum: ['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'],
           description: 'Format of the book file',
         },
-        fileSize: {
-          type: 'integer',
-          description: 'Size of the file in bytes (optional)',
-        },
-        originalFilename: {
-          type: 'string',
-          description: 'Original filename (optional)',
-        },
       },
       required: ['file', 'bookId', 'format'],
     },
@@ -86,7 +79,7 @@ export class BookFileController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<BookFileResponseDto> {
     if (!file) {
-      throw new Error('File is required');
+      throw new BadRequestException('File is required');
     }
 
     return this.bookFileUseCase.uploadBookFile(
@@ -120,7 +113,7 @@ export class BookFileController {
 
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"`,
       'Content-Length': buffer.length,
     });
 
@@ -139,12 +132,15 @@ export class BookFileController {
     @Res({ passthrough: true }) res: Response,
     @CurrentUser() user: JwtPayload,
   ): Promise<StreamableFile> {
-    const { buffer, mimeType, filename } =
+    const { buffer, mimeType, filename, file } =
       await this.bookFileUseCase.getBookFile(id);
+
+    // For PDF files, set inline disposition
+    const disposition = file.format.value === 'PDF' ? 'inline' : 'attachment';
 
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': 'inline',
+      'Content-Disposition': `${disposition}; filename="${encodeURIComponent(filename)}"`,
       'Content-Length': buffer.length,
     });
 
@@ -196,5 +192,35 @@ export class BookFileController {
     @Param('bookId', ParseUUIDPipe) bookId: string,
   ): Promise<BookFileResponseDto[]> {
     return this.bookFileUseCase.findBookFiles(bookId);
+  }
+
+  @Get('metadata/:id')
+  @ApiOperation({ summary: 'Get metadata for a book file' })
+  @ApiParam({ name: 'id', description: 'Book file ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns file metadata',
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        author: { type: 'string' },
+        pageCount: { type: 'number' },
+        fileSize: { type: 'number' },
+        format: { type: 'string' },
+        creationDate: { type: 'string', format: 'date-time' },
+        language: { type: 'string' },
+      },
+    },
+  })
+  async getFileMetadata(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
+    const bookFile = await this.bookFileUseCase.getBookFile(id);
+
+    return {
+      ...(bookFile.file.metadata || {}),
+      format: bookFile.file.format.value,
+      fileSize: bookFile.file.fileSize,
+      filename: bookFile.filename,
+    };
   }
 }
