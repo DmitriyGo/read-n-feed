@@ -10,6 +10,7 @@ import { CommentModule } from './comment/comment.module';
 import { ApiConfigModule } from './config/config.module';
 import { GenreModule } from './genre/genre.module';
 import { LoggerModule } from './logger/logger.module';
+import { ReadingProgressModule } from './reading-progress/reading-progress.module';
 import { TagModule } from './tag/tag.module';
 import { UserModule } from './user/user.module';
 
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     UserModule,
     BookModule,
+    ReadingProgressModule,
     BookRequestModule,
     BookFileModule,
     CommentModule,

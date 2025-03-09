@@ -5,7 +5,9 @@ export interface IReadingProgressRepository {
   find(
     userId: string,
     bookId: string,
-    deviceId?: string,
+    deviceId?: string | null,
   ): Promise<ReadingProgress | null>;
   findAllForBook(userId: string, bookId: string): Promise<ReadingProgress[]>;
+  findAllBooksByUser(userId: string): Promise<string[]>;
+  delete(id: string): Promise<void>;
 }
