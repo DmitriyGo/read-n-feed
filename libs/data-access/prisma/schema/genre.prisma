@@ -9,8 +9,8 @@ model Genre {
 model BookGenre {
   bookId  String @map("book_id")
   genreId String @map("genre_id")
-  book    Book   @relation(fields: [bookId], references: [id])
-  genre   Genre  @relation(fields: [genreId], references: [id])
+  book    Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
 
   @@id([bookId, genreId])
   @@map("book_genre")

@@ -28,7 +28,6 @@ export class GenreUseCase {
     const genre = new Genre({
       id: uuidv4(),
       name: dto.name,
-      description: dto.description ?? null,
     });
 
     await this.genreRepo.create(genre);
@@ -54,10 +53,6 @@ export class GenreUseCase {
     const updatedProps: GenreProps = {
       ...genre.toPrimitives(),
       name: dto.name ?? genre.name,
-      description:
-        dto.description !== undefined
-          ? dto.description
-          : genre.toPrimitives().description,
     };
 
     const updatedGenre = new Genre(updatedProps);

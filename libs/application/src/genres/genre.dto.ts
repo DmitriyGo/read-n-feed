@@ -11,14 +11,6 @@ export class CreateGenreDto {
   @IsNotEmpty()
   @MaxLength(50)
   name: string;
-
-  @ApiPropertyOptional({
-    example: 'Books involving futuristic concepts, technology, and space',
-    description: 'Description of the genre',
-  })
-  @IsString()
-  @IsOptional()
-  description?: string;
 }
 
 export class UpdateGenreDto {
@@ -30,15 +22,6 @@ export class UpdateGenreDto {
   @IsOptional()
   @MaxLength(50)
   name?: string;
-
-  @ApiPropertyOptional({
-    example:
-      'Fiction based on imagined future scientific or technological advances',
-    description: 'Updated description of the genre',
-  })
-  @IsString()
-  @IsOptional()
-  description?: string;
 }
 
 export class GenreResponseDto {
@@ -47,11 +30,6 @@ export class GenreResponseDto {
 
   @ApiProperty({ example: 'Science Fiction' })
   name: string;
-
-  @ApiPropertyOptional({
-    example: 'Books involving futuristic concepts, technology, and space',
-  })
-  description?: string | null;
 }
 
 export function toGenreResponseDto(genre: Genre): GenreResponseDto {
@@ -59,6 +37,5 @@ export function toGenreResponseDto(genre: Genre): GenreResponseDto {
   return {
     id: props.id,
     name: props.name,
-    description: props.description,
   };
 }

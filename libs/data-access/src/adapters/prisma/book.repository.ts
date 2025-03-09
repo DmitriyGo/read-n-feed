@@ -29,16 +29,6 @@ export class PrismaBookRepository implements IBookRepository {
   }
 
   async delete(bookId: string): Promise<void> {
-    // Delete associated records first
-    await this.prisma.bookAuthor.deleteMany({ where: { bookId } });
-    await this.prisma.bookGenre.deleteMany({ where: { bookId } });
-    await this.prisma.bookTag.deleteMany({ where: { bookId } });
-    await this.prisma.bookLike.deleteMany({ where: { bookId } });
-    await this.prisma.bookComment.deleteMany({ where: { bookId } });
-    await this.prisma.bookFile.deleteMany({ where: { bookId } });
-    await this.prisma.readingProgress.deleteMany({ where: { bookId } });
-
-    // Then delete the book
     await this.prisma.book.delete({ where: { id: bookId } });
   }
 

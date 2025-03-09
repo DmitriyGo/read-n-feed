@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { IUserRepository, JwtPayload, User } from '@read-n-feed/domain';
 import { ISessionRepository, Session } from '@read-n-feed/domain';
 import { ITokenGenerator } from '@read-n-feed/domain';
-import { lookupLocation, parseUserAgent } from '@read-n-feed/shared';
+import { lookupLocation, parseUserAgent } from '@read-n-feed/infrastructure';
 import { compareSync, hashSync } from 'bcrypt';
 import { add } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
