@@ -28,17 +28,6 @@ export class CreateBookFileDto {
   })
   @IsEnum(BookFormatDto)
   format: BookFormatDto;
-
-  @ApiPropertyOptional({ description: 'Size of the file in bytes' })
-  @IsOptional()
-  @IsInt()
-  @IsPositive()
-  fileSize?: number;
-
-  @ApiPropertyOptional({ description: 'Original filename' })
-  @IsOptional()
-  @IsString()
-  originalFilename?: string;
 }
 
 export class BookFileResponseDto {
@@ -57,6 +46,20 @@ export class BookFileResponseDto {
   @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
   createdAt: Date;
 
+  @ApiPropertyOptional({ example: 'original-filename.pdf' })
+  filename?: string | null;
+
+  @ApiPropertyOptional({ example: 'application/pdf' })
+  mimeType?: string | null;
+
+  @ApiPropertyOptional({ example: true })
+  isValidated?: boolean;
+
+  @ApiPropertyOptional({
+    example: { title: 'Book title', author: 'Book author', pageCount: 320 },
+  })
+  metadata?: Record<string, any> | null;
+
   @ApiPropertyOptional({ example: 'https://example.com/files/book.pdf' })
   downloadUrl?: string;
 }
@@ -74,6 +77,10 @@ export function toBookFileResponseDto(
     format: props.format,
     fileSize: props.fileSize,
     createdAt: props.createdAt,
+    filename: props.filename,
+    mimeType: props.mimeType,
+    isValidated: props.isValidated,
+    metadata: props.metadata,
   };
 
   if (includeUrl && url) {
