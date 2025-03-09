@@ -23,7 +23,10 @@ export class CreateBookDto {
   @IsString()
   description?: string | null;
 
-  @ApiPropertyOptional({ description: 'Cover image URL' })
+  @ApiPropertyOptional({
+    description: 'Cover image URL',
+    example: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
+  })
   @IsOptional()
   @IsUrl()
   coverImageUrl?: string | null;

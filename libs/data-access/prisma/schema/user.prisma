@@ -46,6 +46,7 @@ model User {
   BookLike        BookLike[]
   BookComment     BookComment[]
   ReadingProgress ReadingProgress[]
+  BookRequest     BookRequest[]
 
   @@map("user")
 }

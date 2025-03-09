@@ -58,7 +58,6 @@ export class PrismaGenreRepository implements IGenreRepository {
     return new Genre({
       id: record.id,
       name: record.name,
-      description: null, // The database schema doesn't have a description field yet
     });
   }
 }

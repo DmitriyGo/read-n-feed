@@ -26,7 +26,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  BookLikeResponseDto,
   BookResponseDto,
   BookUseCase,
   CreateBookDto,
