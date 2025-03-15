@@ -2,6 +2,7 @@ import { Dispatch, ReactElement } from 'react';
 import { create } from 'zustand';
 
 import { SignInModal, SignUpModal } from '@/components/common/modals';
+import { RequestForCreateModal } from '@/components/common/modals/request-for-create';
 
 export type ModalModeInfo = {
   component: ReactElement;
@@ -15,6 +16,9 @@ const ModalInfos = {
   },
   SignUp: {
     component: <SignUpModal />,
+  },
+  CreateRequestForUpload: {
+    component: <RequestForCreateModal />,
   },
 } satisfies Record<string, ModalModeInfo>;
 

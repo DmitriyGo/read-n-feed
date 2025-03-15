@@ -14,7 +14,11 @@ export const useBookById = (id?: string) => {
   return useQuery({
     queryKey: [QueryKey.GetBooksCatalog, accessToken, id],
     queryFn: async () => {
-      return axiosSecure.get<BookResponseDto>(`${ApiRoute.Books.Base}${id}`);
+      if (!isDefined(id)) {
+        return;
+      }
+
+      return axiosSecure.get<BookResponseDto>(ApiRoute.Books.Id(id));
     },
     enabled: isDefined(id),
   });

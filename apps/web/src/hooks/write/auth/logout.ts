@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { useAuth } from '../use-auth';
+import { useAuth } from '../../use-auth';
 
 import { ApiRoute } from '@/constants';
 import { axiosSecure } from '@/lib';

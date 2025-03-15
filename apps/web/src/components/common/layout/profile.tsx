@@ -32,15 +32,24 @@ export const Profile = () => {
     navigate(Route.Profile);
   };
 
+  const handleUploadNewBook = () => {
+    setMode('CreateRequestForUpload');
+  };
+
   return (
     <Popover>
       <PopoverTrigger>
         <Avatar src={data?.data.avatarUrl} />
       </PopoverTrigger>
+
       <PopoverContent className="flex flex-col gap-4" align="end">
         {isDefined(accessToken) ? (
           <>
             <Button onClick={handleSeeProfile}>See Profile</Button>
+
+            <Button variant="outline" onClick={handleUploadNewBook}>
+              Create Request For Upload
+            </Button>
 
             <Button onClick={handleLogout} variant="destructive">
               LogOut
