@@ -7,4 +7,8 @@ export const Route = {
     Details: '/book/details',
     Search: '/book/search',
   },
+
+  Requests: {
+    MyRequests: '/requests/my-requests',
+  },
 } as const;

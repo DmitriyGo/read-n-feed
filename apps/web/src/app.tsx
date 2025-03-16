@@ -7,12 +7,18 @@ import {
 
 import { useAuth } from './hooks';
 import { axiosSecure } from './lib';
-import { BookSearchPage } from './pages/books/search';
+import { MyRequestsPage } from './pages/requests/my-requests';
 import { useAuthStore, useFilterStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
 import { ApiRoute, Route } from '@/constants';
-import { HomePage, ProfilePage, NoFoundPage, BookDetailsPage } from '@/pages';
+import {
+  HomePage,
+  ProfilePage,
+  NoFoundPage,
+  BookDetailsPage,
+  BookSearchPage,
+} from '@/pages';
 
 export function App() {
   const { isReady, setIsReady, clearAccessToken } = useAuth();
@@ -50,8 +56,14 @@ export function App() {
     <Routes>
       <RouteComponent path={Route.Home} element={<Layout />}>
         <RouteComponent index element={<HomePage />} />
+
         <RouteComponent element={<RequiresRoleLayout userRole="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
+
+          <RouteComponent
+            path={Route.Requests.MyRequests}
+            element={<MyRequestsPage />}
+          />
         </RouteComponent>
 
         <RouteComponent

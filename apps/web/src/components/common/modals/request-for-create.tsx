@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isDefined } from '@read-n-feed/shared';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
@@ -15,37 +16,17 @@ import {
   Textarea,
 } from '@/components/ui';
 import { useCreateRequest } from '@/hooks/write/requests';
+import { clearObject } from '@/lib';
 import { useModalStore } from '@/store';
 
 const formSchema = z.object({
   title: z.string().nonempty('Title cannot be empty'),
-  description: z.string().nonempty('Description cannot be empty'),
-  authorNames: z.string().transform((str) =>
-    str
-      ? str
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [],
-  ),
-  genreNames: z.string().transform((str) =>
-    str
-      ? str
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [],
-  ),
-  publicationDate: z.string().nonempty('Publication date cannot be empty'),
-  publisher: z.string().nonempty('Publisher cannot be empty'),
-  tagLabels: z.string().transform((str) =>
-    str
-      ? str
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [],
-  ),
+  description: z.string().optional(),
+  authorNames: z.string().optional(),
+  genreNames: z.string().optional(),
+  publicationDate: z.string().optional(),
+  publisher: z.string().optional(),
+  tagLabels: z.string().optional(),
 });
 
 type CreateRequestSchema = z.infer<typeof formSchema>;
@@ -59,24 +40,23 @@ export function RequestForCreateModal() {
     defaultValues: {
       title: '',
       description: '',
-      authorNames: [],
-      genreNames: [],
+      authorNames: '',
+      genreNames: '',
       publicationDate: '',
       publisher: '',
-      tagLabels: [],
+      tagLabels: '',
     },
   });
 
   const onSubmit = async (values: CreateRequestSchema) => {
     try {
+      const data = clearObject(values) as CreateRequestSchema;
+
       await createRequest({
-        title: values.title,
-        description: values.description,
-        authorNames: values.authorNames,
-        genreNames: values.genreNames,
-        publicationDate: values.publicationDate,
-        publisher: values.publisher,
-        tagLabels: values.tagLabels,
+        ...data,
+        authorNames: data.authorNames?.split(',').map((name) => name.trim()),
+        genreNames: data.genreNames?.split(',').map((name) => name.trim()),
+        tagLabels: data.tagLabels?.split(',').map((name) => name.trim()),
       });
 
       toast.success('Request created successfully');

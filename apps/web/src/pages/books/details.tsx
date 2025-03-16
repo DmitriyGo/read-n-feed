@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 
 import { BookDetails } from '@/components/pages/books/details';
-import { useBookById } from '@/hooks/read/get-book';
+import { useBookById } from '@/hooks/read/books/get-book';
 
 export const BookDetailsPage = () => {
   const { id } = useParams<{ id: string }>();

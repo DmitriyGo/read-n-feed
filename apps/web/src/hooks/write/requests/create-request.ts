@@ -22,7 +22,7 @@ export const useCreateRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetRequests],
+            queryKey: [QueryKey.GetBookRequests],
             type: 'active',
           }),
         500,

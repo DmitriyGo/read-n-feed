@@ -12,6 +12,8 @@ export function delay(ms: number) {
 
 export function clearObject(obj: Record<string, string> | object) {
   return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => isDefined(v)),
+    Object.entries(obj).filter(
+      ([_, v]) => isDefined(v) && v !== '' && v.length > 0,
+    ),
   );
 }

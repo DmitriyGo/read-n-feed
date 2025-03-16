@@ -1,0 +1,124 @@
+import { BookRequestResponseDto } from '@read-n-feed/application';
+import { format } from 'date-fns';
+
+import { Badges } from '../books/shared/badges';
+import { Description } from '../books/shared/description';
+
+import { Image, PartiallyLoadedContent } from '@/components/common';
+import { Badge, Card, CardContent, CardHeader } from '@/components/ui';
+
+const formatDate = (date?: Date | null) => {
+  return date ? format(new Date(date), 'MMM d, yyyy') : '';
+};
+
+export const BookRequestItem = ({
+  bookRequest,
+}: {
+  bookRequest: BookRequestResponseDto;
+}) => {
+  return (
+    <Card className="w-fit">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <PartiallyLoadedContent
+          as="h2"
+          className="!text-2xl font-semibold [&>*]:!text-white"
+          content={bookRequest?.title}
+        />
+        <Badge
+          variant={
+            bookRequest.status === 'APPROVED'
+              ? 'default'
+              : bookRequest.status === 'PENDING'
+                ? 'outline'
+                : 'destructive'
+          }
+        >
+          {bookRequest.status}
+        </Badge>
+      </CardHeader>
+
+      <CardContent className="flex flex-row gap-4">
+        <Image
+          src={bookRequest?.coverImageUrl || '/placeholder-book-cover.jpg'}
+          alt={bookRequest?.title}
+          width={175}
+          height={250}
+        />
+
+        <div className="space-y-2">
+          <Description text={bookRequest?.description} />
+
+          <Badges label="Tags" tags={bookRequest?.tagLabels} />
+          <Badges label="Genres" tags={bookRequest?.genreNames} />
+
+          <PartiallyLoadedContent
+            label="Authors"
+            content={bookRequest?.authorNames?.join(', ')}
+          />
+          <PartiallyLoadedContent
+            label="Publisher"
+            content={bookRequest?.publisher}
+          />
+          <PartiallyLoadedContent
+            label="Publication Date"
+            content={
+              bookRequest?.publicationDate
+                ? formatDate(bookRequest.publicationDate)
+                : ''
+            }
+          />
+
+          <div className="mt-4 border-t pt-2">
+            <h3 className="font-medium">Request Details</h3>
+            <PartiallyLoadedContent
+              label="Requested on"
+              content={formatDate(bookRequest?.createdAt)}
+            />
+            <PartiallyLoadedContent
+              label="Last Updated"
+              content={formatDate(bookRequest?.updatedAt)}
+            />
+
+            {bookRequest.status === 'APPROVED' && (
+              <>
+                <PartiallyLoadedContent
+                  label="Approved on"
+                  content={formatDate(bookRequest?.approvedAt)}
+                />
+
+                {bookRequest.resultingBookId && (
+                  <PartiallyLoadedContent
+                    label="Resulting Book ID"
+                    content={bookRequest.resultingBookId}
+                  />
+                )}
+              </>
+            )}
+
+            {bookRequest.status === 'REJECTED' && (
+              <>
+                <PartiallyLoadedContent
+                  label="Rejected on"
+                  content={formatDate(bookRequest?.rejectedAt)}
+                />
+                <PartiallyLoadedContent
+                  label="Rejection Reason"
+                  content={bookRequest?.rejectionReason}
+                  className="text-red-500"
+                />
+              </>
+            )}
+
+            {bookRequest.adminNotes && (
+              <PartiallyLoadedContent
+                label="Admin Notes"
+                content={bookRequest?.adminNotes}
+                className="text-blue-500"
+              />
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

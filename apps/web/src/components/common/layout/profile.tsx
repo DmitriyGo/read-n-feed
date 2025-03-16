@@ -32,8 +32,8 @@ export const Profile = () => {
     navigate(Route.Profile);
   };
 
-  const handleUploadNewBook = () => {
-    setMode('CreateRequestForUpload');
+  const handleMyRequests = () => {
+    navigate(Route.Requests.MyRequests);
   };
 
   return (
@@ -47,8 +47,8 @@ export const Profile = () => {
           <>
             <Button onClick={handleSeeProfile}>See Profile</Button>
 
-            <Button variant="outline" onClick={handleUploadNewBook}>
-              Create Request For Upload
+            <Button variant="outline" onClick={handleMyRequests}>
+              My Requests
             </Button>
 
             <Button onClick={handleLogout} variant="destructive">

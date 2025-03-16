@@ -6,7 +6,7 @@ import { BookCard } from './book-card';
 
 import { Pagination, PerPage } from '@/components/common';
 import { Card } from '@/components/ui';
-import { useGetFilteredBooks } from '@/hooks/read/get-books-catalog';
+import { useGetFilteredBooks } from '@/hooks/read/books/get-books-catalog';
 import { useFilterStore } from '@/store';
 
 export const BookCatalog = () => {

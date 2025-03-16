@@ -9,7 +9,7 @@ export const Badges = ({
   label,
 }: {
   label?: string;
-  tags?: string[];
+  tags: string[] | undefined | null;
   maxLength?: number;
 }) => {
   const [showMore, setShowMore] = useState(false);
