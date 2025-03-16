@@ -12,7 +12,10 @@ export const Description = ({
 }) => {
   const [showMore, setShowMore] = useState(false);
 
-  const indexOfPreviousSpace = text?.lastIndexOf(' ', length);
+  const indexOfPreviousSpace = Math.max(
+    text?.lastIndexOf(' ', length) ?? 0,
+    length,
+  );
 
   return isDefined(text) ? (
     <p className="text-justify">

@@ -1,7 +1,9 @@
 import { isDefined } from '@read-n-feed/shared';
+import { useState } from 'react';
 
 import { BookRequestItem } from './book-request-item';
 
+import { Pagination, PerPage } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { useMyBookRequests } from '@/hooks/read/book-requests/my-book-requests';
 import { useModalStore } from '@/store';
@@ -11,8 +13,8 @@ export const MyBookRequestsBlock = () => {
 
   const { setMode } = useModalStore();
 
-  // const [perPage, setPerPage] = useState<PerPage>(10);
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState<PerPage>(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const myRequests = data?.data;
 
@@ -47,13 +49,13 @@ export const MyBookRequestsBlock = () => {
         </CardContent>
       </Card>
 
-      {/* <Pagination
+      <Pagination
         currentPage={currentPage}
         maxPages={myRequests?.totalPages || 1}
         onPerPageChange={setPerPage}
         perPage={perPage}
         setCurrentPage={setCurrentPage}
-      /> */}
+      />
     </>
   );
 };
