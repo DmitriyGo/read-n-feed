@@ -35,6 +35,30 @@ export class ReadingProgress {
     return this.props.metadata;
   }
 
+  getPageNumber(): number | null {
+    return this.props.metadata?.['pageNumber'] || null;
+  }
+
+  getTotalPages(): number | null {
+    return this.props.metadata?.['totalPages'] || null;
+  }
+
+  getPosition(): string | null {
+    return this.props.metadata?.['position'] || null;
+  }
+
+  setPageNumber(pageNumber: number): void {
+    this.updateMetadata({ pageNumber });
+  }
+
+  setTotalPages(totalPages: number): void {
+    this.updateMetadata({ totalPages });
+  }
+
+  setPosition(position: string): void {
+    this.updateMetadata({ position });
+  }
+
   updateProgress(newProgress: number) {
     this.props.progress = Math.max(0, Math.min(100, newProgress));
     this.props.updatedAt = new Date();

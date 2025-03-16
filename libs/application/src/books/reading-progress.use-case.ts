@@ -12,26 +12,11 @@ import {
 } from '@read-n-feed/domain';
 import { v4 as uuidv4 } from 'uuid';
 
-export class SaveReadingProgressDto {
-  bookId: string;
-  progress: number; // 0-100 percentage
-  pageNumber?: number;
-  totalPages?: number;
-  deviceId?: string;
-  position?: string; // For formats like EPUB where position might be a CFI
-}
-
-export class ReadingProgressResponseDto {
-  id: string;
-  userId: string;
-  bookId: string;
-  progress: number;
-  pageNumber?: number;
-  totalPages?: number;
-  deviceId?: string;
-  position?: string;
-  updatedAt: Date;
-}
+import { handleUseCaseError } from '../common';
+import {
+  ReadingProgressResponseDto,
+  SaveReadingProgressDto,
+} from './dto/reading-progress.dto';
 
 @Injectable()
 export class ReadingProgressUseCase {
@@ -129,27 +114,10 @@ export class ReadingProgressUseCase {
 
       return response;
     } catch (error) {
-      // Re-throw known exceptions
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-
-      // Log and wrap other errors
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      this.logger.error(`Error saving reading progress: ${errorMessage}`);
-      throw new BadRequestException(
-        `Failed to save reading progress: ${errorMessage}`,
-      );
+      return handleUseCaseError(error, 'saving reading progress', this.logger);
     }
   }
 
-  /**
-   * Get the latest reading progress for a book
-   */
   async getProgress(
     userId: string,
     bookId: string,
@@ -170,22 +138,10 @@ export class ReadingProgressUseCase {
 
       return this.toResponseDto(progress);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      this.logger.error(`Error getting reading progress: ${errorMessage}`);
-      throw new BadRequestException(
-        `Failed to get reading progress: ${errorMessage}`,
-      );
+      return handleUseCaseError(error, 'getting reading progress', this.logger);
     }
   }
 
-  /**
-   * Get reading progress for all devices for a book
-   */
   async getAllProgress(
     userId: string,
     bookId: string,
@@ -204,31 +160,22 @@ export class ReadingProgressUseCase {
 
       return progressEntries.map((entry) => this.toResponseDto(entry));
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      this.logger.error(`Error getting all reading progress: ${errorMessage}`);
-      throw new BadRequestException(
-        `Failed to get reading progress: ${errorMessage}`,
+      return handleUseCaseError(
+        error,
+        'getting all reading progress',
+        this.logger,
       );
     }
   }
 
-  /**
-   * Get all books the user has started reading
-   */
   async getInProgressBooks(userId: string): Promise<string[]> {
     try {
       return this.progressRepo.findAllBooksByUser(userId);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      this.logger.error(`Error getting in-progress books: ${errorMessage}`);
-      throw new BadRequestException(
-        `Failed to get in-progress books: ${errorMessage}`,
+      return handleUseCaseError(
+        error,
+        'getting in-progress books',
+        this.logger,
       );
     }
   }
