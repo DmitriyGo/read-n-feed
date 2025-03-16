@@ -1,9 +1,11 @@
 import { BookResponseDto } from '@read-n-feed/application';
 
-import { Badges } from '../shared/badges';
-import { Description } from '../shared/description';
-
-import { Image, PartiallyLoadedContent } from '@/components/common';
+import {
+  Badges,
+  Description,
+  Image,
+  PartiallyLoadedContent,
+} from '@/components/common';
 import { Card, CardContent, CardHeader } from '@/components/ui';
 
 export const BookDetails = ({ book }: { book?: BookResponseDto }) => {

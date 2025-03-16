@@ -1,4 +1,6 @@
+export * from './badges';
 export * from './base-tooltip';
+export * from './description';
 export * from './image';
 export * from './layout';
 export * from './loader';

@@ -2,9 +2,11 @@ import { BookResponseDto } from '@read-n-feed/application';
 import { Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { Description } from '../shared/description';
-
-import { Image, PartiallyLoadedContent } from '@/components/common';
+import {
+  Description,
+  Image,
+  PartiallyLoadedContent,
+} from '@/components/common';
 import {
   Card,
   CardContent,

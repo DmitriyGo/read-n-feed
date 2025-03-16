@@ -1,6 +1,4 @@
-import { Badges } from '../books/shared/badges';
-
-import { PartiallyLoadedContent } from '@/components/common';
+import { Badges, PartiallyLoadedContent } from '@/components/common';
 import { Card, CardContent, CardHeader, Avatar, Badge } from '@/components/ui';
 import { useGetProfile } from '@/hooks/read';
 

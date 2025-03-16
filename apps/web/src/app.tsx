@@ -7,7 +7,6 @@ import {
 
 import { useAuth } from './hooks';
 import { axiosSecure } from './lib';
-import { MyRequestsPage } from './pages/requests/my-requests';
 import { useAuthStore, useFilterStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
@@ -18,6 +17,7 @@ import {
   NoFoundPage,
   BookDetailsPage,
   BookSearchPage,
+  MyBookRequestsPage,
 } from '@/pages';
 
 export function App() {
@@ -62,7 +62,7 @@ export function App() {
 
           <RouteComponent
             path={Route.Requests.MyRequests}
-            element={<MyRequestsPage />}
+            element={<MyBookRequestsPage />}
           />
         </RouteComponent>
 

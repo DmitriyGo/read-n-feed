@@ -2,10 +2,12 @@ import { BookRequestResponseDto } from '@read-n-feed/application';
 import { format } from 'date-fns';
 import { FileEdit } from 'lucide-react';
 
-import { Badges } from '../books/shared/badges';
-import { Description } from '../books/shared/description';
-
-import { Image, PartiallyLoadedContent } from '@/components/common';
+import {
+  Badges,
+  Description,
+  Image,
+  PartiallyLoadedContent,
+} from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { useModalStore } from '@/store';
 
