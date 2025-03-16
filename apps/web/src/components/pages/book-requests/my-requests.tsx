@@ -3,7 +3,7 @@ import { isDefined } from '@read-n-feed/shared';
 import { BookRequestItem } from './book-request-item';
 
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { useMyBookRequests } from '@/hooks/read/book-requests';
+import { useMyBookRequests } from '@/hooks/read/book-requests/my-book-requests';
 import { useModalStore } from '@/store';
 
 export const MyBookRequestsBlock = () => {
@@ -17,7 +17,7 @@ export const MyBookRequestsBlock = () => {
   const myRequests = data?.data;
 
   const handleCreateRequest = () => {
-    setMode('CreateRequestForUpload');
+    setMode('CreateBookRequest');
   };
 
   return (

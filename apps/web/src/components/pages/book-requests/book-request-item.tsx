@@ -1,11 +1,13 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
 import { format } from 'date-fns';
+import { FileEdit } from 'lucide-react';
 
 import { Badges } from '../books/shared/badges';
 import { Description } from '../books/shared/description';
 
 import { Image, PartiallyLoadedContent } from '@/components/common';
-import { Badge, Card, CardContent, CardHeader } from '@/components/ui';
+import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
+import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
   return date ? format(new Date(date), 'MMM d, yyyy') : '';
@@ -16,6 +18,13 @@ export const BookRequestItem = ({
 }: {
   bookRequest: BookRequestResponseDto;
 }) => {
+  const { setMode, setParam } = useModalStore();
+
+  const handleEdit = () => {
+    setMode('UpdateBookRequest');
+    setParam('requestId', bookRequest.id);
+  };
+
   return (
     <Card className="w-fit">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -24,17 +33,24 @@ export const BookRequestItem = ({
           className="!text-2xl font-semibold [&>*]:!text-white"
           content={bookRequest?.title}
         />
-        <Badge
-          variant={
-            bookRequest.status === 'APPROVED'
-              ? 'default'
-              : bookRequest.status === 'PENDING'
-                ? 'outline'
-                : 'destructive'
-          }
-        >
-          {bookRequest.status}
-        </Badge>
+
+        <div className="gap-4 items-center flex justify-center">
+          <Badge
+            variant={
+              bookRequest.status === 'APPROVED'
+                ? 'default'
+                : bookRequest.status === 'PENDING'
+                  ? 'outline'
+                  : 'destructive'
+            }
+          >
+            {bookRequest.status}
+          </Badge>
+
+          <Button variant="outline" onClick={handleEdit}>
+            <FileEdit />
+          </Button>
+        </div>
       </CardHeader>
 
       <CardContent className="flex flex-row gap-4">

@@ -1,6 +1,6 @@
 import {
   BookRequestResponseDto,
-  CreateBookRequestDto,
+  UpdateBookRequestDto,
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -8,14 +8,20 @@ import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useCreateBookRequest = () => {
+export const useUpdateBookRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateBookRequestDto) => {
-      await axiosSecure.post<BookRequestResponseDto>(
-        ApiRoute.Requests.Create,
-        data,
+    mutationFn: async ({
+      dto,
+      id,
+    }: {
+      dto: UpdateBookRequestDto;
+      id: string;
+    }) => {
+      await axiosSecure.patch<BookRequestResponseDto>(
+        ApiRoute.Requests.Update(id),
+        dto,
       );
     },
     onSuccess: () => {

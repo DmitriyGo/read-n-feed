@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { BookRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
@@ -15,7 +17,7 @@ import {
   FormMessage,
   Textarea,
 } from '@/components/ui';
-import { useCreateBookRequest } from '@/hooks/write/requests';
+import { useBookRequestById, useUpdateBookRequest } from '@/hooks';
 import { clearObject } from '@/lib';
 import { useModalStore } from '@/store';
 
@@ -31,9 +33,17 @@ const formSchema = z.object({
 
 type CreateRequestSchema = z.infer<typeof formSchema>;
 
-export function CreateRequestBookModal() {
-  const { mutateAsync: createRequest } = useCreateBookRequest();
-  const { setMode } = useModalStore();
+export function UpdateRequestBookModal() {
+  const { mutateAsync: updateRequest } = useUpdateBookRequest();
+  const { setMode, params } = useModalStore();
+
+  const requestId = params['requestId'] as string;
+
+  const { data } = useBookRequestById({
+    id: requestId,
+    enabled:
+      isDefined(requestId) && typeof requestId === 'string' && requestId !== '',
+  });
 
   const form = useForm<CreateRequestSchema>({
     resolver: zodResolver(formSchema),
@@ -52,11 +62,14 @@ export function CreateRequestBookModal() {
     try {
       const data = clearObject(values) as CreateRequestSchema;
 
-      await createRequest({
-        ...data,
-        authorNames: data.authorNames?.split(',').map((name) => name.trim()),
-        genreNames: data.genreNames?.split(',').map((name) => name.trim()),
-        tagLabels: data.tagLabels?.split(',').map((name) => name.trim()),
+      await updateRequest({
+        id: requestId,
+        dto: {
+          ...data,
+          authorNames: data.authorNames?.split(',').map((name) => name.trim()),
+          genreNames: data.genreNames?.split(',').map((name) => name.trim()),
+          tagLabels: data.tagLabels?.split(',').map((name) => name.trim()),
+        },
       });
 
       toast.success('Request created successfully');
@@ -65,6 +78,20 @@ export function CreateRequestBookModal() {
       toast.error(error as string);
     }
   };
+
+  useEffect(() => {
+    if (isDefined(data?.data)) {
+      form.reset({
+        authorNames: data.data?.authorNames?.join(',') ?? '',
+        description: data.data?.description ?? '',
+        genreNames: data.data?.genreNames?.join(',') ?? '',
+        publicationDate: String(data.data?.publicationDate ?? ''),
+        publisher: data.data?.publisher ?? '',
+        tagLabels: data.data?.tagLabels?.join(',') ?? '',
+        title: data.data?.title ?? '',
+      });
+    }
+  }, [data, form]);
 
   return (
     <Form {...form}>

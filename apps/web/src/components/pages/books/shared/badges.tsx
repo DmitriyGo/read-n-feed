@@ -21,7 +21,7 @@ export const Badges = ({
       {isDefined(tags) ? (
         <>
           {tags.slice(0, showMore ? tags.length : maxLength).map((tag) => (
-            <Badge>{tag}</Badge>
+            <Badge key={tag}>{tag}</Badge>
           ))}
 
           {tags.length > maxLength && (
