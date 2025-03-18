@@ -1,5 +1,5 @@
-import { MyBookRequestsBlock } from '@/components/pages/book-requests/my-requests';
+import { AdminBookRequestsBlock } from '@/components/pages';
 
-export const BookRequestsPage = () => {
-  return <MyBookRequestsBlock />;
+export const AdminBookRequestsPage = () => {
+  return <AdminBookRequestsBlock />;
 };

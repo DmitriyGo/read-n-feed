@@ -1,3 +1,3 @@
 export * from './book-request-item';
-export * from './get-request';
-export * from './my-requests';
+export * from './admin-book-request';
+export * from './my-book-requests';

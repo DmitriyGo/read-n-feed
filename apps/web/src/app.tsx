@@ -1,3 +1,5 @@
+import { UserResponseDto } from '@read-n-feed/application';
+import { User } from '@read-n-feed/domain';
 import { useLayoutEffect, useRef } from 'react';
 import {
   Routes,
@@ -18,6 +20,7 @@ import {
   BookDetailsPage,
   BookSearchPage,
   MyBookRequestsPage,
+  AdminBookRequestsPage,
 } from '@/pages';
 
 export function App() {
@@ -63,6 +66,13 @@ export function App() {
           <RouteComponent
             path={Route.Requests.MyRequests}
             element={<MyBookRequestsPage />}
+          />
+        </RouteComponent>
+
+        <RouteComponent element={<RequiresRoleLayout userRole="ADMIN" />}>
+          <RouteComponent
+            path={Route.Admin.BookRequests}
+            element={<AdminBookRequestsPage />}
           />
         </RouteComponent>
 

@@ -5,10 +5,10 @@ import { BookRequestItem } from './book-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { useMyBookRequests } from '@/hooks/read/book-requests/my-book-requests';
+import { useMyBookRequests } from '@/hooks';
 import { useModalStore } from '@/store';
 
-export const BookRequestsBlock = () => {
+export const MyBookRequestsBlock = () => {
   const { data } = useMyBookRequests();
 
   const { setMode } = useModalStore();

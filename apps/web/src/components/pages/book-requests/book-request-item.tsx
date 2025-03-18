@@ -1,6 +1,6 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
 import { format } from 'date-fns';
-import { FileEdit } from 'lucide-react';
+import { Check, FileEdit } from 'lucide-react';
 
 import {
   Badges,
@@ -9,6 +9,7 @@ import {
   PartiallyLoadedContent,
 } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
+import { useHasRole, useVerifyBookRequest } from '@/hooks';
 import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
@@ -22,9 +23,22 @@ export const BookRequestItem = ({
 }) => {
   const { setMode, setParam } = useModalStore();
 
+  // const { hasRole: isAdmin } = useHasRole('ADMIN');
+
+  const { mutate } = useVerifyBookRequest();
+
   const handleEdit = () => {
     setMode('UpdateBookRequest');
     setParam('requestId', bookRequest.id);
+  };
+
+  const handleVerify = () => {
+    mutate({
+      requestId: bookRequest.id,
+      body: {
+        status: 'APPROVED',
+      },
+    });
   };
 
   return (
@@ -52,6 +66,12 @@ export const BookRequestItem = ({
           <Button variant="outline" onClick={handleEdit}>
             <FileEdit />
           </Button>
+
+          {/* {isAdmin && ( */}
+          <Button variant="outline" onClick={handleVerify}>
+            <Check />
+          </Button>
+          {/* )} */}
         </div>
       </CardHeader>
 
