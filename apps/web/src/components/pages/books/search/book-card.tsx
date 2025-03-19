@@ -1,13 +1,15 @@
+import { Thumb } from '@radix-ui/react-switch';
 import { BookResponseDto } from '@read-n-feed/application';
-import { Star } from 'lucide-react';
+import { Heart, Star, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import {
+  BookCover,
   Description,
-  Image,
   PartiallyLoadedContent,
 } from '@/components/common';
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -33,16 +35,13 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="w-fit h-fit p-4" onClick={handleClick}>
-            <Image
-              src={book.coverImageUrl}
-              alt={book.title}
-              className="object-cover !min-w-[130px] !h-[190px] md:!w-[155px] md:!h-[220px]"
-            />
-            <div className="flex flex-col justify-between">
-              <h2 className="text-lg">{book.title}</h2>
+            <BookCover book={book} />
+
+            <div className="flex flex-col space-y-1 justify-between">
+              <h2>{book.title}</h2>
               <p className="flex flex-row items-center gap-1">
-                <Star className="text-sm" />
-                <span>{book.averageRating}</span>
+                <Star />
+                <span>{book.averageRating ?? '---'}</span>
               </p>
             </div>
           </div>
@@ -55,9 +54,9 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
           sideOffset={12}
           avoidCollisions
         >
-          <Card className="max-w-[90vw] md:max-w-[450px]">
+          <Card className="max-w-[90vw] md:max-w-[450px] ">
             <CardHeader>{book.title}</CardHeader>
-            <CardContent>
+            <CardContent className="space-y-2">
               <Description text={book.description} />
 
               <br />
@@ -71,6 +70,21 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
                 label="Total likes"
                 content={book.totalLikes}
               />
+
+              <div className="flex flow-row justify-between gap-2">
+                <Button
+                  variant={book.liked === true ? 'outline' : 'ghost'}
+                  className="w-full"
+                >
+                  <ThumbsUp />
+                </Button>
+                <Button
+                  variant={book.liked === false ? 'outline' : 'ghost'}
+                  className="w-full"
+                >
+                  <ThumbsDown />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TooltipContent>

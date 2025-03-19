@@ -2,8 +2,8 @@ import { BookResponseDto } from '@read-n-feed/application';
 
 import {
   Badges,
+  BookCover,
   Description,
-  Image,
   PartiallyLoadedContent,
 } from '@/components/common';
 import { Card, CardContent, CardHeader } from '@/components/ui';
@@ -20,12 +20,7 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
       </CardHeader>
 
       <CardContent className="flex flex-row gap-4">
-        <Image
-          src={book?.coverImageUrl}
-          alt={book?.title}
-          width={175}
-          height={250}
-        />
+        <BookCover book={book} />
 
         <div className="space-y-2">
           <Description text={book?.description} />

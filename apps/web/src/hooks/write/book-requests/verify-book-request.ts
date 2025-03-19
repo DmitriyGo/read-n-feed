@@ -38,6 +38,7 @@ export const useVerifyBookRequest = () => {
       toast.success('Book request verified successfully');
     },
     onError: (error) => {
+      toast.error(String(error));
       console.error(error);
     },
   });

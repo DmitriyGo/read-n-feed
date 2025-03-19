@@ -1,5 +1,4 @@
 import { UserRole } from '@read-n-feed/domain';
-import { isDefined } from '@read-n-feed/shared';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -36,5 +35,10 @@ export const RequiresRoleLayout = ({ userRole }: { userRole: UserRole }) => {
     }
   }, [hasRole, isLoadingOrRefetching, isReady, navigate, userRole]);
 
-  return isLoadingOrRefetching ? <FullPageLoader /> : <Outlet />;
+  return (
+    <>
+      {(isLoadingOrRefetching || !isReady) && <FullPageLoader />}
+      <Outlet />
+    </>
+  );
 };

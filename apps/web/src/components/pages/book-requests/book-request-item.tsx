@@ -4,8 +4,8 @@ import { Check, FileEdit } from 'lucide-react';
 
 import {
   Badges,
+  BookCover,
   Description,
-  Image,
   PartiallyLoadedContent,
 } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
@@ -23,7 +23,7 @@ export const BookRequestItem = ({
 }) => {
   const { setMode, setParam } = useModalStore();
 
-  // const { hasRole: isAdmin } = useHasRole('ADMIN');
+  const { hasRole: isAdmin } = useHasRole('ADMIN');
 
   const { mutate } = useVerifyBookRequest();
 
@@ -67,21 +67,16 @@ export const BookRequestItem = ({
             <FileEdit />
           </Button>
 
-          {/* {isAdmin && ( */}
-          <Button variant="outline" onClick={handleVerify}>
-            <Check />
-          </Button>
-          {/* )} */}
+          {isAdmin && (
+            <Button variant="outline" onClick={handleVerify}>
+              <Check />
+            </Button>
+          )}
         </div>
       </CardHeader>
 
       <CardContent className="flex lg:flex-row flex-col gap-4">
-        <Image
-          src={bookRequest?.coverImageUrl}
-          alt={bookRequest?.title}
-          width={175}
-          height={250}
-        />
+        <BookCover book={bookRequest} />
 
         <div>
           <Description text={bookRequest?.description} />
@@ -120,19 +115,10 @@ export const BookRequestItem = ({
           />
 
           {bookRequest.status === 'APPROVED' && (
-            <>
-              <PartiallyLoadedContent
-                label="Approved on"
-                content={formatDate(bookRequest?.approvedAt)}
-              />
-
-              {bookRequest.resultingBookId && (
-                <PartiallyLoadedContent
-                  label="Resulting Book ID"
-                  content={bookRequest.resultingBookId}
-                />
-              )}
-            </>
+            <PartiallyLoadedContent
+              label="Approved on"
+              content={formatDate(bookRequest?.approvedAt)}
+            />
           )}
 
           {bookRequest.status === 'REJECTED' && (
