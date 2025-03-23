@@ -7,6 +7,7 @@ export * from './users/user.dto';
 
 export * from './books/book.use-case';
 export * from './books/book-file.use-case';
+export * from './books/book-file-request.use-case';
 export * from './books/book-request.use-case';
 export * from './books/reading-progress.use-case';
 export * from './books/dto/reading-progress.dto';

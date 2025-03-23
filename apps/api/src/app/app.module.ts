@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthorModule } from './author/author.module';
 import { BookModule } from './book/book.module';
 import { BookFileModule } from './book-file/book-file.module';
+import { BookFileRequestModule } from './book-file-request/book-file-request.module';
 import { BookRequestModule } from './book-request/book-request.module';
 import { CommentModule } from './comment/comment.module';
 import { ApiConfigModule } from './config/config.module';
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     ReadingProgressModule,
     BookRequestModule,
     BookFileModule,
+    BookFileRequestModule,
     CommentModule,
     AuthorModule,
     GenreModule,

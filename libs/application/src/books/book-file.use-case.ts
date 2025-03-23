@@ -10,6 +10,7 @@ import {
 import {
   IBookFileRepository,
   IBookRepository,
+  IBookRequestRepository,
   BookFile,
   BookFormat,
   IFileStorageService,
@@ -35,6 +36,9 @@ export class BookFileUseCase {
 
     @Inject('IBookRepository')
     private readonly bookRepo: IBookRepository,
+
+    @Inject('IBookRequestRepository')
+    private readonly bookRequestRepo: IBookRequestRepository,
 
     @Inject('IFileStorageService')
     private readonly fileStorage: IFileStorageService,
@@ -167,10 +171,34 @@ export class BookFileUseCase {
     originalFilename: string,
   ): Promise<BookFileResponseDto> {
     try {
-      // Check if book exists
-      const book = await this.bookRepo.findById(dto.bookId);
-      if (!book) {
-        throw new NotFoundException(`Book with id=${dto.bookId} not found`);
+      if (!dto.bookId && !dto.bookRequestId) {
+        throw new BadRequestException(
+          'Either bookId or bookRequestId must be provided',
+        );
+      }
+
+      // Check if entity exists
+      if (dto.bookId) {
+        const book = await this.bookRepo.findById(dto.bookId);
+        if (!book) {
+          throw new NotFoundException(`Book with id=${dto.bookId} not found`);
+        }
+      } else if (dto.bookRequestId) {
+        const bookRequest = await this.bookRequestRepo.findById(
+          dto.bookRequestId,
+        );
+        if (!bookRequest) {
+          throw new NotFoundException(
+            `Book request with id=${dto.bookRequestId} not found`,
+          );
+        }
+
+        // Additional check for book request status
+        if (bookRequest.status !== 'PENDING') {
+          throw new BadRequestException(
+            `Files can only be uploaded for pending book requests. This request is ${bookRequest.status.toLowerCase()}.`,
+          );
+        }
       }
 
       // Validate file size
@@ -200,9 +228,9 @@ export class BookFileUseCase {
       // For other formats, we'll add validation later
       // TODO: Add validation for EPUB, FB2, etc.
 
-      // Generate a filename that preserves the original extension
+      // Generate a unique filename
       const extension = `.${dto.format.toLowerCase()}`;
-      const filename = `${dto.bookId}_${uuidv4()}${extension}`;
+      const filename = `${uuidv4()}${extension}`;
 
       // Save file to storage
       const filePath = await this.fileStorage.saveFile(
@@ -215,6 +243,7 @@ export class BookFileUseCase {
       const bookFile = new BookFile({
         id: uuidv4(),
         bookId: dto.bookId,
+        bookRequestId: dto.bookRequestId,
         format: BookFormat.create(dto.format),
         filePath,
         fileSize: fileBuffer.length,
@@ -376,6 +405,70 @@ export class BookFileUseCase {
       this.logger.error(`Error finding book files: ${errorMessage}`);
       throw new BadRequestException(
         `Failed to fetch book files: ${errorMessage}`,
+      );
+    }
+  }
+
+  async findBookRequestFiles(
+    bookRequestId: string,
+  ): Promise<BookFileResponseDto[]> {
+    try {
+      // Check if book request exists
+      const bookRequest = await this.bookRequestRepo.findById(bookRequestId);
+      if (!bookRequest) {
+        throw new NotFoundException(
+          `Book request with id=${bookRequestId} not found`,
+        );
+      }
+
+      const files = await this.bookFileRepo.findAllByBookRequest(bookRequestId);
+
+      // Get URLs for all files
+      const results = await Promise.all(
+        files.map(async (file) => {
+          const url = await this.fileStorage.getFileUrl(file.filePath);
+          return toBookFileResponseDto(file, true, url);
+        }),
+      );
+
+      return results;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error finding book request files: ${errorMessage}`);
+      throw new BadRequestException(
+        `Failed to fetch book request files: ${errorMessage}`,
+      );
+    }
+  }
+
+  async associateFilesWithBook(
+    fileIds: string[],
+    bookId: string,
+  ): Promise<void> {
+    try {
+      // Check if book exists
+      const book = await this.bookRepo.findById(bookId);
+      if (!book) {
+        throw new NotFoundException(`Book with id=${bookId} not found`);
+      }
+
+      // Associate files with book
+      await this.bookFileRepo.associateWithBook(fileIds, bookId);
+
+      this.logger.log(
+        `Associated files ${fileIds.join(', ')} with book ${bookId}`,
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error associating files with book: ${errorMessage}`);
+      throw new BadRequestException(
+        `Failed to associate files with book: ${errorMessage}`,
       );
     }
   }

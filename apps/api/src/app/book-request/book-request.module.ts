@@ -3,6 +3,7 @@ import { BookRequestUseCase } from '@read-n-feed/application';
 import {
   PrismaAuthorRepository,
   PrismaBookRepository,
+  PrismaBookFileRepository,
   PrismaBookRequestRepository,
   PrismaGenreRepository,
   PrismaTagRepository,
@@ -10,8 +11,10 @@ import {
 } from '@read-n-feed/data-access';
 
 import { BookRequestController } from './book-request.controller';
+import { BookFileModule } from '../book-file/book-file.module';
 
 @Module({
+  imports: [BookFileModule],
   controllers: [BookRequestController],
   providers: [
     // Application Use Cases
@@ -41,6 +44,10 @@ import { BookRequestController } from './book-request.controller';
     {
       provide: 'ITagRepository',
       useClass: PrismaTagRepository,
+    },
+    {
+      provide: 'IBookFileRepository',
+      useClass: PrismaBookFileRepository,
     },
   ],
   exports: [BookRequestUseCase],

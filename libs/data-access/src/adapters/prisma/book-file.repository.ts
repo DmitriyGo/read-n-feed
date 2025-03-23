@@ -14,6 +14,7 @@ export class PrismaBookFileRepository implements IBookFileRepository {
       data: {
         id: data.id,
         bookId: data.bookId,
+        bookRequestId: data.bookRequestId,
         format: data.format,
         filePath: data.filePath,
         fileSize: data.fileSize,
@@ -35,6 +36,8 @@ export class PrismaBookFileRepository implements IBookFileRepository {
     await this.prisma.bookFile.update({
       where: { id: data.id },
       data: {
+        bookId: data.bookId,
+        bookRequestId: data.bookRequestId,
         format: data.format,
         filePath: data.filePath,
         fileSize: data.fileSize,
@@ -65,6 +68,13 @@ export class PrismaBookFileRepository implements IBookFileRepository {
     return records.map((r) => this.toDomain(r));
   }
 
+  async findAllByBookRequest(bookRequestId: string): Promise<BookFile[]> {
+    const records = await this.prisma.bookFile.findMany({
+      where: { bookRequestId },
+    });
+    return records.map((r) => this.toDomain(r));
+  }
+
   async delete(fileId: string): Promise<void> {
     await this.prisma.bookFile.delete({ where: { id: fileId } });
   }
@@ -74,6 +84,33 @@ export class PrismaBookFileRepository implements IBookFileRepository {
       where: { checksum },
     });
     return records.map((r) => this.toDomain(r));
+  }
+
+  async associateWithBook(fileIds: string[], bookId: string): Promise<void> {
+    await this.prisma.bookFile.updateMany({
+      where: { id: { in: fileIds } },
+      data: {
+        bookId: bookId,
+        bookRequestId: null,
+      },
+    });
+  }
+
+  async findByBookId(bookId: string): Promise<BookFile[]> {
+    const records = await this.prisma.bookFile.findMany({
+      where: { bookId },
+    });
+    return records.map((r) => this.toDomain(r));
+  }
+
+  async findByRequestId(bookRequestId: string): Promise<BookFile[]> {
+    const bookFiles = await this.prisma.bookFile.findMany({
+      where: {
+        bookRequestId,
+      },
+    });
+
+    return bookFiles.map((file) => this.toDomain(file));
   }
 
   private toDomain(record: BookFileFromDb): BookFile {
