@@ -1,8 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { useNavigate } from 'react-router-dom';
 
-import { Conditional } from '../conditional';
-
 import {
   Avatar,
   Button,
@@ -34,22 +32,31 @@ export const Profile = () => {
     navigate(Route.Profile);
   };
 
+  const handleMyRequests = () => {
+    navigate(Route.Requests.MyRequests);
+  };
+
   return (
     <Popover>
       <PopoverTrigger>
         <Avatar src={data?.data.avatarUrl} />
       </PopoverTrigger>
+
       <PopoverContent className="flex flex-col gap-4" align="end">
-        <Conditional condition={isDefined(accessToken)}>
-          <Conditional.True>
+        {isDefined(accessToken) ? (
+          <>
             <Button onClick={handleSeeProfile}>See Profile</Button>
+
+            <Button variant="outline" onClick={handleMyRequests}>
+              My Requests
+            </Button>
 
             <Button onClick={handleLogout} variant="destructive">
               LogOut
             </Button>
-          </Conditional.True>
-
-          <Conditional.False>
+          </>
+        ) : (
+          <>
             <Button
               variant="secondary"
               onClick={() => {
@@ -66,8 +73,8 @@ export const Profile = () => {
             >
               SignUp
             </Button>
-          </Conditional.False>
-        </Conditional>
+          </>
+        )}
       </PopoverContent>
     </Popover>
   );

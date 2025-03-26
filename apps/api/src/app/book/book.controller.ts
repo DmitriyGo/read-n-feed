@@ -36,6 +36,7 @@ import {
 import { JwtPayload } from '@read-n-feed/domain';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
+import { Public } from '../auth/guards/public.decorator';
 import { AdminOnly } from '../auth/guards/roles.decorator';
 
 @ApiBearerAuth()
@@ -68,6 +69,7 @@ export class BookController {
     description: 'Paginated books with metadata',
     type: PaginatedBooksResponseDto,
   })
+  @Public()
   async searchBooks(
     @Query() query: SearchBooksDto,
     @CurrentUser() user: JwtPayload,

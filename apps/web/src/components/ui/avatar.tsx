@@ -1,6 +1,7 @@
 'use client';
 
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
+import { User2 } from 'lucide-react';
 import {
   ComponentPropsWithoutRef,
   ElementRef,
@@ -45,7 +46,7 @@ const Avatar = forwardRef<
         {isLoading === true || src === undefined ? (
           <Skeleton className="size-full" />
         ) : (
-          (fallback ?? 'NOT GIVEN')
+          (fallback ?? <User2 className="size-[60%]" />)
         )}
       </AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>

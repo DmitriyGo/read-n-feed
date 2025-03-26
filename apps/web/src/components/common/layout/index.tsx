@@ -1,14 +1,13 @@
 import { UserRole } from '@read-n-feed/domain';
-import { isDefined } from '@read-n-feed/shared';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import { Header } from './header';
+import { FullPageLoader } from '../loader';
 import { ModalManager } from '../modal-manager';
 
 import { Route } from '@/constants';
-import { useAuth } from '@/hooks';
-import { useGetProfile } from '@/hooks/read';
+import { useHasRole } from '@/hooks';
 
 export const Layout = () => {
   return (
@@ -24,24 +23,22 @@ export const Layout = () => {
   );
 };
 
-export const RequiresRoleLayout = ({ role }: { role: UserRole }) => {
+export const RequiresRoleLayout = ({ userRole }: { userRole: UserRole }) => {
   const navigate = useNavigate();
-  const { isReady } = useAuth();
-  const { data: profile, isLoading, isRefetching } = useGetProfile();
-  const isLoadingOrRefetching = isLoading || isRefetching;
+  const { isReady, hasRole, isLoadingOrRefetching } = useHasRole(userRole);
 
   useEffect(() => {
     if (isReady && !isLoadingOrRefetching) {
-      const hasRequiredRole =
-        isDefined(profile) && isDefined(profile.data.roles)
-          ? profile.data.roles.some((userRole) => userRole === role)
-          : false;
-
-      if (!hasRequiredRole) {
+      if (!hasRole) {
         navigate(Route.Home);
       }
     }
-  }, [isLoadingOrRefetching, isReady, navigate, profile, role]);
+  }, [hasRole, isLoadingOrRefetching, isReady, navigate, userRole]);
 
-  return <Outlet />;
+  return (
+    <>
+      {(isLoadingOrRefetching || !isReady) && <FullPageLoader />}
+      <Outlet />
+    </>
+  );
 };

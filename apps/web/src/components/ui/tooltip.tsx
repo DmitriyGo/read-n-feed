@@ -4,9 +4,7 @@ import * as React from 'react';
 import { cn } from '@/lib';
 
 const TooltipProvider = TooltipPrimitive.Provider;
-
 const Tooltip = TooltipPrimitive.Root;
-
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipContent = React.forwardRef<
