@@ -1,4 +1,3 @@
-// libs/domain/src/books/book-request.entity.ts
 import { BookRequestProps, BookRequestStatus } from './book-request.props';
 
 export class BookRequest {
@@ -34,6 +33,10 @@ export class BookRequest {
 
   get publisher(): string | null | undefined {
     return this.props.publisher;
+  }
+
+  get language(): string | null | undefined {
+    return this.props.language;
   }
 
   get authorNames(): string[] | null | undefined {

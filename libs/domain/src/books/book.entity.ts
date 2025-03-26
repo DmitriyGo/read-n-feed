@@ -31,6 +31,10 @@ export class Book {
     return this.props.publisher;
   }
 
+  get language() {
+    return this.props.language;
+  }
+
   get averageRating() {
     return this.props.averageRating;
   }

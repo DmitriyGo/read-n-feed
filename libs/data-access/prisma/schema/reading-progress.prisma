@@ -3,8 +3,9 @@ model ReadingProgress {
   userId    String   @map("user_id")
   bookId    String   @map("book_id")
   progress  Float // 0..100
-  deviceId  String?  @map("device_id")
+  deviceId  String   @default("") @map("device_id")
   updatedAt DateTime @updatedAt @map("updated_at")
+  metadata  Json?    @map("metadata")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)

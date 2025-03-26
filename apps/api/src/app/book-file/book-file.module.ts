@@ -4,6 +4,7 @@ import { BookFileUseCase } from '@read-n-feed/application';
 import {
   PrismaBookFileRepository,
   PrismaBookRepository,
+  PrismaBookRequestRepository,
 } from '@read-n-feed/data-access';
 import { FileStorageModule } from '@read-n-feed/infrastructure';
 
@@ -31,6 +32,10 @@ import { BookFileController } from './book-file.controller';
     {
       provide: 'IBookRepository',
       useClass: PrismaBookRepository,
+    },
+    {
+      provide: 'IBookRequestRepository',
+      useClass: PrismaBookRequestRepository,
     },
   ],
   exports: [BookFileUseCase],

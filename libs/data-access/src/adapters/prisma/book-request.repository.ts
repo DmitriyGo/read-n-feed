@@ -162,6 +162,12 @@ export class PrismaBookRequestRepository implements IBookRequestRepository {
     return this.toDomain(record);
   }
 
+  async delete(id: string): Promise<void> {
+    await this.prisma.bookRequest.delete({
+      where: { id },
+    });
+  }
+
   private toDomain(record: BookRequestFromDb): BookRequest {
     return new BookRequest({
       id: record.id,
