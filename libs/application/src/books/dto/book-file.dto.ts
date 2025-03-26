@@ -1,13 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BookFile } from '@read-n-feed/domain';
-import {
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsPositive,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsUUID } from 'class-validator';
 
 export enum BookFormatDto {
   PDF = 'PDF',
@@ -18,9 +11,21 @@ export enum BookFormatDto {
 }
 
 export class CreateBookFileDto {
-  @ApiProperty({ description: 'The ID of the book this file belongs to' })
+  @ApiPropertyOptional({
+    description:
+      'The ID of the book this file belongs to. Either bookId or bookRequestId must be provided',
+  })
   @IsUUID()
-  bookId: string;
+  @IsOptional()
+  bookId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'The ID of the book request this file belongs to. Either bookId or bookRequestId must be provided',
+  })
+  @IsUUID()
+  @IsOptional()
+  bookRequestId?: string;
 
   @ApiProperty({
     enum: BookFormatDto,
@@ -28,14 +33,25 @@ export class CreateBookFileDto {
   })
   @IsEnum(BookFormatDto)
   format: BookFormatDto;
+
+  @ApiPropertyOptional({
+    description: 'Additional metadata for the file',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  metadata?: Record<string, any>;
 }
 
 export class BookFileResponseDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
   id: string;
 
-  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
-  bookId: string;
+  @ApiPropertyOptional({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  bookId?: string | null;
+
+  @ApiPropertyOptional({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  bookRequestId?: string | null;
 
   @ApiProperty({ enum: BookFormatDto, example: 'PDF' })
   format: string;
@@ -74,6 +90,7 @@ export function toBookFileResponseDto(
   const response: BookFileResponseDto = {
     id: props.id,
     bookId: props.bookId,
+    bookRequestId: props.bookRequestId,
     format: props.format,
     fileSize: props.fileSize,
     createdAt: props.createdAt,

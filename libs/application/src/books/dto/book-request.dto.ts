@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BookRequest, BookRequestStatus } from '@read-n-feed/domain';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -10,6 +11,22 @@ import {
   IsUrl,
   MaxLength,
 } from 'class-validator';
+
+// Helper function to transform string inputs to arrays
+const transformToArray = (value: string | string[]): string[] => {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== 'string') return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [value];
+  } catch {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+};
 
 export class CreateBookRequestDto {
   @ApiProperty({
@@ -56,6 +73,7 @@ export class CreateBookRequestDto {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
+  @Transform(({ value }) => transformToArray(value))
   authorNames?: string[];
 
   @ApiPropertyOptional({
@@ -66,6 +84,7 @@ export class CreateBookRequestDto {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
+  @Transform(({ value }) => transformToArray(value))
   genreNames?: string[];
 
   @ApiPropertyOptional({
@@ -76,7 +95,35 @@ export class CreateBookRequestDto {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
+  @Transform(({ value }) => transformToArray(value))
   tagLabels?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Language of the book',
+    example: 'en',
+  })
+  @IsString()
+  @IsOptional()
+  language?: string;
+
+  // Required file information
+  @ApiProperty({
+    enum: ['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'],
+    description: 'Format of the book file',
+  })
+  @IsEnum(['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'])
+  @IsNotEmpty()
+  fileFormat: string;
+
+  @ApiPropertyOptional({
+    description: 'Language of the file (if different from book language)',
+    example: 'en',
+  })
+  @IsString()
+  @IsOptional()
+  fileLanguage?: string;
+
+  // Note: The actual file will be handled by Multer as an uploaded file
 }
 
 export class UpdateBookRequestDto {
@@ -140,6 +187,14 @@ export class UpdateBookRequestDto {
   @IsString()
   @IsOptional()
   adminNotes?: string;
+
+  @ApiPropertyOptional({
+    description: 'Language of the book',
+    example: 'en',
+  })
+  @IsString()
+  @IsOptional()
+  language?: string;
 }
 
 export class AdminReviewDto {
@@ -229,6 +284,12 @@ export class BookRequestResponseDto {
 
   @ApiPropertyOptional()
   resultingBookId?: string | null;
+
+  @ApiPropertyOptional()
+  language?: string | null;
+
+  @ApiPropertyOptional({ type: 'array', items: { type: 'object' } })
+  files?: any[] | null;
 }
 
 export class PaginatedBookRequestResponseDto {
@@ -250,9 +311,11 @@ export class PaginatedBookRequestResponseDto {
 
 export function toBookRequestResponseDto(
   request: BookRequest,
+  files?: any[],
 ): BookRequestResponseDto {
   const props = request.toPrimitives();
   return {
     ...props,
+    files: files || null,
   };
 }

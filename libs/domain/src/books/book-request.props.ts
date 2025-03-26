@@ -10,6 +10,7 @@ export interface BookRequestProps {
   coverImageUrl?: string | null;
   publicationDate?: Date | null;
   publisher?: string | null;
+  language?: string | null;
 
   // Additional request-specific fields
   authorNames?: string[] | null;
