@@ -21,6 +21,7 @@ import {
   BookSearchPage,
   MyBookRequestsPage,
   AdminBookRequestsPage,
+  ReadPage,
 } from '@/pages';
 
 export function App() {
@@ -80,10 +81,7 @@ export function App() {
           path={`${Route.Book.Details}/:id`}
           element={<BookDetailsPage />}
         />
-        <RouteComponent
-          path={Route.Book.ReadString}
-          element={<BookDetailsPage />}
-        />
+        <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
 
         <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
 

@@ -8,8 +8,8 @@ export const Route = {
   Book: {
     Details: '/book/details',
     Search: '/book/search',
-    ReadString: '/book/:bookId/:fileId',
-    Read: (bookId: string, fileId: string) => `/book/${bookId}/${fileId}`,
+    ReadString: '/read/:bookId/:fileId',
+    Read: (bookId: string, fileId: string) => `/read/${bookId}/${fileId}`,
   },
 
   Requests: {
