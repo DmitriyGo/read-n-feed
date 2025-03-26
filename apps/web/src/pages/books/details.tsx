@@ -9,10 +9,10 @@ export const BookDetailsPage = () => {
   const { data } = useBookById(id);
 
   return (
-    <div>
+    <div className="space-y-4">
       <BookDetails book={data?.data} />
 
-      <BookFiles id={id} />
+      <BookFiles bookId={id} />
     </div>
   );
 };

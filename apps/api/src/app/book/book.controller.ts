@@ -135,6 +135,7 @@ export class BookController {
     type: BookResponseDto,
   })
   @ApiNotFoundResponse({ description: 'Book not found' })
+  @Public()
   async getBook(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: JwtPayload,

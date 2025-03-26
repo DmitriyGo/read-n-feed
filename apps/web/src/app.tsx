@@ -80,6 +80,11 @@ export function App() {
           path={`${Route.Book.Details}/:id`}
           element={<BookDetailsPage />}
         />
+        <RouteComponent
+          path={Route.Book.ReadString}
+          element={<BookDetailsPage />}
+        />
+
         <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
 
         <RouteComponent path="*" element={<NoFoundPage />} />

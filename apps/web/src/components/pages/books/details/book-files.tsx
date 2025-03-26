@@ -1,19 +1,53 @@
 import { isDefined } from '@read-n-feed/shared';
+import { Link2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
+import { Card, CardContent, CardHeader } from '@/components/ui';
+import { Route } from '@/constants';
 import { useBookFilesById } from '@/hooks';
 
-export const BookFiles = ({ id }: { id?: string }) => {
-  const { data } = useBookFilesById(id);
+export const BookFiles = ({ bookId }: { bookId?: string }) => {
+  const { data } = useBookFilesById(bookId);
+
+  const navigate = useNavigate();
+
+  const handleClick = (fileId: string) => {
+    if (!isDefined(bookId)) {
+      return;
+    }
+
+    navigate(Route.Book.Read(bookId, fileId));
+  };
 
   return (
-    <div>
-      {isDefined(data?.data) &&
-        data.data.map((bookFile) => (
-          <div>
-            {bookFile.filename} - {bookFile.format} -{' '}
-            <a href={bookFile.downloadUrl}>URL</a>
-          </div>
-        ))}
-    </div>
+    <Card>
+      <CardHeader>Book Files</CardHeader>
+
+      <CardContent className="space-y-4">
+        {isDefined(data?.data) &&
+          data.data.map((bookFile) => (
+            <div
+              key={bookFile.id}
+              onClick={() => handleClick(bookFile.id)}
+              className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
+            >
+              <p>
+                File name:&nbsp;
+                {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
+                  ? bookFile.metadata['Title']
+                  : bookFile.filename}
+              </p>
+
+              <p className="text-center">Format: {bookFile.format}</p>
+
+              <div className="flex justify-end">
+                <a href={bookFile.downloadUrl}>
+                  <Link2 />
+                </a>
+              </div>
+            </div>
+          ))}
+      </CardContent>
+    </Card>
   );
 };

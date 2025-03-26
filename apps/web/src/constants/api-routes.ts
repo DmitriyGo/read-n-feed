@@ -1,4 +1,4 @@
-import { StringRecord } from '@/types';
+import { RouteValue, StringRecord } from '@/types';
 
 enum ApiControllers {
   Auth = 'auth',
@@ -11,13 +11,6 @@ enum ApiControllers {
   Genres = 'genres',
   Tags = 'tags',
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type RouteFunction = (...args: any[]) => string;
-
-type ApiRouteValue = StringRecord<
-  string | RouteFunction | StringRecord<string | RouteFunction>
->;
 
 export const ApiRoute = {
   Auth: {
@@ -112,4 +105,4 @@ export const ApiRoute = {
     Update: (tagId: string) => `${ApiControllers.Tags}/${tagId}`,
     Delete: (tagId: string) => `${ApiControllers.Tags}/${tagId}`,
   },
-} as const satisfies Record<keyof typeof ApiControllers, ApiRouteValue>;
+} as const satisfies Record<keyof typeof ApiControllers, RouteValue>;

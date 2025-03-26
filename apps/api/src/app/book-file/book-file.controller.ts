@@ -34,6 +34,7 @@ import { JwtPayload } from '@read-n-feed/domain';
 import { Response } from 'express';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
+import { Public } from '../auth/guards/public.decorator';
 import { AdminOnly } from '../auth/guards/roles.decorator';
 
 @ApiBearerAuth()
@@ -212,6 +213,7 @@ export class BookFileController {
     description: 'Returns all files for the specified book',
     type: [BookFileResponseDto],
   })
+  @Public()
   async getBookFiles(
     @Param('bookId', ParseUUIDPipe) bookId: string,
   ): Promise<BookFileResponseDto[]> {
