@@ -1,26 +1,44 @@
 import { Module } from '@nestjs/common';
+import { MulterModule } from '@nestjs/platform-express';
 import { BookFileRequestUseCase } from '@read-n-feed/application';
 import {
+  PrismaBookFileRequestRepository,
+  PrismaBookRepository,
   PrismaBookFileRepository,
-  PrismaBookRequestRepository,
 } from '@read-n-feed/data-access';
+import { FileStorageModule } from '@read-n-feed/infrastructure';
 
-import { BookFileRequestController } from './book-file-request.controller';
+import { BookFileRequestAdminController } from './book-file-request-admin.controller';
+import { BookFileRequestUserController } from './book-file-request-user.controller';
+import { BookFileModule } from '../book-file/book-file.module';
 
 @Module({
-  controllers: [BookFileRequestController],
+  imports: [
+    FileStorageModule,
+    BookFileModule,
+    MulterModule.register({
+      limits: {
+        fileSize: 100 * 1024 * 1024, // 100MB limit
+      },
+    }),
+  ],
+  controllers: [BookFileRequestAdminController, BookFileRequestUserController],
   providers: [
     // Application Use Cases
     BookFileRequestUseCase,
 
     // Domain Repositories
     {
-      provide: 'IBookFileRepository',
-      useClass: PrismaBookFileRepository,
+      provide: 'IBookFileRequestRepository',
+      useClass: PrismaBookFileRequestRepository,
     },
     {
-      provide: 'IBookRequestRepository',
-      useClass: PrismaBookRequestRepository,
+      provide: 'IBookRepository',
+      useClass: PrismaBookRepository,
+    },
+    {
+      provide: 'IBookFileRepository',
+      useClass: PrismaBookFileRepository,
     },
   ],
   exports: [BookFileRequestUseCase],
