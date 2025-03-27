@@ -22,8 +22,9 @@ model BookFile {
   bookRequestId String? @map("book_request_id")
 
   // Relations
-  book        Book?        @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  bookRequest BookRequest? @relation(fields: [bookRequestId], references: [id], onDelete: SetNull)
+  book            Book?             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookRequest     BookRequest?      @relation(fields: [bookRequestId], references: [id], onDelete: SetNull)
+  BookFileRequest BookFileRequest[]
 
   @@map("book_file")
 }
