@@ -8,6 +8,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 export const PDFReader = ({ fileInfo }: { fileInfo: BookFileResponseDto }) => {
   const [numPages, setNumPages] = useState<number>();
+  const [scale, setScale] = useState<number>(1);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
@@ -15,6 +16,14 @@ export const PDFReader = ({ fileInfo }: { fileInfo: BookFileResponseDto }) => {
 
   return (
     <div className="select-none">
+      <input
+        type="range"
+        min="0.8"
+        max="1.5"
+        step="0.1"
+        value={scale}
+        onChange={(e) => setScale(parseFloat(e.target.value))}
+      />
       <Document
         className="w-fit mx-auto"
         file={fileInfo.downloadUrl}
@@ -23,7 +32,12 @@ export const PDFReader = ({ fileInfo }: { fileInfo: BookFileResponseDto }) => {
         {Array(numPages)
           .fill(0)
           .map((_, pageNum) => (
-            <Page pageNumber={pageNum + 1} />
+            <Page
+              width={700}
+              scale={scale}
+              key={pageNum}
+              pageNumber={pageNum + 1}
+            />
           ))}
       </Document>
     </div>

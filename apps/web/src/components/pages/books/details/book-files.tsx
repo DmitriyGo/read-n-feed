@@ -1,8 +1,8 @@
 import { isDefined } from '@read-n-feed/shared';
-import { Link2 } from 'lucide-react';
+import { Link2, PlusSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { Card, CardContent, CardHeader } from '@/components/ui';
+import { Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { Route } from '@/constants';
 import { useBookFilesById } from '@/hooks';
 
@@ -21,7 +21,13 @@ export const BookFiles = ({ bookId }: { bookId?: string }) => {
 
   return (
     <Card>
-      <CardHeader>Book Files</CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <p className="text-lg ">Book Files</p>
+
+        <Button className="aspect-square !p-1">
+          <PlusSquare />
+        </Button>
+      </CardHeader>
 
       <CardContent className="space-y-4">
         {isDefined(data?.data) &&
