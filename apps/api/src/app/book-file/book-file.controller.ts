@@ -12,6 +12,8 @@ import {
   HttpStatus,
   HttpCode,
   StreamableFile,
+  BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -41,8 +43,9 @@ export class BookFileController {
   constructor(private readonly bookFileUseCase: BookFileUseCase) {}
 
   @Post('upload')
-  @AdminOnly()
-  @ApiOperation({ summary: 'Upload a new book file' })
+  @ApiOperation({
+    summary: 'Upload a new book file for a book or a book request',
+  })
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @ApiBody({
@@ -57,23 +60,22 @@ export class BookFileController {
         bookId: {
           type: 'string',
           format: 'uuid',
-          description: 'The ID of the book this file belongs to',
+          description:
+            'The ID of the book this file belongs to (optional if bookRequestId is provided)',
+        },
+        bookRequestId: {
+          type: 'string',
+          format: 'uuid',
+          description:
+            'The ID of the book request this file belongs to (optional if bookId is provided)',
         },
         format: {
           type: 'string',
           enum: ['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'],
           description: 'Format of the book file',
         },
-        fileSize: {
-          type: 'integer',
-          description: 'Size of the file in bytes (optional)',
-        },
-        originalFilename: {
-          type: 'string',
-          description: 'Original filename (optional)',
-        },
       },
-      required: ['file', 'bookId', 'format'],
+      required: ['file', 'format'],
     },
   })
   @ApiResponse({
@@ -84,9 +86,24 @@ export class BookFileController {
   async uploadBookFile(
     @Body() dto: CreateBookFileDto,
     @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: JwtPayload,
   ): Promise<BookFileResponseDto> {
     if (!file) {
-      throw new Error('File is required');
+      throw new BadRequestException('File is required');
+    }
+
+    // Validate that either bookId or bookRequestId is provided
+    if (!dto.bookId && !dto.bookRequestId) {
+      throw new BadRequestException(
+        'Either bookId or bookRequestId must be provided',
+      );
+    }
+
+    // Only allow admins to upload files directly to books
+    if (dto.bookId && !user.roles.includes('ADMIN')) {
+      throw new ForbiddenException(
+        'Only admins can upload files directly to books',
+      );
     }
 
     return this.bookFileUseCase.uploadBookFile(
@@ -120,7 +137,7 @@ export class BookFileController {
 
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"`,
       'Content-Length': buffer.length,
     });
 
@@ -139,12 +156,15 @@ export class BookFileController {
     @Res({ passthrough: true }) res: Response,
     @CurrentUser() user: JwtPayload,
   ): Promise<StreamableFile> {
-    const { buffer, mimeType, filename } =
+    const { buffer, mimeType, filename, file } =
       await this.bookFileUseCase.getBookFile(id);
+
+    // For PDF files, set inline disposition
+    const disposition = file.format.value === 'PDF' ? 'inline' : 'attachment';
 
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': 'inline',
+      'Content-Disposition': `${disposition}; filename="${encodeURIComponent(filename)}"`,
       'Content-Length': buffer.length,
     });
 
@@ -196,5 +216,49 @@ export class BookFileController {
     @Param('bookId', ParseUUIDPipe) bookId: string,
   ): Promise<BookFileResponseDto[]> {
     return this.bookFileUseCase.findBookFiles(bookId);
+  }
+
+  @Get('book-request/:bookRequestId')
+  @ApiOperation({ summary: 'Get all files for a book request' })
+  @ApiParam({ name: 'bookRequestId', description: 'Book Request ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns all files for the specified book request',
+    type: [BookFileResponseDto],
+  })
+  async getBookRequestFiles(
+    @Param('bookRequestId', ParseUUIDPipe) bookRequestId: string,
+  ): Promise<BookFileResponseDto[]> {
+    return this.bookFileUseCase.findBookRequestFiles(bookRequestId);
+  }
+
+  @Get('metadata/:id')
+  @ApiOperation({ summary: 'Get metadata for a book file' })
+  @ApiParam({ name: 'id', description: 'Book file ID' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns file metadata',
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        author: { type: 'string' },
+        pageCount: { type: 'number' },
+        fileSize: { type: 'number' },
+        format: { type: 'string' },
+        creationDate: { type: 'string', format: 'date-time' },
+        language: { type: 'string' },
+      },
+    },
+  })
+  async getFileMetadata(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
+    const bookFile = await this.bookFileUseCase.getBookFile(id);
+
+    return {
+      ...(bookFile.file.metadata || {}),
+      format: bookFile.file.format.value,
+      fileSize: bookFile.file.fileSize,
+      filename: bookFile.filename,
+    };
   }
 }

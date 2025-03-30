@@ -20,6 +20,7 @@ import {
   Tag,
   Book,
   BookRequestProps,
+  IBookFileRepository,
 } from '@read-n-feed/domain';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,6 +28,8 @@ import {
   CreateBookRequestDto,
   UpdateBookRequestDto,
   AdminReviewDto,
+  BookRequestResponseDto,
+  toBookRequestResponseDto,
 } from './dto/book-request.dto';
 
 @Injectable()
@@ -47,11 +50,13 @@ export class BookRequestUseCase {
     private readonly genreRepo: IGenreRepository,
     @Inject('ITagRepository')
     private readonly tagRepo: ITagRepository,
+    @Inject('IBookFileRepository')
+    private readonly bookFileRepo: IBookFileRepository,
   ) {}
 
   async createBookRequest(
     userId: string,
-    dto: CreateBookRequestDto,
+    dto: Omit<CreateBookRequestDto, 'fileFormat' | 'fileLanguage'>,
   ): Promise<BookRequest> {
     const user = await this.userRepo.findById(userId);
     if (!user) {
@@ -89,6 +94,7 @@ export class BookRequestUseCase {
       authorNames: dto.authorNames || null,
       genreNames: dto.genreNames || null,
       tagLabels: dto.tagLabels || null,
+      language: dto.language || null,
       status: 'PENDING',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -167,6 +173,7 @@ export class BookRequestUseCase {
           coverImageUrl: bookRequest.coverImageUrl || null,
           publicationDate: bookRequest.publicationDate || null,
           publisher: bookRequest.publisher || null,
+          language: bookRequest.language || null,
           averageRating: null,
           totalLikes: 0,
           createdAt: now,
@@ -263,6 +270,31 @@ export class BookRequestUseCase {
           }
         }
 
+        // 5. Handle book files - associate files with the new book
+        try {
+          // Find all files associated with this request
+          const bookFiles =
+            await this.bookFileRepo.findAllByBookRequest(requestId);
+          if (bookFiles.length > 0) {
+            // Get the file IDs
+            const fileIds = bookFiles.map((file) => file.id);
+
+            // Associate files with the new book
+            await this.bookFileRepo.associateWithBook(fileIds, newBookId);
+
+            this.logger.log(
+              `Associated ${fileIds.length} files with newly created book ${newBookId}`,
+            );
+          }
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `Error handling book files during approval: ${errorMessage}`,
+          );
+          // Continue with approval process even if file association fails
+        }
+
         // Store the resulting book ID in the request
         bookRequest.update({
           resultingBookId: newBookId,
@@ -349,5 +381,115 @@ export class BookRequestUseCase {
       ...options,
       userId,
     });
+  }
+
+  async deleteBookRequest(requestId: string): Promise<void> {
+    const bookRequest = await this.bookRequestRepo.findById(requestId);
+    if (!bookRequest) {
+      // If it doesn't exist, we consider it deleted already
+      return;
+    }
+
+    // Delete associated files
+    try {
+      const files = await this.bookFileRepo.findAllByBookRequest(requestId);
+
+      // Delete each file
+      for (const file of files) {
+        await this.bookFileRepo.delete(file.id);
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Error deleting files for request ${requestId}: ${error}`,
+      );
+      // Continue with request deletion even if file deletion fails
+    }
+
+    // Delete the request
+    await this.bookRequestRepo.delete(requestId);
+  }
+
+  async getUserBookRequestsWithFiles(
+    userId: string,
+    options: BookRequestSearchOptions = {},
+  ): Promise<{
+    items: BookRequestResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const result = await this.searchBookRequests({
+      ...options,
+      userId,
+    });
+
+    // Enhance each book request with its files
+    const enhancedItems = await Promise.all(
+      result.items.map(async (request) => {
+        return this.getBookRequestWithFiles(request.id);
+      }),
+    );
+
+    return {
+      items: enhancedItems,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+
+  async searchBookRequestsWithFiles(
+    options: BookRequestSearchOptions = {},
+  ): Promise<{
+    items: BookRequestResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const result = await this.searchBookRequests(options);
+
+    // Enhance each book request with its files
+    const enhancedItems = await Promise.all(
+      result.items.map(async (request) => {
+        return this.getBookRequestWithFiles(request.id);
+      }),
+    );
+
+    return {
+      items: enhancedItems,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+
+  async getBookRequestWithFiles(
+    requestId: string,
+  ): Promise<BookRequestResponseDto> {
+    const bookRequest = await this.getBookRequest(requestId);
+
+    // Get files associated with this request
+    const files = await this.bookFileRepo.findAllByBookRequest(requestId);
+
+    // Transform files to response DTOs
+    const fileResponses = files.map((file) => ({
+      id: file.id,
+      bookId: file.bookId,
+      bookRequestId: file.bookRequestId,
+      format: file.format.value,
+      fileSize: file.fileSize,
+      createdAt: file.createdAt,
+      filename: file.filename,
+      mimeType: file.mimeType,
+      isValidated: file.isValidated,
+      metadata: file.metadata,
+    }));
+
+    // Use toBookRequestResponseDto to create the response
+    return toBookRequestResponseDto(bookRequest, fileResponses);
   }
 }

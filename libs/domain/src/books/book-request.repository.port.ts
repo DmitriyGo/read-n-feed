@@ -19,4 +19,5 @@ export interface IBookRequestRepository {
     userId: string,
     title: string,
   ): Promise<BookRequest | null>;
+  delete(id: string): Promise<void>;
 }

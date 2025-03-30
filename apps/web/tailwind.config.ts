@@ -1,8 +1,7 @@
-const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
-const { join } = require('path');
+import { createGlobPatternsForDependencies } from '@nx/react/tailwind';
+import { join } from 'path';
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const config = {
   content: [
     join(
       __dirname,
@@ -52,7 +51,16 @@ module.exports = {
         md: `calc(var(--radius) - 2px)`,
         sm: 'calc(var(--radius) - 4px)',
       },
+      screens: {
+        xs: '320px',
+        sm: '480px',
+        md: '768px',
+        lg: '976px',
+        xl: '1440px',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],
 };
+
+export default config;

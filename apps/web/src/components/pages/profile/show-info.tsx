@@ -1,4 +1,4 @@
-import { PartiallyLoadedContent } from '@/components/common';
+import { Badges, PartiallyLoadedContent } from '@/components/common';
 import { Card, CardContent, CardHeader, Avatar, Badge } from '@/components/ui';
 import { useGetProfile } from '@/hooks/read';
 
@@ -59,19 +59,7 @@ export const ShowProfileInfo = () => {
               }
             />
 
-            <PartiallyLoadedContent
-              className="min-h-[22px]"
-              label="Roles"
-              isLoading={isLoading}
-              content={profileData?.roles.map((role) => (
-                <Badge
-                  key={role}
-                  variant={role === 'ADMIN' ? 'destructive' : 'default'}
-                >
-                  {role}
-                </Badge>
-              ))}
-            />
+            <Badges label="Roles" tags={profileData?.roles} />
           </CardContent>
         </Card>
       </CardContent>

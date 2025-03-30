@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { useAuth } from '../use-auth';
+import { useAuth } from '../../use-auth';
 
 import { ApiRoute } from '@/constants';
 import { axiosSecure } from '@/lib';
@@ -10,7 +10,7 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: async () => {
-      await axiosSecure.get(ApiRoute.Auth.Logout);
+      await axiosSecure.post(ApiRoute.Auth.Logout);
 
       clearAccessToken();
     },

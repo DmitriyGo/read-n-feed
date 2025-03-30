@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsString,
@@ -11,6 +12,21 @@ import {
   IsArray,
   IsUUID,
 } from 'class-validator';
+
+const transformToArray = (value: string | string[]): string[] => {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== 'string') return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [value];
+  } catch {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+};
 
 export class CreateBookDto {
   @ApiProperty({ description: 'The title of the book', maxLength: 200 })
@@ -54,6 +70,7 @@ export class CreateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   authorIds?: string[];
 
   @ApiPropertyOptional({
@@ -64,6 +81,7 @@ export class CreateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   genreIds?: string[];
 
   @ApiPropertyOptional({
@@ -74,6 +92,7 @@ export class CreateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   tagIds?: string[];
 }
 
@@ -124,6 +143,7 @@ export class UpdateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   authorIds?: string[];
 
   @ApiPropertyOptional({
@@ -135,6 +155,7 @@ export class UpdateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   genreIds?: string[];
 
   @ApiPropertyOptional({
@@ -146,6 +167,7 @@ export class UpdateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   tagIds?: string[];
 }
 
