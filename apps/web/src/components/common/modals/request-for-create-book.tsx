@@ -14,6 +14,9 @@ import {
   FormLabel,
   FormMessage,
   Textarea,
+  RadioGroup,
+  RadioGroupItem,
+  Label,
 } from '@/components/ui';
 import { SupportedLanguages } from '@/constants';
 import { useCreateBookRequest } from '@/hooks/write/book-requests';
@@ -51,9 +54,6 @@ export function CreateRequestBookModal() {
       publicationDate: '',
       publisher: '',
       tagLabels: '',
-      fileLanguage: undefined,
-      language: undefined,
-      // file: {},
     },
   });
 
@@ -212,7 +212,17 @@ export function CreateRequestBookModal() {
             <FormItem>
               <FormLabel>File Language</FormLabel>
               <FormControl>
-                <Input placeholder="Enter file language" {...field} />
+                <RadioGroup
+                  defaultValue={SupportedLanguages[0]}
+                  className="flex flex-row"
+                >
+                  {SupportedLanguages.map((lang) => (
+                    <div key={lang} className="flex items-center space-x-2">
+                      <RadioGroupItem value={lang} id={lang} />
+                      <Label htmlFor={lang}>{lang.toUpperCase()}</Label>
+                    </div>
+                  ))}
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -226,7 +236,17 @@ export function CreateRequestBookModal() {
             <FormItem>
               <FormLabel>Original Language</FormLabel>
               <FormControl>
-                <Input placeholder="Enter original language" {...field} />
+                <RadioGroup
+                  defaultValue={SupportedLanguages[0]}
+                  className="flex flex-row"
+                >
+                  {SupportedLanguages.map((lang) => (
+                    <div key={lang} className="flex items-center space-x-2">
+                      <RadioGroupItem value={lang} id={lang} />
+                      <Label htmlFor={lang}>{lang.toUpperCase()}</Label>
+                    </div>
+                  ))}
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
