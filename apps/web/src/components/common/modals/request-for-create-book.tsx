@@ -15,6 +15,7 @@ import {
   FormMessage,
   Textarea,
 } from '@/components/ui';
+import { SupportedLanguages } from '@/constants';
 import { useCreateBookRequest } from '@/hooks/write/book-requests';
 import { clearObject } from '@/lib';
 import { useModalStore } from '@/store';
@@ -27,6 +28,11 @@ const formSchema = z.object({
   publicationDate: z.string().optional(),
   publisher: z.string().optional(),
   tagLabels: z.string().optional(),
+  fileLanguage: z.enum(SupportedLanguages).optional(),
+  language: z.enum(SupportedLanguages).optional(),
+  file: z.any({
+    message: 'File is required',
+  }),
 });
 
 type CreateRequestSchema = z.infer<typeof formSchema>;
@@ -45,6 +51,9 @@ export function CreateRequestBookModal() {
       publicationDate: '',
       publisher: '',
       tagLabels: '',
+      fileLanguage: undefined,
+      language: undefined,
+      // file: {},
     },
   });
 
@@ -52,17 +61,33 @@ export function CreateRequestBookModal() {
     try {
       const data = clearObject(values) as CreateRequestSchema;
 
+      const file = data.file as File;
+
+      const fileFormat = file.name.split('.').pop()?.toUpperCase();
+      const ACCEPTED_FILE_FORMATS = ['PDF', 'EPUB', 'MOBI'];
+
+      if (
+        !isDefined(fileFormat) ||
+        !ACCEPTED_FILE_FORMATS.includes(fileFormat)
+      ) {
+        toast.error('File format is not valid');
+        return;
+      }
+
       await createRequest({
         ...data,
         authorNames: data.authorNames?.split(',').map((name) => name.trim()),
         genreNames: data.genreNames?.split(',').map((name) => name.trim()),
         tagLabels: data.tagLabels?.split(',').map((name) => name.trim()),
+        fileFormat: fileFormat,
+        language: data.language,
+        file: file,
       });
 
       toast.success('Request created successfully');
       setMode(null);
-    } catch (error) {
-      toast.error(error as string);
+    } catch (error: any) {
+      toast.error(error.message ?? (error as string));
     }
   };
 
@@ -173,6 +198,57 @@ export function CreateRequestBookModal() {
                 <Input
                   placeholder="Enter tags separated by commas"
                   {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="fileLanguage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>File Language</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter file language" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Original Language</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter original language" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="file"
+          render={({ field: { value, onChange, ...fieldProps } }) => (
+            <FormItem>
+              <FormLabel>Upload File</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  {...fieldProps}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      onChange(file);
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />
