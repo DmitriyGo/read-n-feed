@@ -228,6 +228,8 @@ export class BookFileUseCase {
       // For other formats, we'll add validation later
       // TODO: Add validation for EPUB, FB2, etc.
 
+      const displayFilename = dto.filename || originalFilename;
+
       // Generate a unique filename
       const extension = `.${dto.format.toLowerCase()}`;
       const filename = `${uuidv4()}${extension}`;
@@ -248,7 +250,7 @@ export class BookFileUseCase {
         filePath,
         fileSize: fileBuffer.length,
         createdAt: new Date(),
-        filename: originalFilename,
+        filename: displayFilename,
         mimeType,
         metadata,
         isValidated: isValidFile,

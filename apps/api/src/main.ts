@@ -64,7 +64,26 @@ async function bootstrap() {
 
   // Configure static file serving for uploads
   const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-  app.use('/files', express.static(path.join(process.cwd(), uploadDir)));
+  app.use('/files', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    express.static(path.join(process.cwd(), uploadDir), {
+      setHeaders: (res, path) => {
+        // Proper content type detection based on file extension
+        const ext = path.split('.').pop().toLowerCase();
+        const mimeTypes = {
+          pdf: 'application/pdf',
+          epub: 'application/epub+zip',
+          fb2: 'application/xml',
+          mobi: 'application/x-mobipocket-ebook',
+          azw3: 'application/vnd.amazon.ebook',
+        };
+
+        if (mimeTypes[ext]) {
+          res.set('Content-Type', mimeTypes[ext]);
+        }
+      },
+    })(req, res, next);
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
