@@ -114,6 +114,10 @@ export class BookRequestController {
           type: 'string',
           description: 'Language of the file (if different from book language)',
         },
+        filename: {
+          type: 'string',
+          description: 'Custom display filename',
+        },
       },
       required: ['file', 'fileFormat', 'title'],
     },
@@ -136,7 +140,7 @@ export class BookRequestController {
     }
 
     // Extract file-related props and book request props
-    const { fileFormat, fileLanguage, ...bookRequestDto } = dto;
+    const { fileFormat, fileLanguage, filename, ...bookRequestDto } = dto;
 
     if (!fileFormat) {
       throw new BadRequestException('File format is required');
@@ -152,6 +156,7 @@ export class BookRequestController {
       // Upload the file and associate it with the book request
       const fileDto: CreateBookFileDto = {
         bookRequestId: request.id,
+        filename: filename,
         format: fileFormat as any,
       };
 

@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isDefined } from '@read-n-feed/shared';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+
+import { FileUploadField } from '../file-upload-field';
+import { LanguageSelectField } from '../language-select-field';
 
 import {
   Button,
@@ -14,13 +16,11 @@ import {
   FormLabel,
   FormMessage,
   Textarea,
-  RadioGroup,
-  RadioGroupItem,
-  Label,
 } from '@/components/ui';
 import { SupportedLanguages } from '@/constants';
 import { useCreateBookRequest } from '@/hooks/write/book-requests';
 import { clearObject } from '@/lib';
+import { validateFile, getFileExtension } from '@/lib/file-utils';
 import { useModalStore } from '@/store';
 
 const formSchema = z.object({
@@ -32,8 +32,9 @@ const formSchema = z.object({
   publisher: z.string().optional(),
   tagLabels: z.string().optional(),
   fileLanguage: z.enum(SupportedLanguages).optional(),
+  filename: z.string(),
   language: z.enum(SupportedLanguages).optional(),
-  file: z.any({
+  file: z.any().refine((file) => file instanceof File, {
     message: 'File is required',
   }),
 });
@@ -54,25 +55,26 @@ export function CreateRequestBookModal() {
       publicationDate: '',
       publisher: '',
       tagLabels: '',
+      fileLanguage: SupportedLanguages[0],
+      language: SupportedLanguages[0],
+      filename: '',
     },
   });
+
+  console.log('Form values:', form.getValues('fileLanguage'));
 
   const onSubmit = async (values: CreateRequestSchema) => {
     try {
       const data = clearObject(values) as CreateRequestSchema;
-
       const file = data.file as File;
 
-      const fileFormat = file.name.split('.').pop()?.toUpperCase();
-      const ACCEPTED_FILE_FORMATS = ['PDF', 'EPUB', 'MOBI'];
-
-      if (
-        !isDefined(fileFormat) ||
-        !ACCEPTED_FILE_FORMATS.includes(fileFormat)
-      ) {
-        toast.error('File format is not valid');
+      const fileValidation = validateFile(file);
+      if (!fileValidation.valid) {
+        toast.error(fileValidation.error);
         return;
       }
+
+      const fileFormat = getFileExtension(file);
 
       await createRequest({
         ...data,
@@ -80,7 +82,6 @@ export function CreateRequestBookModal() {
         genreNames: data.genreNames?.split(',').map((name) => name.trim()),
         tagLabels: data.tagLabels?.split(',').map((name) => name.trim()),
         fileFormat: fileFormat,
-        language: data.language,
         file: file,
       });
 
@@ -209,23 +210,7 @@ export function CreateRequestBookModal() {
           control={form.control}
           name="fileLanguage"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>File Language</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  defaultValue={SupportedLanguages[0]}
-                  className="flex flex-row"
-                >
-                  {SupportedLanguages.map((lang) => (
-                    <div key={lang} className="flex items-center space-x-2">
-                      <RadioGroupItem value={lang} id={lang} />
-                      <Label htmlFor={lang}>{lang.toUpperCase()}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+            <LanguageSelectField field={field} label="File Language" />
           )}
         />
 
@@ -233,20 +218,18 @@ export function CreateRequestBookModal() {
           control={form.control}
           name="language"
           render={({ field }) => (
+            <LanguageSelectField field={field} label="Original Language" />
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="filename"
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>Original Language</FormLabel>
+              <FormLabel>File Name</FormLabel>
               <FormControl>
-                <RadioGroup
-                  defaultValue={SupportedLanguages[0]}
-                  className="flex flex-row"
-                >
-                  {SupportedLanguages.map((lang) => (
-                    <div key={lang} className="flex items-center space-x-2">
-                      <RadioGroupItem value={lang} id={lang} />
-                      <Label htmlFor={lang}>{lang.toUpperCase()}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
+                <Input placeholder="Enter file name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -256,23 +239,12 @@ export function CreateRequestBookModal() {
         <FormField
           control={form.control}
           name="file"
-          render={({ field: { value, onChange, ...fieldProps } }) => (
-            <FormItem>
-              <FormLabel>Upload File</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  {...fieldProps}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      onChange(file);
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field }) => (
+            <FileUploadField
+              field={field}
+              label="Upload File"
+              required={true}
+            />
           )}
         />
 
