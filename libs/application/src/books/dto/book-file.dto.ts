@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BookFile } from '@read-n-feed/domain';
-import { IsEnum, IsOptional, IsUUID } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export enum BookFormatDto {
   PDF = 'PDF',
@@ -33,6 +33,14 @@ export class CreateBookFileDto {
   })
   @IsEnum(BookFormatDto)
   format: BookFormatDto;
+
+  @ApiPropertyOptional({
+    description: 'Custom display filename for the file',
+    example: 'Война и мир.pdf',
+  })
+  @IsString()
+  @IsOptional()
+  filename?: string;
 
   @ApiPropertyOptional({
     description: 'Additional metadata for the file',

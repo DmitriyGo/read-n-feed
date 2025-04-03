@@ -74,14 +74,13 @@ export class BookFileController {
           enum: ['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'],
           description: 'Format of the book file',
         },
+        filename: {
+          type: 'string',
+          description: 'Custom display filename',
+        },
       },
       required: ['file', 'format'],
     },
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Book file uploaded successfully',
-    type: BookFileResponseDto,
   })
   async uploadBookFile(
     @Body() dto: CreateBookFileDto,
@@ -135,9 +134,12 @@ export class BookFileController {
     const { buffer, mimeType, filename } =
       await this.bookFileUseCase.getBookFile(id);
 
+    const encodedFilename = encodeURIComponent(filename);
+    const contentDisposition = `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`;
+
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"`,
+      'Content-Disposition': contentDisposition,
       'Content-Length': buffer.length,
     });
 

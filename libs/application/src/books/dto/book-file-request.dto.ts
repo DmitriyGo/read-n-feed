@@ -27,8 +27,15 @@ export class CreateBookFileRequestDto {
   @IsOptional()
   notes?: string;
 
-  // Note: The file itself will be handled by Multer as an uploaded file,
-  // so we don't need to add it to the DTO
+  @ApiPropertyOptional({
+    description: 'Custom display filename for the file',
+    example: 'Кобзар.pdf',
+  })
+  @IsString()
+  @IsOptional()
+  filename?: string;
+
+  // Note: The file itself will be handled by Multer as an uploaded file
 }
 
 export class AdminReviewBookFileRequestDto {
@@ -117,7 +124,11 @@ export class BookFileRequestResponseDto {
   @ApiPropertyOptional({
     type: 'object',
     properties: {
-      filename: { type: 'string' },
+      filename: {
+        type: 'string',
+        description: 'Custom or original filename of the file',
+        example: 'Война и мир.pdf',
+      },
       fileSize: { type: 'number' },
       mimeType: { type: 'string' },
     },
