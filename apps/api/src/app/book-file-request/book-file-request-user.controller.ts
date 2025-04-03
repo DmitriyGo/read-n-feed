@@ -72,6 +72,11 @@ export class BookFileRequestUserController {
           type: 'string',
           description: 'Additional notes for the admin (optional)',
         },
+        filename: {
+          type: 'string',
+          description: 'Custom display filename (supports Unicode characters)',
+          example: 'Преступление и наказание.epub',
+        },
       },
       required: ['file', 'bookId', 'format'],
     },
