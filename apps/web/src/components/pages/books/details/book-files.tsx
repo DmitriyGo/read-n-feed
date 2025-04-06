@@ -44,7 +44,9 @@ export const BookFiles = ({ bookId }: { bookId?: string }) => {
                   : bookFile.filename}
               </p>
 
-              <p className="text-center">Format: {bookFile.format}</p>
+              <p className="text-center">
+                <span>Format: {bookFile.format}</span>
+              </p>
 
               <div className="flex justify-end">
                 <a href={bookFile.downloadUrl}>
