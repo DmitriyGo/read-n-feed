@@ -76,6 +76,8 @@ export const ApiRoute = {
     Delete: (fileId: string) => `${ApiControllers.BookFiles}/${fileId}`,
     GetForBook: (bookId: string) =>
       `${ApiControllers.BookFiles}/book/${bookId}`,
+    GetForBookRequest: (requestId: string) =>
+      `${ApiControllers.BookFiles}/book-request/${requestId}`,
   },
   Comments: {
     Create: `${ApiControllers.Comments}/`,

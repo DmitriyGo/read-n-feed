@@ -3,14 +3,23 @@ import { isDefined, shouldBeUnreachable } from '@read-n-feed/shared';
 import { useParams } from 'react-router-dom';
 
 import { PDFReader } from '@/components/pages';
-import { useBookFilesById } from '@/hooks';
+import { useBookFilesById, useBookRequestFilesById } from '@/hooks';
 
 export const ReadPage = () => {
-  const { bookId, fileId } = useParams<{ bookId: string; fileId: string }>();
+  const { bookOrRequestId, fileId, type } = useParams<{
+    bookOrRequestId: string;
+    fileId: string;
+    type: 'book' | 'request';
+  }>();
 
-  const { data } = useBookFilesById(bookId);
+  const { data: bookData } = useBookFilesById(bookOrRequestId, type === 'book');
+  const { data: requestData } = useBookRequestFilesById(
+    bookOrRequestId,
+    type === 'request',
+  );
+  const bookRequestFiles = bookData?.data ?? requestData?.data;
 
-  const bookFileInfo = data?.data.find(
+  const bookFileInfo = bookRequestFiles?.find(
     (bookFileFetched) => bookFileFetched.id === fileId,
   );
 

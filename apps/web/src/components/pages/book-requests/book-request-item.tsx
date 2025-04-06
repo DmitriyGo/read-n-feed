@@ -1,6 +1,8 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
+import { isDefined } from 'class-validator';
 import { format } from 'date-fns';
-import { Check, FileEdit } from 'lucide-react';
+import { Check, FileEdit, Link2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Badges,
@@ -9,7 +11,12 @@ import {
   PartiallyLoadedContent,
 } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { useHasRole, useVerifyBookRequest } from '@/hooks';
+import { Route } from '@/constants';
+import {
+  useBookRequestFilesById,
+  useHasRole,
+  useVerifyBookRequest,
+} from '@/hooks';
 import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
@@ -27,6 +34,9 @@ export const BookRequestItem = ({
 
   const { mutate } = useVerifyBookRequest();
 
+  const { data } = useBookRequestFilesById(bookRequest.id);
+  const bookRequestFiles = data?.data;
+
   const handleEdit = () => {
     setMode('UpdateBookRequest');
     setParam('requestId', bookRequest.id);
@@ -39,6 +49,11 @@ export const BookRequestItem = ({
         status: 'APPROVED',
       },
     });
+  };
+  const navigate = useNavigate();
+
+  const handleClick = (fileId: string) => {
+    navigate(Route.Book.Read(bookRequest.id, fileId));
   };
 
   return (
@@ -63,11 +78,13 @@ export const BookRequestItem = ({
             {bookRequest.status}
           </Badge>
 
-          <Button variant="outline" onClick={handleEdit}>
-            <FileEdit />
-          </Button>
+          {bookRequest.status === 'PENDING' && (
+            <Button variant="outline" onClick={handleEdit}>
+              <FileEdit />
+            </Button>
+          )}
 
-          {isAdmin && (
+          {isAdmin && bookRequest.status === 'PENDING' && (
             <Button variant="outline" onClick={handleVerify}>
               <Check />
             </Button>
@@ -142,6 +159,31 @@ export const BookRequestItem = ({
               className="text-blue-500"
             />
           )}
+
+          {bookRequestFiles?.map((bookFile) => (
+            <div
+              key={bookFile.id}
+              onClick={() => handleClick(bookFile.id)}
+              className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
+            >
+              <p>
+                File name:&nbsp;
+                {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
+                  ? bookFile.metadata['Title']
+                  : bookFile.filename}
+              </p>
+
+              <p className="text-center">
+                <span>Format: {bookFile.format}</span>
+              </p>
+
+              <div className="flex justify-end">
+                <a href={bookFile.downloadUrl}>
+                  <Link2 />
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

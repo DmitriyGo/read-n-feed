@@ -8,18 +8,18 @@ import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useBookFilesById = (id?: string, enabled = true) => {
+export const useBookRequestFilesById = (id?: string, enabled = true) => {
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.GetBookFiles, accessToken, id],
+    queryKey: [QueryKey.GetBookRequestFiles, accessToken, id],
     queryFn: async () => {
       if (!isDefined(id)) {
         return;
       }
 
       return axiosSecure.get<BookFileResponseDto[]>(
-        ApiRoute.BookFiles.GetForBook(id),
+        ApiRoute.BookFiles.GetForBookRequest(id),
       );
     },
     enabled: isDefined(id) && enabled,
