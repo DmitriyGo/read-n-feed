@@ -1,3 +1,5 @@
+import { BookRequestStatus } from '@read-n-feed/domain';
+
 export type SupportedLanguage = 'ua' | 'en';
 export const SupportedLanguages = [
   'ua',
@@ -10,3 +12,10 @@ export const FileFormats = [
   'EPUB',
   'MOBI',
 ] as const satisfies FileFormat[];
+
+export const AcceptedStatuses = [
+  'APPROVED',
+  'PENDING',
+  'REJECTED',
+] as const satisfies BookRequestStatus[];
+export type AcceptedStatus = (typeof AcceptedStatuses)[number];

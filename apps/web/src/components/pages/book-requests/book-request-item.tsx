@@ -2,7 +2,7 @@ import { BookRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from 'class-validator';
 import { format } from 'date-fns';
 import { Check, FileEdit, Link2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   Badges,
@@ -28,9 +28,12 @@ export const BookRequestItem = ({
 }: {
   bookRequest: BookRequestResponseDto;
 }) => {
+  const { pathname } = useLocation();
+
   const { setMode, setParam } = useModalStore();
 
   const { hasRole: isAdmin } = useHasRole('ADMIN');
+  const isOnAdminPage = pathname.includes('admin');
 
   const { mutate } = useVerifyBookRequest();
 
@@ -84,7 +87,8 @@ export const BookRequestItem = ({
             </Button>
           )}
 
-          {isAdmin && bookRequest.status === 'PENDING' && (
+          {/* Show the verify button only for admins on admin routes when the request is pending */}
+          {isAdmin && isOnAdminPage && bookRequest.status === 'PENDING' && (
             <Button variant="outline" onClick={handleVerify}>
               <Check />
             </Button>
@@ -92,7 +96,7 @@ export const BookRequestItem = ({
         </div>
       </CardHeader>
 
-      <CardContent className="flex lg:flex-row flex-col gap-4">
+      <CardContent className="flex flex-col gap-4">
         <BookCover book={bookRequest} />
 
         <div>
@@ -160,30 +164,32 @@ export const BookRequestItem = ({
             />
           )}
 
-          {bookRequestFiles?.map((bookFile) => (
-            <div
-              key={bookFile.id}
-              onClick={() => handleClick(bookFile.id)}
-              className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
-            >
-              <p>
-                File name:&nbsp;
-                {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
-                  ? bookFile.metadata['Title']
-                  : bookFile.filename}
-              </p>
+          <div className="border-l pl-4">
+            {bookRequestFiles?.map((bookFile) => (
+              <div
+                key={bookFile.id}
+                onClick={() => handleClick(bookFile.id)}
+                className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
+              >
+                <p>
+                  File name:&nbsp;
+                  {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
+                    ? bookFile.metadata['Title']
+                    : bookFile.filename}
+                </p>
 
-              <p className="text-center">
-                <span>Format: {bookFile.format}</span>
-              </p>
+                <p className="text-center">
+                  <span>Format: {bookFile.format}</span>
+                </p>
 
-              <div className="flex justify-end">
-                <a href={bookFile.downloadUrl}>
-                  <Link2 />
-                </a>
+                <div className="flex justify-end">
+                  <a href={bookFile.downloadUrl}>
+                    <Link2 />
+                  </a>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

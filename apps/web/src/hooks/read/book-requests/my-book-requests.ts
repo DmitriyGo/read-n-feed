@@ -1,20 +1,27 @@
 import { PaginatedBookRequestResponseDto } from '@read-n-feed/application';
+import { BookRequestStatus } from '@read-n-feed/domain';
 import { isDefined } from '@read-n-feed/shared';
 import { useQuery } from '@tanstack/react-query';
 
 import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { useAuth } from '@/hooks/use-auth';
-import { axiosSecure } from '@/lib';
+import { axiosSecure, clearObject } from '@/lib';
 
-export const useMyBookRequests = () => {
+export const useMyBookRequests = (data: {
+  page?: number;
+  limit?: number;
+  status?: BookRequestStatus;
+}) => {
   const { accessToken } = useAuth();
 
+  const urlParams = new URLSearchParams(clearObject(data));
+
   return useQuery({
-    queryKey: [QueryKey.GetBookRequests, accessToken],
+    queryKey: [QueryKey.GetBookRequests, accessToken, urlParams.toString()],
     queryFn: async () => {
       return axiosSecure.get<PaginatedBookRequestResponseDto>(
-        ApiRoute.Requests.MyRequests,
+        `${ApiRoute.Requests.MyRequests}?${urlParams}`,
       );
     },
     enabled: isDefined(accessToken),
