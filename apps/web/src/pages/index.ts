@@ -6,5 +6,5 @@ export * from './books/details';
 export * from './read';
 export * from './books/search';
 
-export * from './book-requests/my-requests';
+export * from './requests/my-book-requests';
 export * from './admin/book-requests';
