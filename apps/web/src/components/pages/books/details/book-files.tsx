@@ -19,7 +19,7 @@ export const BookFiles = ({ bookId }: { bookId?: string }) => {
       return;
     }
 
-    navigate(Route.Book.Read(bookId, fileId));
+    navigate(Route.Book.Read(bookId, fileId, 'request'));
   };
 
   const handleNewFile = () => {

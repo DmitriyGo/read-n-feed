@@ -1,4 +1,3 @@
-import { BookFileResponseDto } from '@read-n-feed/application';
 import { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -6,7 +5,13 @@ import 'react-pdf/dist/Page/TextLayer.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-export const PDFReader = ({ fileInfo }: { fileInfo: BookFileResponseDto }) => {
+export const PDFReader = ({
+  downloadUrl,
+  filename,
+}: {
+  downloadUrl: string;
+  filename: string;
+}) => {
   const [numPages, setNumPages] = useState<number>();
   const [scale, setScale] = useState<number>(1);
 
@@ -24,9 +29,15 @@ export const PDFReader = ({ fileInfo }: { fileInfo: BookFileResponseDto }) => {
         value={scale}
         onChange={(e) => setScale(parseFloat(e.target.value))}
       />
+      <p>
+        Scale: {scale}
+        <span className="text-gray-400"> (0.8 - 1.5)</span>
+      </p>
+
+      <p className="text-center text-lg font-bold">{filename}</p>
       <Document
         className="w-fit mx-auto"
-        file={fileInfo.downloadUrl}
+        file={downloadUrl}
         onLoadSuccess={onDocumentLoadSuccess}
       >
         {Array(numPages)

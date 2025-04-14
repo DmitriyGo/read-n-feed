@@ -17,7 +17,7 @@ import {
   useHasRole,
   useVerifyBookRequest,
 } from '@/hooks';
-import { useGetDownloadUrl } from '@/hooks/read/file/get-download-url';
+import { useGetDownloadUrl } from '@/hooks/read/files/get-download-url';
 import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
@@ -59,7 +59,7 @@ export const FileRequestItem = ({
   const navigate = useNavigate();
 
   const handleClick = (fileId: string) => {
-    navigate(Route.Book.Read(fileRequest.id, fileId));
+    navigate(Route.Book.Read('-', fileId, 'file-request'));
   };
 
   return (
@@ -124,6 +124,9 @@ export const FileRequestItem = ({
           <Link to={downloadUrl || ''} target="_blank">
             <Button>Download</Button>
           </Link>
+          <Button onClick={() => handleClick(fileRequest.fileId ?? '')}>
+            Read
+          </Button>
         </div>
 
         <div className="border-l pl-4">

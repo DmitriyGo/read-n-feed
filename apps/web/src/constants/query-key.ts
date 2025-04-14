@@ -8,4 +8,5 @@ export const QueryKey = {
   GetMyFileRequests: 'get-my-file-requests',
   GetFileRequestById: 'get-file-request-by-id',
   DownloadUrl: 'download-url',
+  Metadata: 'metadata',
 };

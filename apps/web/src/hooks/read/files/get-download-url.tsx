@@ -6,7 +6,13 @@ import { QueryKey } from '@/constants/query-key';
 import { useAuth } from '@/hooks/use-auth';
 import { axiosSecure } from '@/lib';
 
-export const useGetDownloadUrl = ({ fileId }: { fileId?: string | null }) => {
+export const useGetDownloadUrl = ({
+  fileId,
+  enabled,
+}: {
+  fileId?: string | null;
+  enabled?: boolean;
+}) => {
   const { accessToken } = useAuth();
 
   return useQuery({
@@ -20,6 +26,6 @@ export const useGetDownloadUrl = ({ fileId }: { fileId?: string | null }) => {
         ApiRoute.BookFiles.GetUrl(fileId),
       );
     },
-    enabled: isDefined(accessToken),
+    enabled: isDefined(accessToken) && enabled,
   });
 };

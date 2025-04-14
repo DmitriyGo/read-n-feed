@@ -3,13 +3,18 @@ import { isDefined, shouldBeUnreachable } from '@read-n-feed/shared';
 import { useParams } from 'react-router-dom';
 
 import { PDFReader } from '@/components/pages';
-import { useBookFilesById, useBookRequestFilesById } from '@/hooks';
+import {
+  useBookFilesById,
+  useBookRequestFilesById,
+  useGetDownloadUrl,
+  useGetMetadata,
+} from '@/hooks';
 
 export const ReadPage = () => {
   const { bookOrRequestId, fileId, type } = useParams<{
     bookOrRequestId: string;
     fileId: string;
-    type: 'book' | 'request';
+    type: 'book' | 'request' | 'file-request';
   }>();
 
   const { data: bookData } = useBookFilesById(bookOrRequestId, type === 'book');
@@ -17,23 +22,39 @@ export const ReadPage = () => {
     bookOrRequestId,
     type === 'request',
   );
+  const { data: fileRequestData } = useGetMetadata({
+    fileId,
+    enabled: type === 'file-request',
+  });
+  const { data: downloadUrlData } = useGetDownloadUrl({
+    fileId,
+    enabled: type === 'file-request',
+  });
   const bookRequestFiles = bookData?.data ?? requestData?.data;
 
   const bookFileInfo = bookRequestFiles?.find(
     (bookFileFetched) => bookFileFetched.id === fileId,
   );
 
-  const fileFormat = bookFileInfo?.format as
+  const fileFormat = (bookFileInfo?.format ?? fileRequestData?.data.format) as
     | keyof typeof BookFormatDto
     | undefined;
 
-  if (!isDefined(bookFileInfo)) {
+  const bookFileName =
+    bookFileInfo?.filename ?? fileRequestData?.data.filename ?? '';
+
+  const downloadUrl = bookFileInfo?.downloadUrl ?? downloadUrlData?.data.url;
+
+  if (
+    (!isDefined(bookFileInfo) && !isDefined(fileRequestData)) ||
+    !isDefined(downloadUrl)
+  ) {
     return;
   }
 
   switch (fileFormat) {
     case 'PDF':
-      return <PDFReader fileInfo={bookFileInfo} />;
+      return <PDFReader downloadUrl={downloadUrl} filename={bookFileName} />;
     case 'EPUB':
       return <p>EPUB READER NOT IMPLEMENTED YET</p>;
     case 'FB2':

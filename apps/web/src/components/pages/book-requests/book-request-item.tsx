@@ -56,7 +56,7 @@ export const BookRequestItem = ({
   const navigate = useNavigate();
 
   const handleClick = (fileId: string) => {
-    navigate(Route.Book.Read(bookRequest.id, fileId));
+    navigate(Route.Book.Read(bookRequest.id, fileId, 'book'));
   };
 
   return (
