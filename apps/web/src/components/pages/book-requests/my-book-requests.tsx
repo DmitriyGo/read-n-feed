@@ -1,20 +1,29 @@
+import { BookRequestStatus } from '@read-n-feed/domain';
 import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { BookRequestItem } from './book-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { useMyBookRequests } from '@/hooks';
-import { useModalStore } from '@/store';
+import { useFilterStore, useModalStore } from '@/store';
 
 export const MyBookRequestsBlock = () => {
-  const { data } = useMyBookRequests();
-
   const { setMode } = useModalStore();
 
   const [perPage, setPerPage] = useState<PerPage>(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { getFilter } = useFilterStore();
+  const [urlSearchParams] = useSearchParams();
+
+  const { data } = useMyBookRequests({
+    page: currentPage,
+    limit: perPage,
+    status: getFilter(urlSearchParams, 'status') as BookRequestStatus,
+  });
 
   const myRequests = data?.data;
 
@@ -23,7 +32,7 @@ export const MyBookRequestsBlock = () => {
   };
 
   return (
-    <>
+    <div>
       <Card>
         <CardHeader>
           <h2 className="text-2xl">Your book requests</h2>
@@ -56,6 +65,6 @@ export const MyBookRequestsBlock = () => {
         perPage={perPage}
         setCurrentPage={setCurrentPage}
       />
-    </>
+    </div>
   );
 };

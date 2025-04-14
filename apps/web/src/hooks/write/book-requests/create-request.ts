@@ -12,10 +12,20 @@ export const useCreateBookRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateBookRequestDto) => {
+    mutationFn: async (data: CreateBookRequestDto & { file: File }) => {
+      const formData = new FormData();
+
+      for (const [key, value] of Object.entries(data)) {
+        if (key !== 'file' && value) {
+          formData.append(key, String(value));
+        }
+      }
+
+      formData.append('file', data.file);
+
       await axiosSecure.post<BookRequestResponseDto>(
         ApiRoute.Requests.Create,
-        data,
+        formData,
       );
     },
     onSuccess: () => {

@@ -2,7 +2,7 @@ import { Dispatch, ReactElement } from 'react';
 import { create } from 'zustand';
 
 import { SignInModal, SignUpModal } from '@/components/common/modals';
-import { CreateRequestBookModal } from '@/components/common/modals/request-for-create';
+import { CreateRequestBookModal } from '@/components/common/modals/request-for-create-book';
 import { UpdateRequestBookModal } from '@/components/common/modals/update-book-request';
 
 export type ModalModeInfo = {

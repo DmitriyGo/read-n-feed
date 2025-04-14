@@ -33,7 +33,7 @@ export const BookCatalog = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="flex flex-row w-full h-fit gap-4">
+      <Card className="flex flex-wrap justify-between w-full h-fit gap-4">
         {isDefined(filteredBooks) &&
           filteredBooks.items.map((filteredBook) => (
             <BookCard key={filteredBook.id} book={filteredBook} />

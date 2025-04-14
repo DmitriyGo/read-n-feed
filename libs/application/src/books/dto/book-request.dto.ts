@@ -123,6 +123,14 @@ export class CreateBookRequestDto {
   @IsOptional()
   fileLanguage?: string;
 
+  @ApiPropertyOptional({
+    description: 'Custom display filename for the file',
+    example: 'Война и мир.pdf',
+  })
+  @IsString()
+  @IsOptional()
+  filename?: string;
+
   // Note: The actual file will be handled by Multer as an uploaded file
 }
 

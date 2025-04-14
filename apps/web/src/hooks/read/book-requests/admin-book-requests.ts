@@ -31,7 +31,7 @@ export const useAdminBookRequests = ({
   );
 
   return useQuery({
-    queryKey: [QueryKey.GetBookRequests, accessToken, ...urlParams.values()],
+    queryKey: [QueryKey.GetBookRequests, accessToken, urlParams.toString()],
     queryFn: async () => {
       return axiosSecure.get<PaginatedBookRequestResponseDto>(
         `${ApiRoute.Requests.GetAll}?${urlParams}`,

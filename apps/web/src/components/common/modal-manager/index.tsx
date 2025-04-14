@@ -23,7 +23,7 @@ export const ModalManager = () => {
         setMode(null);
       }}
     >
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-auto">
         <DialogTitle className="hidden" />
 
         <div

@@ -42,8 +42,6 @@ axiosSecure.interceptors.response.use(
 
       useAuthStore.getState().setAccessToken(accessToken);
 
-      console.log(1, useAuthStore.getState().accessToken);
-
       error.config.headers.Authorization = accessToken;
 
       return axiosSecure.request(error.config);

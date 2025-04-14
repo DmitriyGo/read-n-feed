@@ -21,8 +21,10 @@ export const Image = ({
   return isDefined(src) ? (
     <img
       style={{
-        width: calculatedWidth,
-        height: calculatedHeight,
+        minWidth: calculatedWidth,
+        minHeight: calculatedHeight,
+        maxWidth: calculatedWidth,
+        maxHeight: calculatedHeight,
       }}
       className={cn('rounded-lg', '', className)}
       src={src ?? undefined}
@@ -32,8 +34,10 @@ export const Image = ({
   ) : (
     <Skeleton
       style={{
-        width: calculatedWidth,
-        height: calculatedHeight,
+        minWidth: calculatedWidth,
+        minHeight: calculatedHeight,
+        maxWidth: calculatedWidth,
+        maxHeight: calculatedHeight,
       }}
     />
   );

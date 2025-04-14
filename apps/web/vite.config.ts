@@ -2,8 +2,16 @@
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { resolve } from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, normalizePath } from 'vite';
+// import { viteStaticCopy } from 'vite-plugin-static-copy';
+
+// const require = createRequire(import.meta.url);
+
+// const pdfjsDistPath = path.dirname(require.resolve('pdfjs-dist/package.json'));
+// const cMapsDir = normalizePath(path.join(pdfjsDistPath, 'cmaps'));
 
 export default defineConfig({
   root: __dirname,
@@ -21,10 +29,22 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
-  plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
+  plugins: [
+    react(),
+    nxViteTsPaths(),
+    nxCopyAssetsPlugin(['*.md']),
+    // viteStaticCopy({
+    //   targets: [
+    //     {
+    //       src: cMapsDir,
+    //       dest: '',
+    //     },
+    //   ],
+    // }),
+  ],
   // Uncomment this if you are using workers.
   // worker: {
-  //  plugins: [ nxViteTsPaths() ],
+  //   plugins: [nxViteTsPaths()],
   // },
   build: {
     outDir: '../../dist/apps/web',

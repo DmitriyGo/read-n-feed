@@ -9,6 +9,7 @@ import {
 
 import { useAuth } from './hooks';
 import { axiosSecure } from './lib';
+import { RequestsLayout } from './pages/requests/layout';
 import { useAuthStore, useFilterStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
@@ -21,6 +22,7 @@ import {
   BookSearchPage,
   MyBookRequestsPage,
   AdminBookRequestsPage,
+  ReadPage,
 } from '@/pages';
 
 export function App() {
@@ -63,10 +65,12 @@ export function App() {
         <RouteComponent element={<RequiresRoleLayout userRole="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
 
-          <RouteComponent
-            path={Route.Requests.MyRequests}
-            element={<MyBookRequestsPage />}
-          />
+          <RouteComponent element={<RequestsLayout />}>
+            <RouteComponent
+              path={Route.Requests.MyBookRequests}
+              element={<MyBookRequestsPage />}
+            />
+          </RouteComponent>
         </RouteComponent>
 
         <RouteComponent element={<RequiresRoleLayout userRole="ADMIN" />}>
@@ -80,6 +84,8 @@ export function App() {
           path={`${Route.Book.Details}/:id`}
           element={<BookDetailsPage />}
         />
+        <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
+
         <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
 
         <RouteComponent path="*" element={<NoFoundPage />} />
