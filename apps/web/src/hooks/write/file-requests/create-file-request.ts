@@ -1,44 +1,44 @@
 import {
-  AdminReviewDto,
   BookRequestResponseDto,
+  CreateBookFileRequestDto,
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
 
 import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useVerifyBookRequest = () => {
+export const useCreateFileRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      requestId,
-      body,
-    }: {
-      requestId: string;
-      body: AdminReviewDto;
-    }) => {
+    mutationFn: async (data: CreateBookFileRequestDto & { file: File }) => {
+      const formData = new FormData();
+
+      for (const [key, value] of Object.entries(data)) {
+        if (key !== 'file' && value) {
+          formData.append(key, String(value));
+        }
+      }
+
+      formData.append('file', data.file);
+
       await axiosSecure.post<BookRequestResponseDto>(
-        ApiRoute.BookRequests.Review(requestId),
-        body,
+        ApiRoute.FileRequests.Create,
+        formData,
       );
     },
     onSuccess: () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetBookRequests],
+            queryKey: [QueryKey.GetFileRequests],
             type: 'active',
           }),
         500,
       );
-
-      toast.success('Book request verified successfully');
     },
     onError: (error) => {
-      toast.error(String(error));
       console.error(error);
     },
   });

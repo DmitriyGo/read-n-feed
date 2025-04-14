@@ -5,4 +5,6 @@ export const QueryKey = {
   GetBookRequestById: 'get-request-by-id',
   GetBookFiles: 'get-book-files',
   GetBookRequestFiles: 'get-book-request-files',
+  GetFileRequests: 'get-file-requests',
+  GetFileRequestById: 'get-file-request-by-id',
 };

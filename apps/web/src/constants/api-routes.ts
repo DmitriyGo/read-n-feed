@@ -1,15 +1,18 @@
-import { RouteValue, StringRecord } from '@/types';
+import { RouteValue } from '@/types';
 
 enum ApiControllers {
   Auth = 'auth',
   Users = 'users',
   Books = 'books',
-  Requests = 'book-requests',
+  BookRequests = 'book-requests',
   BookFiles = 'book-files',
   Comments = 'comments',
   Authors = 'authors',
   Genres = 'genres',
   Tags = 'tags',
+  ReadingProgress = 'reading-progress',
+  FileRequests = 'book-file-requests',
+  FileRequestsAdmin = 'admin/book-file-requests',
 }
 
 export const ApiRoute = {
@@ -57,15 +60,24 @@ export const ApiRoute = {
     Like: (bookId: string) => `${ApiControllers.Books}/${bookId}/like`,
     Unlike: (bookId: string) => `${ApiControllers.Books}/${bookId}/like`,
   },
-  Requests: {
-    Base: `${ApiControllers.Requests}/`,
-    Create: `${ApiControllers.Requests}/`,
-    GetAll: `${ApiControllers.Requests}/`,
-    MyRequests: `${ApiControllers.Requests}/my-requests`,
-    Id: (requestId: string) => `${ApiControllers.Requests}/${requestId}`,
-    Update: (requestId: string) => `${ApiControllers.Requests}/${requestId}`,
+  ReadingProgress: {
+    Save: `${ApiControllers.ReadingProgress}/`,
+    GetForBook: (bookId: string) =>
+      `${ApiControllers.ReadingProgress}/book/${bookId}`,
+    GetForBookAllDevices: (bookId: string) =>
+      `${ApiControllers.ReadingProgress}/book/${bookId}/all-devices`,
+    GetInProgress: `${ApiControllers.ReadingProgress}/in-progress`,
+  },
+  BookRequests: {
+    Base: `${ApiControllers.BookRequests}/`,
+    Create: `${ApiControllers.BookRequests}/`,
+    GetAll: `${ApiControllers.BookRequests}/`,
+    MyRequests: `${ApiControllers.BookRequests}/my-requests`,
+    Id: (requestId: string) => `${ApiControllers.BookRequests}/${requestId}`,
+    Update: (requestId: string) =>
+      `${ApiControllers.BookRequests}/${requestId}`,
     Review: (requestId: string) =>
-      `${ApiControllers.Requests}/${requestId}/review`,
+      `${ApiControllers.BookRequests}/${requestId}/review`,
   },
   BookFiles: {
     Upload: `${ApiControllers.BookFiles}/upload`,
@@ -78,6 +90,26 @@ export const ApiRoute = {
       `${ApiControllers.BookFiles}/book/${bookId}`,
     GetForBookRequest: (requestId: string) =>
       `${ApiControllers.BookFiles}/book-request/${requestId}`,
+    GetMetadata: (fileId: string) =>
+      `${ApiControllers.BookFiles}/metadata/${fileId}`,
+  },
+  FileRequests: {
+    Create: `${ApiControllers.FileRequests}/`,
+    MyRequests: `${ApiControllers.FileRequests}/my-requests`,
+    Get: (requestId: string) => `${ApiControllers.FileRequests}/${requestId}`,
+    Delete: (requestId: string) =>
+      `${ApiControllers.FileRequests}/${requestId}`,
+    AssociateFile: (requestId: string, fileId: string) =>
+      `${ApiControllers.FileRequests}/${requestId}/associate-file/${fileId}`,
+  },
+  FileRequestsAdmin: {
+    GetAll: `${ApiControllers.FileRequestsAdmin}/`,
+    Review: (requestId: string) =>
+      `${ApiControllers.FileRequestsAdmin}/${requestId}/review`,
+    Get: (requestId: string) =>
+      `${ApiControllers.FileRequestsAdmin}/${requestId}`,
+    GetForBook: (bookId: string) =>
+      `${ApiControllers.FileRequestsAdmin}/book/${bookId}`,
   },
   Comments: {
     Create: `${ApiControllers.Comments}/`,

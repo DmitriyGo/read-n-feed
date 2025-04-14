@@ -5,13 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { Route } from '@/constants';
 import { useBookFilesById } from '@/hooks';
+import { useModalStore } from '@/store';
 
 export const BookFiles = ({ bookId }: { bookId?: string }) => {
   const { data } = useBookFilesById(bookId);
 
+  const { setMode, setParam } = useModalStore();
+
   const navigate = useNavigate();
 
-  const handleClick = (fileId: string) => {
+  const handleOpen = (fileId: string) => {
     if (!isDefined(bookId)) {
       return;
     }
@@ -19,12 +22,17 @@ export const BookFiles = ({ bookId }: { bookId?: string }) => {
     navigate(Route.Book.Read(bookId, fileId));
   };
 
+  const handleNewFile = () => {
+    setMode('CreateFileRequest');
+    setParam('bookId', bookId);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <p className="text-lg ">Book Files</p>
 
-        <Button className="aspect-square !p-1">
+        <Button className="aspect-square !p-1" onClick={handleNewFile}>
           <PlusSquare />
         </Button>
       </CardHeader>
@@ -34,7 +42,7 @@ export const BookFiles = ({ bookId }: { bookId?: string }) => {
           data.data.map((bookFile) => (
             <div
               key={bookFile.id}
-              onClick={() => handleClick(bookFile.id)}
+              onClick={() => handleOpen(bookFile.id)}
               className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
             >
               <p>

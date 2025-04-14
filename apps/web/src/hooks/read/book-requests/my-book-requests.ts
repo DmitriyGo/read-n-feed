@@ -21,7 +21,7 @@ export const useMyBookRequests = (data: {
     queryKey: [QueryKey.GetBookRequests, accessToken, urlParams.toString()],
     queryFn: async () => {
       return axiosSecure.get<PaginatedBookRequestResponseDto>(
-        `${ApiRoute.Requests.MyRequests}?${urlParams}`,
+        `${ApiRoute.BookRequests.MyRequests}?${urlParams}`,
       );
     },
     enabled: isDefined(accessToken),

@@ -19,7 +19,9 @@ export const useBookRequestById = ({
   return useQuery({
     queryKey: [QueryKey.GetBookRequestById, accessToken],
     queryFn: async () => {
-      return axiosSecure.get<BookRequestResponseDto>(ApiRoute.Requests.Id(id));
+      return axiosSecure.get<BookRequestResponseDto>(
+        ApiRoute.BookRequests.Id(id),
+      );
     },
     enabled: isDefined(accessToken) && enabled,
   });
