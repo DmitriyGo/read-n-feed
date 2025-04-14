@@ -15,6 +15,7 @@ export const Route = {
 
   Requests: {
     MyBookRequests: '/requests/my-book-requests',
+    MyFileRequests: '/requests/my-file-requests',
   },
 
   Admin: {

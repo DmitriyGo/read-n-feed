@@ -22,7 +22,7 @@ import { clearObject, validateFile, getFileExtension } from '@/lib';
 import { useModalStore } from '@/store';
 
 const formSchema = z.object({
-  fileLanguage: z.enum(SupportedLanguages).optional(),
+  // fileLanguage: z.enum(SupportedLanguages).optional(),
   filename: z.string(),
   file: z.any().refine((file) => file instanceof File, {
     message: 'File is required',
@@ -40,7 +40,7 @@ export function CreateFileRequestModal() {
   const form = useForm<CreateRequestSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fileLanguage: SupportedLanguages[0],
+      // fileLanguage: SupportedLanguages[0],
       filename: '',
     },
   });
@@ -59,6 +59,7 @@ export function CreateFileRequestModal() {
       const fileFormat = getFileExtension(file);
 
       await createRequest({
+        ...data,
         bookId,
         format: fileFormat,
         file: file,
@@ -75,13 +76,13 @@ export function CreateFileRequestModal() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
+        {/* <FormField
           control={form.control}
           name="fileLanguage"
           render={({ field }) => (
             <LanguageSelectField field={field} label="File Language" />
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}

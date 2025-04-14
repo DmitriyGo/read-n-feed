@@ -23,6 +23,7 @@ import {
   MyBookRequestsPage,
   AdminBookRequestsPage,
   ReadPage,
+  MyFileRequestsPage,
 } from '@/pages';
 
 export function App() {
@@ -69,6 +70,11 @@ export function App() {
             <RouteComponent
               path={Route.Requests.MyBookRequests}
               element={<MyBookRequestsPage />}
+            />
+
+            <RouteComponent
+              path={Route.Requests.MyFileRequests}
+              element={<MyFileRequestsPage />}
             />
           </RouteComponent>
         </RouteComponent>

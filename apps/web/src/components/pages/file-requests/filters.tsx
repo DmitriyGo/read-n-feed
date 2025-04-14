@@ -1,0 +1,137 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
+import { z } from 'zod';
+
+import {
+  Button,
+  Input,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  Card,
+} from '@/components/ui';
+import { AcceptedStatus, AcceptedStatuses } from '@/constants';
+import { useFilterStore } from '@/store';
+
+const formSchema = z.object({
+  status: z.enum(AcceptedStatuses).optional(),
+  title: z.string().optional(),
+});
+
+type SearchBooksFormData = z.infer<typeof formSchema>;
+
+export const FileRequestSearchFilters = ({
+  isAdmin = false,
+}: {
+  isAdmin?: boolean;
+}) => {
+  const form = useForm<SearchBooksFormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      status: undefined,
+    },
+  });
+
+  const { updateFilter, clearFilters, clearSort, saveFilters, getFilter } =
+    useFilterStore();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    form.setValue('title', getFilter(searchParams, 'title') ?? '');
+    form.setValue(
+      'status',
+      (getFilter(searchParams, 'status') as AcceptedStatus) ?? '',
+    );
+  }, []);
+
+  const onSubmit = (values: SearchBooksFormData) => {
+    updateFilter({ name: 'title', value: values.title });
+    updateFilter({ name: 'status', value: values.status });
+
+    saveFilters(setSearchParams);
+  };
+
+  const handleClear = () => {
+    clearFilters(setSearchParams);
+    clearSort(setSearchParams);
+
+    form.reset();
+  };
+
+  return (
+    <Card className="w-full max-h-[calc(100vh-98px)] p-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {isAdmin && (
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value ?? ''}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(AcceptedStatuses).map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="w-full">
+            Save
+          </Button>
+
+          <Button
+            type="reset"
+            variant="destructive"
+            className="w-full"
+            onClick={handleClear}
+          >
+            Clear
+          </Button>
+        </form>
+      </Form>
+    </Card>
+  );
+};

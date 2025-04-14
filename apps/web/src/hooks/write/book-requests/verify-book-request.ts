@@ -29,7 +29,7 @@ export const useVerifyBookRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetBookRequests],
+            queryKey: [QueryKey.GetMyBookRequests],
             type: 'active',
           }),
         500,

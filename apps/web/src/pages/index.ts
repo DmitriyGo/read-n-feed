@@ -7,4 +7,6 @@ export * from './read';
 export * from './books/search';
 
 export * from './requests/my-book-requests';
+export * from './requests/my-file-requests';
+
 export * from './admin/book-requests';

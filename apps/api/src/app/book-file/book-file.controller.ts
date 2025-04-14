@@ -174,6 +174,7 @@ export class BookFileController {
     return new StreamableFile(buffer);
   }
 
+  @Public()
   @Get('url/:id')
   @ApiOperation({ summary: 'Get a download URL for a book file' })
   @ApiParam({ name: 'id', description: 'Book file ID' })

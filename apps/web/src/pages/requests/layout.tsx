@@ -8,6 +8,10 @@ const RequestsRoutes = [
     name: 'My Book Requests',
     href: Route.Requests.MyBookRequests,
   },
+  {
+    name: 'My File Requests',
+    href: Route.Requests.MyFileRequests,
+  },
 ];
 
 export const RequestsLayout = () => {

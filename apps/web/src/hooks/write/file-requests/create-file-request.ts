@@ -32,7 +32,7 @@ export const useCreateFileRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetFileRequests],
+            queryKey: [QueryKey.GetMyFileRequests],
             type: 'active',
           }),
         500,
