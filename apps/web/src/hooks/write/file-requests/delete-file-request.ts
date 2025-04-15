@@ -1,7 +1,3 @@
-import {
-  AdminReviewDto,
-  BookRequestResponseDto,
-} from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
@@ -9,36 +5,28 @@ import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useVerifyBookRequest = () => {
+export const useDeleteFileRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      requestId,
-      body,
-    }: {
-      requestId: string;
-      body: AdminReviewDto;
-    }) => {
-      return await axiosSecure.post<BookRequestResponseDto>(
-        ApiRoute.BookRequests.Review(requestId),
-        body,
+    mutationFn: async ({ fileRequestId }: { fileRequestId: string }) => {
+      return await axiosSecure.delete(
+        ApiRoute.FileRequests.Delete(fileRequestId),
       );
     },
     onSuccess: () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetMyBookRequests],
+            queryKey: [QueryKey.GetMyFileRequests],
             type: 'active',
           }),
         500,
       );
 
-      toast.success('Book request verified successfully');
+      toast.success('File request deleted successfully');
     },
     onError: (error) => {
-      toast.error(String(error));
       console.error(error);
     },
   });

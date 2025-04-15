@@ -1,24 +1,17 @@
 import { BookFileRequestResponseDto } from '@read-n-feed/application';
-import { isDefined } from 'class-validator';
 import { format } from 'date-fns';
-import { Check, FileEdit, Link2 } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Check, Trash2 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
-import {
-  Badges,
-  BookCover,
-  Description,
-  PartiallyLoadedContent,
-} from '@/components/common';
+import { PartiallyLoadedContent } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { Route } from '@/constants';
 import {
-  useBookRequestFilesById,
+  useDeleteFileRequest,
   useHasRole,
-  useVerifyBookRequest,
+  useGetDownloadUrl,
+  useVerifyFileRequest,
 } from '@/hooks';
-import { useGetDownloadUrl } from '@/hooks/read/files/get-download-url';
-import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
   return date ? format(new Date(date), 'MMM d, yyyy') : '';
@@ -31,8 +24,6 @@ export const FileRequestItem = ({
 }) => {
   const { pathname } = useLocation();
 
-  const { setMode, setParam } = useModalStore();
-
   const { hasRole: isAdmin } = useHasRole('ADMIN');
   const isOnAdminPage = pathname.includes('admin');
 
@@ -41,25 +32,22 @@ export const FileRequestItem = ({
   });
   const downloadUrl = data?.data?.url;
 
-  const { mutate } = useVerifyBookRequest();
+  const { mutate: deleteFileRequest } = useDeleteFileRequest();
+  const { mutate: verifyFileRequest } = useVerifyFileRequest();
 
-  const handleEdit = () => {
-    setMode('UpdateBookRequest');
-    setParam('requestId', fileRequest.id);
+  const handleDelete = () => {
+    deleteFileRequest({
+      fileRequestId: fileRequest.id,
+    });
   };
 
   const handleVerify = () => {
-    mutate({
+    verifyFileRequest({
       requestId: fileRequest.id,
       body: {
         status: 'APPROVED',
       },
     });
-  };
-  const navigate = useNavigate();
-
-  const handleClick = (fileId: string) => {
-    navigate(Route.Book.Read('-', fileId, 'file-request'));
   };
 
   return (
@@ -85,8 +73,8 @@ export const FileRequestItem = ({
           </Badge>
 
           {fileRequest.status === 'PENDING' && (
-            <Button variant="outline" onClick={handleEdit}>
-              <FileEdit />
+            <Button variant="outline" onClick={handleDelete}>
+              <Trash2 />
             </Button>
           )}
 
@@ -121,12 +109,21 @@ export const FileRequestItem = ({
             content={fileRequest?.fileInfo?.fileSize + ' KB'}
           />
 
-          <Link to={downloadUrl || ''} target="_blank">
-            <Button>Download</Button>
-          </Link>
-          <Button onClick={() => handleClick(fileRequest.fileId ?? '')}>
-            Read
-          </Button>
+          <div className="flex flex-wrap gap-4">
+            <Link to={downloadUrl || ''} target="_blank">
+              <Button>Download</Button>
+            </Link>
+
+            <Link
+              to={Route.Book.Read(
+                '-',
+                fileRequest.fileId ?? '',
+                'file-request',
+              )}
+            >
+              <Button>Read</Button>
+            </Link>
+          </div>
         </div>
 
         <div className="border-l pl-4">

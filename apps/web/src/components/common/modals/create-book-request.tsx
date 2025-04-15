@@ -60,8 +60,6 @@ export function CreateBookRequestModal() {
     },
   });
 
-  console.log('Form values:', form.getValues('fileLanguage'));
-
   const onSubmit = async (values: CreateRequestSchema) => {
     try {
       const data = clearObject(values) as CreateRequestSchema;

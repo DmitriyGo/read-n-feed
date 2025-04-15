@@ -19,7 +19,7 @@ export const useUpdateBookRequest = () => {
       dto: UpdateBookRequestDto;
       id: string;
     }) => {
-      await axiosSecure.patch<BookRequestResponseDto>(
+      return await axiosSecure.patch<BookRequestResponseDto>(
         ApiRoute.BookRequests.Update(id),
         dto,
       );

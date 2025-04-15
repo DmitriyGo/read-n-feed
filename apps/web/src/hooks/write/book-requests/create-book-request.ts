@@ -23,7 +23,7 @@ export const useCreateBookRequest = () => {
 
       formData.append('file', data.file);
 
-      await axiosSecure.post<BookRequestResponseDto>(
+      return await axiosSecure.post<BookRequestResponseDto>(
         ApiRoute.BookRequests.Create,
         formData,
       );
