@@ -3,43 +3,53 @@ import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { BookRequestItem } from './book-request-item';
+import { FileRequestItem } from './file-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
-import { Card, CardContent, CardHeader } from '@/components/ui';
-import { useAdminBookRequests } from '@/hooks';
-import { useFilterStore } from '@/store';
+import { Button, Card, CardContent, CardHeader } from '@/components/ui';
+import { useAdminFileRequests } from '@/hooks';
+import { useFilterStore, useModalStore } from '@/store';
 
-export const AdminBookRequestsBlock = () => {
+export const AdminFileRequestsBlock = () => {
+  const { setMode } = useModalStore();
+
   const [perPage, setPerPage] = useState<PerPage>(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   const { getFilter } = useFilterStore();
   const [urlSearchParams] = useSearchParams();
 
-  const { data } = useAdminBookRequests({
-    limit: perPage,
+  const { data } = useAdminFileRequests({
     page: currentPage,
+    limit: perPage,
     status: getFilter(urlSearchParams, 'status') as BookRequestStatus,
-    title: getFilter(urlSearchParams, 'title'),
+    bookId: getFilter(urlSearchParams, 'bookId'),
   });
 
-  const bookRequests = data?.data;
+  const myRequests = data?.data;
+
+  const handleCreateRequest = () => {
+    setMode('CreateBookRequest');
+  };
 
   return (
     <div>
       <Card>
         <CardHeader>
-          <h2 className="text-2xl">User book requests</h2>
+          <h2 className="text-2xl">User file requests</h2>
         </CardHeader>
 
         <CardContent className="space-y-4">
+          <Button className="w-full text-base" onClick={handleCreateRequest}>
+            Create a New Request
+          </Button>
+
           <div className="2xl:grid grid-cols-2 flex flex-col w-full gap-4">
-            {isDefined(bookRequests) ? (
-              bookRequests.items.map((requestItem) => (
-                <BookRequestItem
+            {isDefined(myRequests) ? (
+              myRequests.items.map((requestItem) => (
+                <FileRequestItem
                   key={requestItem.id}
-                  bookRequest={requestItem}
+                  fileRequest={requestItem}
                 />
               ))
             ) : (
@@ -51,7 +61,7 @@ export const AdminBookRequestsBlock = () => {
 
       <Pagination
         currentPage={currentPage}
-        maxPages={bookRequests?.totalPages || 1}
+        maxPages={myRequests?.totalPages || 1}
         onPerPageChange={setPerPage}
         perPage={perPage}
         setCurrentPage={setCurrentPage}

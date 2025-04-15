@@ -23,5 +23,6 @@ export const Route = {
 
   Admin: {
     BookRequests: '/admin/book-requests',
+    FileRequests: '/admin/file-requests',
   },
 } as const satisfies Record<string, RouteValue>;

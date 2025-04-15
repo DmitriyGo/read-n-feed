@@ -1,4 +1,4 @@
-import { PaginatedBookRequestResponseDto } from '@read-n-feed/application';
+import { PaginatedBookFileRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { useQuery } from '@tanstack/react-query';
 
@@ -7,11 +7,11 @@ import { QueryKey } from '@/constants/query-key';
 import { useAuth } from '@/hooks/use-auth';
 import { axiosSecure, clearObject } from '@/lib';
 
-export const useAdminBookRequests = (data: {
-  page: number;
-  limit: number;
+export const useAdminFileRequests = (data: {
+  page?: number;
+  limit?: number;
   status?: AcceptedStatus;
-  title?: string;
+  bookId?: string;
 }) => {
   const { accessToken } = useAuth();
 
@@ -19,13 +19,13 @@ export const useAdminBookRequests = (data: {
 
   return useQuery({
     queryKey: [
-      QueryKey.GetAdminBookRequests,
+      QueryKey.GetAdminFileRequests,
       accessToken,
       urlParams.toString(),
     ],
     queryFn: async () => {
-      return axiosSecure.get<PaginatedBookRequestResponseDto>(
-        `${ApiRoute.BookRequests.GetAll}?${urlParams}`,
+      return axiosSecure.get<PaginatedBookFileRequestResponseDto>(
+        `${ApiRoute.FileRequestsAdmin.GetAll}?${urlParams}`,
       );
     },
     enabled: isDefined(accessToken),

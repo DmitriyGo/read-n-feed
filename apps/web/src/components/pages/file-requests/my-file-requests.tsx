@@ -7,7 +7,7 @@ import { FileRequestItem } from './file-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { useMyFileRequests } from '@/hooks/read/file-requests/my-file-requests';
+import { useMyFileRequests } from '@/hooks';
 import { useFilterStore, useModalStore } from '@/store';
 
 export const MyFileRequestsBlock = () => {

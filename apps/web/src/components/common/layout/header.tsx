@@ -20,7 +20,7 @@ export const Header = () => {
 
         {isAdmin && (
           <li>
-            <Link to={Route.Admin.BookRequests}>User Book Requests</Link>
+            <Link to={Route.Admin.BookRequests}>User Requests</Link>
           </li>
         )}
       </ul>

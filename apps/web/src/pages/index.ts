@@ -10,3 +10,5 @@ export * from './requests/my-book-requests';
 export * from './requests/my-file-requests';
 
 export * from './admin/book-requests';
+export * from './admin/file-requests';
+export * from './admin/layout';

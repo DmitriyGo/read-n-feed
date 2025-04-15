@@ -25,6 +25,7 @@ import { useFilterStore } from '@/store';
 
 const formSchema = z.object({
   status: z.enum(AcceptedStatuses).optional(),
+  bookId: z.string().uuid().optional(),
   title: z.string().optional(),
 });
 
@@ -54,11 +55,13 @@ export const FileRequestSearchFilters = ({
       'status',
       (getFilter(searchParams, 'status') as AcceptedStatus) ?? '',
     );
+    form.setValue('bookId', getFilter(searchParams, 'bookId') ?? '');
   }, []);
 
   const onSubmit = (values: SearchBooksFormData) => {
     updateFilter({ name: 'title', value: values.title });
     updateFilter({ name: 'status', value: values.status });
+    updateFilter({ name: 'bookId', value: values.bookId });
 
     saveFilters(setSearchParams);
   };
@@ -117,6 +120,22 @@ export const FileRequestSearchFilters = ({
               </FormItem>
             )}
           />
+
+          {isAdmin && (
+            <FormField
+              control={form.control}
+              name="bookId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Book ID</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Book ID" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <Button type="submit" className="w-full">
             Save
