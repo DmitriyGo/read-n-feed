@@ -1,4 +1,3 @@
-import { BookRequestStatus } from '@read-n-feed/domain';
 import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -7,6 +6,7 @@ import { FileRequestItem } from './file-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
+import { AcceptedStatus } from '@/constants';
 import { useMyFileRequests } from '@/hooks';
 import { useFilterStore, useModalStore } from '@/store';
 
@@ -22,7 +22,7 @@ export const MyFileRequestsBlock = () => {
   const { data } = useMyFileRequests({
     page: currentPage,
     limit: perPage,
-    status: getFilter(urlSearchParams, 'status') as BookRequestStatus,
+    status: getFilter(urlSearchParams, 'status') as AcceptedStatus,
   });
 
   const myRequests = data?.data;

@@ -1,4 +1,4 @@
-import { isDefined } from 'class-validator';
+import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
