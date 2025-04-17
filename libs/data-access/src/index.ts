@@ -14,3 +14,4 @@ export * from './adapters/prisma/book-progress.repository';
 export * from './adapters/prisma/author.repository';
 export * from './adapters/prisma/genre.repository';
 export * from './adapters/prisma/tag.repository';
+export * from './adapters/prisma/recommendation.repository';

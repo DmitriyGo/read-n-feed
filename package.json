@@ -15,7 +15,8 @@
     "db:migration:dev:reset": "yarn prisma migrate reset --schema ./libs/data-access/prisma/schema",
     "db:migrate:deploy": "prisma migrate deploy --schema ./libs/data-access/prisma/schema",
     "db:migrate:status": "prisma migrate status --schema ./libs/data-access/prisma/schema",
-    "db:generate": "prisma generate --schema ./libs/data-access/prisma/schema"
+    "db:generate": "prisma generate --schema ./libs/data-access/prisma/schema",
+    "db:seed": "npx ts-node -P libs/data-access/prisma/tsconfig.json libs/data-access/prisma/seed.ts"
   },
   "private": true,
   "dependencies": {
@@ -139,5 +140,8 @@
     "vitest": "^1.3.1",
     "webpack-cli": "^5.1.4"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.6.0",
+  "prisma": {
+    "seed": "node libs/data-access/prisma/seed-runner.js"
+  }
 }

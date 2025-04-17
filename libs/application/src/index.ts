@@ -31,3 +31,6 @@ export * from './tags/tag.use-case';
 export * from './tags/tag.dto';
 
 export * from './common';
+
+export * from './recommendations/recommendation.dto';
+export * from './recommendations/recommendation.use-case';
