@@ -29,6 +29,7 @@ export const ApiRoute = {
   Users: {
     Me: `${ApiControllers.Users}/me`,
     UpdateMe: `${ApiControllers.Users}/me`,
+    Get: (userId: string) => `${ApiControllers.Users}/${userId}`,
     Block: (userId: string) => `${ApiControllers.Users}/${userId}/block`,
     Unblock: (userId: string) => `${ApiControllers.Users}/${userId}/unblock`,
   },
