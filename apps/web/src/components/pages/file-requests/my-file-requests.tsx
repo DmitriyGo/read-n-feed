@@ -2,24 +2,22 @@ import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { BookRequestItem } from './book-request-item';
+import { FileRequestItem } from './file-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
-import { Button, Card, CardContent, CardHeader } from '@/components/ui';
+import { Card, CardContent, CardHeader } from '@/components/ui';
 import { AcceptedStatus } from '@/constants';
-import { useMyBookRequests } from '@/hooks';
-import { useFilterStore, useModalStore } from '@/store';
+import { useMyFileRequests } from '@/hooks';
+import { useFilterStore } from '@/store';
 
-export const MyBookRequestsBlock = () => {
-  const { setMode } = useModalStore();
-
+export const MyFileRequestsBlock = () => {
   const [perPage, setPerPage] = useState<PerPage>(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   const { getFilter } = useFilterStore();
   const [urlSearchParams] = useSearchParams();
 
-  const { data } = useMyBookRequests({
+  const { data } = useMyFileRequests({
     page: currentPage,
     limit: perPage,
     status: getFilter(urlSearchParams, 'status') as AcceptedStatus,
@@ -27,28 +25,20 @@ export const MyBookRequestsBlock = () => {
 
   const myRequests = data?.data;
 
-  const handleCreateRequest = () => {
-    setMode('CreateBookRequest');
-  };
-
   return (
     <div>
       <Card>
         <CardHeader>
-          <h2 className="text-2xl">Your book requests</h2>
+          <h2 className="text-2xl">Your file requests</h2>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <Button className="w-full text-base" onClick={handleCreateRequest}>
-            Create a New Request
-          </Button>
-
           <div className="2xl:grid grid-cols-2 flex flex-col w-full gap-4">
             {isDefined(myRequests) ? (
               myRequests.items.map((requestItem) => (
-                <BookRequestItem
+                <FileRequestItem
                   key={requestItem.id}
-                  bookRequest={requestItem}
+                  fileRequest={requestItem}
                 />
               ))
             ) : (

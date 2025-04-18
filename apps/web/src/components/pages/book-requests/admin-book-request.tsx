@@ -1,4 +1,3 @@
-import { BookRequestStatus } from '@read-n-feed/domain';
 import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -7,6 +6,7 @@ import { BookRequestItem } from './book-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
 import { Card, CardContent, CardHeader } from '@/components/ui';
+import { AcceptedStatus } from '@/constants';
 import { useAdminBookRequests } from '@/hooks';
 import { useFilterStore } from '@/store';
 
@@ -20,7 +20,7 @@ export const AdminBookRequestsBlock = () => {
   const { data } = useAdminBookRequests({
     limit: perPage,
     page: currentPage,
-    status: getFilter(urlSearchParams, 'status') as BookRequestStatus,
+    status: getFilter(urlSearchParams, 'status') as AcceptedStatus,
     title: getFilter(urlSearchParams, 'title'),
   });
 
@@ -30,7 +30,7 @@ export const AdminBookRequestsBlock = () => {
     <div>
       <Card>
         <CardHeader>
-          <h2 className="text-2xl">Your book requests</h2>
+          <h2 className="text-2xl">User book requests</h2>
         </CardHeader>
 
         <CardContent className="space-y-4">

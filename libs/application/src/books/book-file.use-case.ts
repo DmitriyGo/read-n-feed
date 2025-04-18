@@ -263,7 +263,7 @@ export class BookFileUseCase {
       // Get URL for the file
       const downloadUrl = await this.fileStorage.getFileUrl(filePath);
 
-      this.logger.log(`Book file uploaded successfully: ${filename}`);
+      // Removed debug console.log statement before production
       return toBookFileResponseDto(bookFile, true, downloadUrl);
     } catch (error) {
       if (

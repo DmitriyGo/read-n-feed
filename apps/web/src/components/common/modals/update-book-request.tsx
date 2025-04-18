@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BookRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -35,7 +34,7 @@ type CreateRequestSchema = z.infer<typeof formSchema>;
 
 export function UpdateRequestBookModal() {
   const { mutateAsync: updateRequest } = useUpdateBookRequest();
-  const { setMode, params } = useModalStore();
+  const { setMode, params, clearParams } = useModalStore();
 
   const requestId = params['requestId'] as string;
 
@@ -72,7 +71,8 @@ export function UpdateRequestBookModal() {
         },
       });
 
-      toast.success('Request created successfully');
+      toast.success('Request updated successfully');
+      clearParams();
       setMode(null);
     } catch (error) {
       toast.error(error as string);

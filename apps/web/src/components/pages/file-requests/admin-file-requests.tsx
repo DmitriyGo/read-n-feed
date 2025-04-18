@@ -2,15 +2,15 @@ import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { BookRequestItem } from './book-request-item';
+import { FileRequestItem } from './file-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { AcceptedStatus } from '@/constants';
-import { useMyBookRequests } from '@/hooks';
+import { useAdminFileRequests } from '@/hooks';
 import { useFilterStore, useModalStore } from '@/store';
 
-export const MyBookRequestsBlock = () => {
+export const AdminFileRequestsBlock = () => {
   const { setMode } = useModalStore();
 
   const [perPage, setPerPage] = useState<PerPage>(10);
@@ -19,10 +19,11 @@ export const MyBookRequestsBlock = () => {
   const { getFilter } = useFilterStore();
   const [urlSearchParams] = useSearchParams();
 
-  const { data } = useMyBookRequests({
+  const { data } = useAdminFileRequests({
     page: currentPage,
     limit: perPage,
     status: getFilter(urlSearchParams, 'status') as AcceptedStatus,
+    bookId: getFilter(urlSearchParams, 'bookId'),
   });
 
   const myRequests = data?.data;
@@ -35,7 +36,7 @@ export const MyBookRequestsBlock = () => {
     <div>
       <Card>
         <CardHeader>
-          <h2 className="text-2xl">Your book requests</h2>
+          <h2 className="text-2xl">User file requests</h2>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -46,9 +47,9 @@ export const MyBookRequestsBlock = () => {
           <div className="2xl:grid grid-cols-2 flex flex-col w-full gap-4">
             {isDefined(myRequests) ? (
               myRequests.items.map((requestItem) => (
-                <BookRequestItem
+                <FileRequestItem
                   key={requestItem.id}
-                  bookRequest={requestItem}
+                  fileRequest={requestItem}
                 />
               ))
             ) : (

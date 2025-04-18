@@ -1,28 +1,31 @@
 import {
-  AdminReviewDto,
   BookRequestResponseDto,
+  CreateBookRequestDto,
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
 
 import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useVerifyBookRequest = () => {
+export const useCreateBookRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      requestId,
-      body,
-    }: {
-      requestId: string;
-      body: AdminReviewDto;
-    }) => {
+    mutationFn: async (data: CreateBookRequestDto & { file: File }) => {
+      const formData = new FormData();
+
+      for (const [key, value] of Object.entries(data)) {
+        if (key !== 'file' && value) {
+          formData.append(key, String(value));
+        }
+      }
+
+      formData.append('file', data.file);
+
       return await axiosSecure.post<BookRequestResponseDto>(
-        ApiRoute.BookRequests.Review(requestId),
-        body,
+        ApiRoute.BookRequests.Create,
+        formData,
       );
     },
     onSuccess: () => {
@@ -34,11 +37,8 @@ export const useVerifyBookRequest = () => {
           }),
         500,
       );
-
-      toast.success('Book request verified successfully');
     },
     onError: (error) => {
-      toast.error(String(error));
       console.error(error);
     },
   });

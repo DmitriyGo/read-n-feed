@@ -1,6 +1,6 @@
 import {
   BookRequestResponseDto,
-  CreateBookRequestDto,
+  CreateBookFileRequestDto,
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -8,11 +8,11 @@ import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useCreateBookRequest = () => {
+export const useCreateFileRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CreateBookRequestDto & { file: File }) => {
+    mutationFn: async (data: CreateBookFileRequestDto & { file: File }) => {
       const formData = new FormData();
 
       for (const [key, value] of Object.entries(data)) {
@@ -23,8 +23,8 @@ export const useCreateBookRequest = () => {
 
       formData.append('file', data.file);
 
-      await axiosSecure.post<BookRequestResponseDto>(
-        ApiRoute.Requests.Create,
+      return await axiosSecure.post<BookRequestResponseDto>(
+        ApiRoute.FileRequests.Create,
         formData,
       );
     },
@@ -32,7 +32,7 @@ export const useCreateBookRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetBookRequests],
+            queryKey: [QueryKey.GetMyFileRequests],
             type: 'active',
           }),
         500,

@@ -1,5 +1,3 @@
-import { UserResponseDto } from '@read-n-feed/application';
-import { User } from '@read-n-feed/domain';
 import { useLayoutEffect, useRef } from 'react';
 import {
   Routes,
@@ -23,6 +21,9 @@ import {
   MyBookRequestsPage,
   AdminBookRequestsPage,
   ReadPage,
+  MyFileRequestsPage,
+  AdminRequestsLayout,
+  AdminFileRequestsPage,
 } from '@/pages';
 
 export function App() {
@@ -70,23 +71,34 @@ export function App() {
               path={Route.Requests.MyBookRequests}
               element={<MyBookRequestsPage />}
             />
+
+            <RouteComponent
+              path={Route.Requests.MyFileRequests}
+              element={<MyFileRequestsPage />}
+            />
           </RouteComponent>
         </RouteComponent>
 
         <RouteComponent element={<RequiresRoleLayout userRole="ADMIN" />}>
-          <RouteComponent
-            path={Route.Admin.BookRequests}
-            element={<AdminBookRequestsPage />}
-          />
+          <RouteComponent element={<AdminRequestsLayout />}>
+            <RouteComponent
+              path={Route.Admin.BookRequests}
+              element={<AdminBookRequestsPage />}
+            />
+
+            <RouteComponent
+              path={Route.Admin.FileRequests}
+              element={<AdminFileRequestsPage />}
+            />
+          </RouteComponent>
         </RouteComponent>
 
         <RouteComponent
           path={`${Route.Book.Details}/:id`}
           element={<BookDetailsPage />}
         />
-        <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
-
         <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
+        <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
 
         <RouteComponent path="*" element={<NoFoundPage />} />
       </RouteComponent>

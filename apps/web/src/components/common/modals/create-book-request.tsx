@@ -18,9 +18,8 @@ import {
   Textarea,
 } from '@/components/ui';
 import { SupportedLanguages } from '@/constants';
-import { useCreateBookRequest } from '@/hooks/write/book-requests';
-import { clearObject } from '@/lib';
-import { validateFile, getFileExtension } from '@/lib/file-utils';
+import { useCreateBookRequest } from '@/hooks';
+import { clearObject, validateFile, getFileExtension } from '@/lib';
 import { useModalStore } from '@/store';
 
 const formSchema = z.object({
@@ -41,7 +40,7 @@ const formSchema = z.object({
 
 type CreateRequestSchema = z.infer<typeof formSchema>;
 
-export function CreateRequestBookModal() {
+export function CreateBookRequestModal() {
   const { mutateAsync: createRequest } = useCreateBookRequest();
   const { setMode } = useModalStore();
 
@@ -60,8 +59,6 @@ export function CreateRequestBookModal() {
       filename: '',
     },
   });
-
-  console.log('Form values:', form.getValues('fileLanguage'));
 
   const onSubmit = async (values: CreateRequestSchema) => {
     try {

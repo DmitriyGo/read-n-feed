@@ -1,4 +1,3 @@
-import { BookRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { useQuery } from '@tanstack/react-query';
 
@@ -7,20 +6,24 @@ import { QueryKey } from '@/constants/query-key';
 import { useAuth } from '@/hooks/use-auth';
 import { axiosSecure } from '@/lib';
 
-export const useBookRequestById = ({
-  id,
+export const useGetDownloadUrl = ({
+  fileId,
   enabled,
 }: {
-  id: string;
-  enabled: boolean;
+  fileId?: string | null;
+  enabled?: boolean;
 }) => {
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.GetBookRequestById, accessToken],
+    queryKey: [QueryKey.DownloadUrl, accessToken, fileId],
     queryFn: async () => {
-      return axiosSecure.get<BookRequestResponseDto>(
-        ApiRoute.BookRequests.Id(id),
+      if (!isDefined(fileId)) {
+        return;
+      }
+
+      return axiosSecure.get<{ url: string }>(
+        ApiRoute.BookFiles.GetUrl(fileId),
       );
     },
     enabled: isDefined(accessToken) && enabled,

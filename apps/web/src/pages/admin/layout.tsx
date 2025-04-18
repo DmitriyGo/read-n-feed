@@ -5,16 +5,16 @@ import { Route } from '@/constants';
 
 const RequestsRoutes = [
   {
-    name: 'My Book Requests',
-    href: Route.Requests.MyBookRequests,
+    name: 'User Book Requests',
+    href: Route.Admin.BookRequests,
   },
   {
-    name: 'My File Requests',
-    href: Route.Requests.MyFileRequests,
+    name: 'User File Requests',
+    href: Route.Admin.FileRequests,
   },
 ];
 
-export const RequestsLayout = () => {
+export const AdminRequestsLayout = () => {
   const location = useLocation();
 
   return (

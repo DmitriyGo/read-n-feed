@@ -1,5 +1,5 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
-import { isDefined } from 'class-validator';
+import { isDefined } from '@read-n-feed/shared';
 import { format } from 'date-fns';
 import { Check, FileEdit, Link2 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -56,7 +56,7 @@ export const BookRequestItem = ({
   const navigate = useNavigate();
 
   const handleClick = (fileId: string) => {
-    navigate(Route.Book.Read(bookRequest.id, fileId));
+    navigate(Route.Book.Read(bookRequest.id, fileId, 'book'));
   };
 
   return (

@@ -1,8 +1,14 @@
 export const QueryKey = {
   GetProfile: 'get-profile',
   GetBooksCatalog: 'get-books-catalog',
-  GetBookRequests: 'get-requests',
+  GetMyBookRequests: 'get-my-requests',
+  GetAdminBookRequests: 'get-my-requests',
   GetBookRequestById: 'get-request-by-id',
   GetBookFiles: 'get-book-files',
   GetBookRequestFiles: 'get-book-request-files',
+  GetMyFileRequests: 'get-my-file-requests',
+  GetAdminFileRequests: 'get-my-file-requests',
+  GetFileRequestById: 'get-file-request-by-id',
+  DownloadUrl: 'download-url',
+  Metadata: 'metadata',
 };
