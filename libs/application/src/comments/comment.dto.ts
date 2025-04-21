@@ -38,6 +38,9 @@ export class CommentResponseDto {
   @ApiProperty()
   userId: string;
 
+  @ApiPropertyOptional({ description: 'Username of the comment author' })
+  username?: string;
+
   @ApiProperty()
   content: string;
 
