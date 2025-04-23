@@ -31,8 +31,6 @@ export const BookComments = ({ bookId }: { bookId?: string }) => {
   const { mutate: createComment } = useCreateComment();
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
-  console.log({ isLoading, commentsResponse });
-
   const form = useForm<CommentFormData>({
     defaultValues: {
       content: '',

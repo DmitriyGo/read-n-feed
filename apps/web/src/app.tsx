@@ -63,9 +63,21 @@ export function App() {
       <RouteComponent path={Route.Home} element={<Layout />}>
         <RouteComponent index element={<HomePage />} />
 
+        {/* User */}
         <RouteComponent element={<RequiresRoleLayout userRole="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
 
+          <RouteComponent
+            path={`${Route.Book.Details}/:id`}
+            element={<BookDetailsPage />}
+          />
+          <RouteComponent
+            path={Route.Book.Search}
+            element={<BookSearchPage />}
+          />
+          <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
+
+          {/* Requests */}
           <RouteComponent element={<RequestsLayout />}>
             <RouteComponent
               path={Route.Requests.MyBookRequests}
@@ -79,6 +91,7 @@ export function App() {
           </RouteComponent>
         </RouteComponent>
 
+        {/* Admin */}
         <RouteComponent element={<RequiresRoleLayout userRole="ADMIN" />}>
           <RouteComponent element={<AdminRequestsLayout />}>
             <RouteComponent
@@ -92,13 +105,6 @@ export function App() {
             />
           </RouteComponent>
         </RouteComponent>
-
-        <RouteComponent
-          path={`${Route.Book.Details}/:id`}
-          element={<BookDetailsPage />}
-        />
-        <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
-        <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
 
         <RouteComponent path="*" element={<NoFoundPage />} />
       </RouteComponent>

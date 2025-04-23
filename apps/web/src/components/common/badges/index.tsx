@@ -16,7 +16,7 @@ export const Badges = ({
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
-      {isDefined(label) && <p>{label}</p>}
+      {isDefined(label) && <p>{label}:</p>}
 
       {isDefined(tags) ? (
         <>

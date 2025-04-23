@@ -1,6 +1,7 @@
 export const QueryKey = {
   GetProfile: 'get-profile',
   GetBooksCatalog: 'get-books-catalog',
+  GetBookById: 'get-book-by-id',
   GetMyBookRequests: 'get-my-requests',
   GetAdminBookRequests: 'get-my-requests',
   GetBookRequestById: 'get-request-by-id',

@@ -19,5 +19,8 @@ export const useCreateComment = () => {
         queryKey: ['comments', 'book', variables.bookId],
       });
     },
+    onError: (error) => {
+      console.error(error);
+    },
   });
 };
