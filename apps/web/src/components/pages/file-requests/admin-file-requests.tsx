@@ -5,14 +5,12 @@ import { useSearchParams } from 'react-router-dom';
 import { FileRequestItem } from './file-request-item';
 
 import { Pagination, PerPage } from '@/components/common';
-import { Button, Card, CardContent, CardHeader } from '@/components/ui';
+import { Card, CardContent, CardHeader } from '@/components/ui';
 import { AcceptedStatus } from '@/constants';
 import { useAdminFileRequests } from '@/hooks';
-import { useFilterStore, useModalStore } from '@/store';
+import { useFilterStore } from '@/store';
 
 export const AdminFileRequestsBlock = () => {
-  const { setMode } = useModalStore();
-
   const [perPage, setPerPage] = useState<PerPage>(10);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -28,10 +26,6 @@ export const AdminFileRequestsBlock = () => {
 
   const myRequests = data?.data;
 
-  const handleCreateRequest = () => {
-    setMode('CreateBookRequest');
-  };
-
   return (
     <div>
       <Card>
@@ -40,10 +34,6 @@ export const AdminFileRequestsBlock = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <Button className="w-full text-base" onClick={handleCreateRequest}>
-            Create a New Request
-          </Button>
-
           <div className="2xl:grid grid-cols-2 flex flex-col w-full gap-4">
             {isDefined(myRequests) ? (
               myRequests.items.map((requestItem) => (
