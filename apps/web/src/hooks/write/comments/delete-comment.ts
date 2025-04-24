@@ -15,5 +15,8 @@ export const useDeleteComment = (commentId: string, bookId: string) => {
         queryKey: ['comments', 'book', bookId],
       });
     },
+    onError: (error) => {
+      console.error(error);
+    },
   });
 };

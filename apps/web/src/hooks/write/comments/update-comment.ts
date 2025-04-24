@@ -19,5 +19,8 @@ export const useUpdateComment = (commentId: string, bookId: string) => {
         queryKey: ['comments', 'book', bookId],
       });
     },
+    onError: (error) => {
+      console.error(error);
+    },
   });
 };

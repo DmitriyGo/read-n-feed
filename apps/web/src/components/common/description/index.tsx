@@ -19,7 +19,9 @@ export const Description = ({
 
   return isDefined(text) ? (
     <p className="text-justify">
-      <span>{showMore ? text : text.slice(0, indexOfPreviousSpace)}</span>
+      <span>
+        Description: {showMore ? text : text.slice(0, indexOfPreviousSpace)}
+      </span>
 
       {text.length > length && (
         <span
