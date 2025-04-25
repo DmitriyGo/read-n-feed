@@ -63,5 +63,7 @@
   "publisher": "Видавець",
   "publicationDate": "Дата Публікації",
   "fileName": "Назва файлу",
-  "format": "Формат"
+  "format": "Формат",
+  "myBookRequests": "Мої запити книг",
+  "myFileRequests": "Мої запити файлів"
 }

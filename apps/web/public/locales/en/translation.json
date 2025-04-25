@@ -63,5 +63,7 @@
   "publisher": "Publisher",
   "publicationDate": "Publication Date",
   "fileName": "File name",
-  "format": "Format"
+  "format": "Format",
+  "myBookRequests": "My Book Requests",
+  "myFileRequests": "My File Requests"
 }

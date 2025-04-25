@@ -71,7 +71,7 @@ export const FileRequestItem = ({
                   : 'destructive'
             }
           >
-            {fileRequest.status}
+            {t(fileRequest.status.toLowerCase())}
           </Badge>
 
           {fileRequest.status === 'PENDING' && (
