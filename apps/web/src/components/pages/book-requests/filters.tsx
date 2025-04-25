@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -35,6 +36,7 @@ export const BookRequestSearchFilters = ({
 }: {
   isAdmin?: boolean;
 }) => {
+  const { t } = useTranslation();
   const form = useForm<SearchBooksFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -80,9 +82,9 @@ export const BookRequestSearchFilters = ({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t('title')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Title" {...field} />
+                    <Input placeholder={t('title')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,19 +97,19 @@ export const BookRequestSearchFilters = ({
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{t('status')}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value ?? ''}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder={t('status')} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.values(AcceptedStatuses).map((status) => (
                         <SelectItem key={status} value={status}>
-                          {status}
+                          {t(status.toLowerCase())}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -119,7 +121,7 @@ export const BookRequestSearchFilters = ({
           />
 
           <Button type="submit" className="w-full">
-            Save
+            {t('save')}
           </Button>
 
           <Button
@@ -128,7 +130,7 @@ export const BookRequestSearchFilters = ({
             className="w-full"
             onClick={handleClear}
           >
-            Clear
+            {t('clear')}
           </Button>
         </form>
       </Form>
