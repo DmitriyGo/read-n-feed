@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import {
@@ -26,7 +28,7 @@ const formSchema = z.object({
         return firstName === '' || firstName.length >= 3;
       },
       {
-        message: 'First name is too short',
+        message: 'firstNameTooShort',
       },
     )
     .transform((value) => {
@@ -39,7 +41,7 @@ const formSchema = z.object({
         return firstName === '' || firstName.length >= 3;
       },
       {
-        message: 'First name is too short',
+        message: 'lastNameTooShort',
       },
     )
     .transform((value) => {
@@ -52,6 +54,8 @@ type UpdateProfileFormSchema = z.infer<typeof formSchema>;
 export const UpdateProfileInfo = () => {
   const { isSuccess } = useGetProfile();
   const { mutateAsync: updateProfile } = useUpdateProfile();
+
+  const { t } = useTranslation();
 
   const form = useForm<UpdateProfileFormSchema>({
     resolver: zodResolver(formSchema),
@@ -82,7 +86,7 @@ export const UpdateProfileInfo = () => {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-xl font-semibold">Update Your Profile</h2>
+        <h2 className="text-xl font-semibold">{t('updateYourProfile')}</h2>
       </CardHeader>
 
       <CardContent className="flex flex-row gap-4">
@@ -96,9 +100,9 @@ export const UpdateProfileInfo = () => {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>{t('firstName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="John" {...field} />
+                    <Input placeholder={t('john')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -110,9 +114,9 @@ export const UpdateProfileInfo = () => {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>{t('lastName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Doe" {...field} />
+                    <Input placeholder={t('doe')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,7 +132,7 @@ export const UpdateProfileInfo = () => {
               onClick={clearForm}
               className="w-full"
             >
-              Cancel
+              {t('cancel')}
             </Button>
 
             <Button
@@ -137,7 +141,7 @@ export const UpdateProfileInfo = () => {
               variant="outline"
               className="w-full"
             >
-              Update Information
+              {t('updateInformation')}
             </Button>
           </form>
         </Form>

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import {
   Pagination as BasePagination,
   PaginationContent,
@@ -32,6 +34,8 @@ export const Pagination = ({
   setCurrentPage: (value: number) => void;
   className?: string;
 }) => {
+  const { t } = useTranslation();
+
   const handlePerPageChange = (value: PerPage) => {
     onPerPageChange(value);
     setCurrentPage(1);
@@ -65,8 +69,9 @@ export const Pagination = ({
       className={cn(className, 'w-full items-center justify-between md:flex')}
     >
       <div className="flex items-center gap-2">
-        <p className="text-[12px] md:text-[14px] text-nowrap">Show per page</p>
-
+        <p className="text-[12px] md:text-[14px] text-nowrap">
+          {t('showPerPage')}
+        </p>
         <Select
           value={String(perPage)}
           defaultValue="10"
@@ -105,7 +110,7 @@ export const Pagination = ({
               }
             }}
           >
-            <PaginationPrevious />
+            <PaginationPrevious>{t('previous')}</PaginationPrevious>
           </PaginationItem>
 
           {mode === 'start' && (
@@ -207,7 +212,7 @@ export const Pagination = ({
               }
             }}
           >
-            <PaginationNext />
+            <PaginationNext>{t('next')}</PaginationNext>
           </PaginationItem>
         </PaginationContent>
       </BasePagination>

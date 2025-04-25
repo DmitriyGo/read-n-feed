@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -15,6 +16,8 @@ export const PDFReader = ({
   const [numPages, setNumPages] = useState<number>();
   const [scale, setScale] = useState<number>(1);
 
+  const { t } = useTranslation();
+
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
   }
@@ -30,7 +33,7 @@ export const PDFReader = ({
         onChange={(e) => setScale(parseFloat(e.target.value))}
       />
       <p>
-        Scale: {scale}
+        {t('scale')}: {scale}
         <span className="text-gray-400"> (0.8 - 1.5)</span>
       </p>
 
