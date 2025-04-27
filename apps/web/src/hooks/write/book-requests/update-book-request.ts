@@ -19,8 +19,8 @@ export const useUpdateBookRequest = () => {
       dto: UpdateBookRequestDto;
       id: string;
     }) => {
-      await axiosSecure.patch<BookRequestResponseDto>(
-        ApiRoute.Requests.Update(id),
+      return await axiosSecure.patch<BookRequestResponseDto>(
+        ApiRoute.BookRequests.Update(id),
         dto,
       );
     },
@@ -28,7 +28,7 @@ export const useUpdateBookRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetBookRequests],
+            queryKey: [QueryKey.GetMyBookRequests],
             type: 'active',
           }),
         500,

@@ -20,8 +20,8 @@ export const useVerifyBookRequest = () => {
       requestId: string;
       body: AdminReviewDto;
     }) => {
-      await axiosSecure.post<BookRequestResponseDto>(
-        ApiRoute.Requests.Review(requestId),
+      return await axiosSecure.post<BookRequestResponseDto>(
+        ApiRoute.BookRequests.Review(requestId),
         body,
       );
     },
@@ -29,7 +29,7 @@ export const useVerifyBookRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetBookRequests],
+            queryKey: [QueryKey.GetMyBookRequests],
             type: 'active',
           }),
         500,

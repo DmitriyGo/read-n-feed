@@ -33,7 +33,7 @@ export const Profile = () => {
   };
 
   const handleMyRequests = () => {
-    navigate(Route.Requests.MyRequests);
+    navigate(Route.Requests.MyBookRequests);
   };
 
   return (

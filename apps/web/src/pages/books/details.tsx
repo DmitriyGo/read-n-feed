@@ -1,6 +1,10 @@
 import { useParams } from 'react-router-dom';
 
-import { BookDetails, BookFiles } from '@/components/pages/books/details';
+import {
+  BookComments,
+  BookDetails,
+  BookFiles,
+} from '@/components/pages/books/details';
 import { useBookById } from '@/hooks/read/books/get-book';
 
 export const BookDetailsPage = () => {
@@ -9,10 +13,12 @@ export const BookDetailsPage = () => {
   const { data } = useBookById(id);
 
   return (
-    <div>
+    <div className="space-y-4">
       <BookDetails book={data?.data} />
 
-      <BookFiles id={id} />
+      <BookFiles bookId={id} />
+
+      <BookComments bookId={id} />
     </div>
   );
 };

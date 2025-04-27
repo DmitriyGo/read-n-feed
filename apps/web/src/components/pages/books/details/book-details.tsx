@@ -1,4 +1,5 @@
 import { BookResponseDto } from '@read-n-feed/application';
+import { isDefined } from '@read-n-feed/shared';
 
 import {
   Badges,
@@ -6,9 +7,25 @@ import {
   Description,
   PartiallyLoadedContent,
 } from '@/components/common';
-import { Card, CardContent, CardHeader } from '@/components/ui';
+import { Button, Card, CardContent, CardHeader } from '@/components/ui';
+import { useAuth } from '@/hooks';
+import { useLikeBook } from '@/hooks/write/books';
 
 export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
+  const { mutate: likeBook } = useLikeBook();
+  const { accessToken } = useAuth();
+
+  const handleLike = () => {
+    if (!book) {
+      return;
+    }
+
+    likeBook({
+      bookId: book.id,
+      userWantsToLike: !book.liked,
+    });
+  };
+
   return (
     <Card className="[&:p]:text-sm">
       <CardHeader>
@@ -20,7 +37,17 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
       </CardHeader>
 
       <CardContent className="flex flex-row gap-4">
-        <BookCover book={book} />
+        <div className="flex-[0_1_0%] flex-col flex justify-between space-y-2">
+          <BookCover book={book} />
+          <Button
+            className="w-full"
+            onClick={handleLike}
+            disabled={!isDefined(accessToken)}
+            variant={book?.liked ? 'default' : 'outline'}
+          >
+            {book?.liked ? 'Unlike' : 'Like'}
+          </Button>
+        </div>
 
         <div className="space-y-2">
           <Description text={book?.description} />
@@ -32,12 +59,14 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
             content={book?.authors?.map((author) => author.name).join(', ')}
           />
           <PartiallyLoadedContent label="Publisher" content={book?.publisher} />
-          <PartiallyLoadedContent
-            label="Published at"
-            content={new Date(
-              String(book?.publicationDate),
-            ).toLocaleDateString()}
-          />
+          {isDefined(book?.publicationDate) && (
+            <PartiallyLoadedContent
+              label="Published at"
+              content={new Date(
+                String(book?.publicationDate),
+              ).toLocaleDateString()}
+            />
+          )}
           <PartiallyLoadedContent
             label="Average Rating"
             content={book?.averageRating}
@@ -46,7 +75,6 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
             label="Total Likes"
             content={book?.totalLikes}
           />
-          <PartiallyLoadedContent label="Liked" content={book?.liked} />
         </div>
       </CardContent>
     </Card>

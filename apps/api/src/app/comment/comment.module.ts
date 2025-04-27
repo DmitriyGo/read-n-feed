@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CommentUseCase } from '@read-n-feed/application';
+import { CommentUseCase, UserUseCase } from '@read-n-feed/application';
 import {
   PrismaBookCommentRepository,
   PrismaBookRepository,
@@ -13,6 +13,7 @@ import { CommentController } from './comment.controller';
   providers: [
     // Application Use Cases
     CommentUseCase,
+    UserUseCase,
 
     // Domain Repositories
     {

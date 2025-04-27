@@ -16,7 +16,7 @@ export const useGetFilteredBooks = (searchData: SearchBooksDto) => {
   const urlParams = new URLSearchParams(clearObject(searchData));
 
   return useQuery({
-    queryKey: [QueryKey.GetBooksCatalog, accessToken, ...urlParams.values()],
+    queryKey: [QueryKey.GetBooksCatalog, accessToken, urlParams.toString()],
     queryFn: async () => {
       return axiosSecure.get<PaginatedBooksResponseDto>(
         `${ApiRoute.Books.Base}?${urlParams}`,

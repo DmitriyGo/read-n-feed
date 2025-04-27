@@ -40,11 +40,19 @@ export class LocalFileStorageService implements IFileStorageService {
 
   async saveFile(
     fileBuffer: Buffer,
-    originalFilename: string,
+    filename: string,
     mimeType: string,
   ): Promise<string> {
-    const secureFilename = this.generateSecureFilename(originalFilename);
-    const filePath = path.join(this.uploadDir, secureFilename);
+    // If filename already includes path info, extract just the filename
+    const basename = path.basename(filename);
+
+    // Encode filename to handle Unicode characters properly
+    const encodedFilename = encodeURIComponent(basename).replace(
+      /[!'()*]/g,
+      (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+    );
+
+    const filePath = path.join(this.uploadDir, encodedFilename);
 
     try {
       await fs.promises.writeFile(filePath, fileBuffer);
@@ -87,6 +95,8 @@ export class LocalFileStorageService implements IFileStorageService {
       'http://localhost:3001/files',
     );
     const filename = path.basename(filePath);
-    return `${baseUrl}/${filename}`;
+
+    const encodedFilename = encodeURIComponent(filename);
+    return `${baseUrl}/${encodedFilename}`;
   }
 }

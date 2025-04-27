@@ -1,4 +1,4 @@
-import { isDefined } from 'class-validator';
+import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -33,7 +33,7 @@ export const BookCatalog = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="flex flex-row w-full h-fit gap-4">
+      <Card className="flex flex-wrap justify-start w-full h-fit gap-4">
         {isDefined(filteredBooks) &&
           filteredBooks.items.map((filteredBook) => (
             <BookCard key={filteredBook.id} book={filteredBook} />

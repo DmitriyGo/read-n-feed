@@ -8,7 +8,7 @@ import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useBookFilesById = (id?: string) => {
+export const useBookFilesById = (id?: string, enabled = true) => {
   const { accessToken } = useAuth();
 
   return useQuery({
@@ -22,6 +22,6 @@ export const useBookFilesById = (id?: string) => {
         ApiRoute.BookFiles.GetForBook(id),
       );
     },
-    enabled: isDefined(id),
+    enabled: isDefined(id) && enabled,
   });
 };

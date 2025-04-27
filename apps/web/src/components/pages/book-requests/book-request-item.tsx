@@ -1,6 +1,8 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
+import { isDefined } from '@read-n-feed/shared';
 import { format } from 'date-fns';
-import { Check, FileEdit } from 'lucide-react';
+import { Check, FileEdit, Link2 } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   Badges,
@@ -9,7 +11,12 @@ import {
   PartiallyLoadedContent,
 } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { useHasRole, useVerifyBookRequest } from '@/hooks';
+import { Route } from '@/constants';
+import {
+  useBookRequestFilesById,
+  useHasRole,
+  useVerifyBookRequest,
+} from '@/hooks';
 import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
@@ -21,11 +28,17 @@ export const BookRequestItem = ({
 }: {
   bookRequest: BookRequestResponseDto;
 }) => {
+  const { pathname } = useLocation();
+
   const { setMode, setParam } = useModalStore();
 
   const { hasRole: isAdmin } = useHasRole('ADMIN');
+  const isOnAdminPage = pathname.includes('admin');
 
   const { mutate } = useVerifyBookRequest();
+
+  const { data } = useBookRequestFilesById(bookRequest.id);
+  const bookRequestFiles = data?.data;
 
   const handleEdit = () => {
     setMode('UpdateBookRequest');
@@ -39,6 +52,11 @@ export const BookRequestItem = ({
         status: 'APPROVED',
       },
     });
+  };
+  const navigate = useNavigate();
+
+  const handleClick = (fileId: string) => {
+    navigate(Route.Book.Read(bookRequest.id, fileId, 'book'));
   };
 
   return (
@@ -63,11 +81,14 @@ export const BookRequestItem = ({
             {bookRequest.status}
           </Badge>
 
-          <Button variant="outline" onClick={handleEdit}>
-            <FileEdit />
-          </Button>
+          {bookRequest.status === 'PENDING' && (
+            <Button variant="outline" onClick={handleEdit}>
+              <FileEdit />
+            </Button>
+          )}
 
-          {isAdmin && (
+          {/* Show the verify button only for admins on admin routes when the request is pending */}
+          {isAdmin && isOnAdminPage && bookRequest.status === 'PENDING' && (
             <Button variant="outline" onClick={handleVerify}>
               <Check />
             </Button>
@@ -75,7 +96,7 @@ export const BookRequestItem = ({
         </div>
       </CardHeader>
 
-      <CardContent className="flex lg:flex-row flex-col gap-4">
+      <CardContent className="flex flex-col gap-4">
         <BookCover book={bookRequest} />
 
         <div>
@@ -142,6 +163,33 @@ export const BookRequestItem = ({
               className="text-blue-500"
             />
           )}
+
+          <div className="border-l pl-4">
+            {bookRequestFiles?.map((bookFile) => (
+              <div
+                key={bookFile.id}
+                onClick={() => handleClick(bookFile.id)}
+                className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
+              >
+                <p>
+                  File name:&nbsp;
+                  {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
+                    ? bookFile.metadata['Title']
+                    : bookFile.filename}
+                </p>
+
+                <p className="text-center">
+                  <span>Format: {bookFile.format}</span>
+                </p>
+
+                <div className="flex justify-end">
+                  <a href={bookFile.downloadUrl}>
+                    <Link2 />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>

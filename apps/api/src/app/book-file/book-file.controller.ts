@@ -34,6 +34,7 @@ import { JwtPayload } from '@read-n-feed/domain';
 import { Response } from 'express';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
+import { Public } from '../auth/guards/public.decorator';
 import { AdminOnly } from '../auth/guards/roles.decorator';
 
 @ApiBearerAuth()
@@ -74,14 +75,13 @@ export class BookFileController {
           enum: ['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'],
           description: 'Format of the book file',
         },
+        filename: {
+          type: 'string',
+          description: 'Custom display filename',
+        },
       },
       required: ['file', 'format'],
     },
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Book file uploaded successfully',
-    type: BookFileResponseDto,
   })
   async uploadBookFile(
     @Body() dto: CreateBookFileDto,
@@ -135,9 +135,12 @@ export class BookFileController {
     const { buffer, mimeType, filename } =
       await this.bookFileUseCase.getBookFile(id);
 
+    const encodedFilename = encodeURIComponent(filename);
+    const contentDisposition = `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`;
+
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"`,
+      'Content-Disposition': contentDisposition,
       'Content-Length': buffer.length,
     });
 
@@ -171,6 +174,7 @@ export class BookFileController {
     return new StreamableFile(buffer);
   }
 
+  @Public()
   @Get('url/:id')
   @ApiOperation({ summary: 'Get a download URL for a book file' })
   @ApiParam({ name: 'id', description: 'Book file ID' })
@@ -212,6 +216,7 @@ export class BookFileController {
     description: 'Returns all files for the specified book',
     type: [BookFileResponseDto],
   })
+  @Public()
   async getBookFiles(
     @Param('bookId', ParseUUIDPipe) bookId: string,
   ): Promise<BookFileResponseDto[]> {

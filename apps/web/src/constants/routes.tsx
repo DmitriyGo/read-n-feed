@@ -1,3 +1,5 @@
+import { RouteValue } from '@/types';
+
 export const Route = {
   Home: '/',
 
@@ -6,13 +8,21 @@ export const Route = {
   Book: {
     Details: '/book/details',
     Search: '/book/search',
+    ReadString: '/read/:bookOrRequestId/:fileId/:type',
+    Read: (
+      bookOrRequestId: string,
+      fileId: string,
+      type: 'book' | 'request' | 'file-request',
+    ) => `/read/${bookOrRequestId}/${fileId}/${type}`,
   },
 
   Requests: {
-    MyRequests: '/requests/my-requests',
+    MyBookRequests: '/requests/my-book-requests',
+    MyFileRequests: '/requests/my-file-requests',
   },
 
   Admin: {
     BookRequests: '/admin/book-requests',
+    FileRequests: '/admin/file-requests',
   },
-} as const;
+} as const satisfies Record<string, RouteValue>;

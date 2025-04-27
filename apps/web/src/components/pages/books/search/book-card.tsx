@@ -1,6 +1,5 @@
-import { Thumb } from '@radix-ui/react-switch';
 import { BookResponseDto } from '@read-n-feed/application';
-import { Heart, Star, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { Star, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -34,11 +33,11 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="w-fit h-fit p-4" onClick={handleClick}>
+          <div className="w-min h-fit p-4" onClick={handleClick}>
             <BookCover book={book} />
 
             <div className="flex flex-col space-y-1 justify-between">
-              <h2>{book.title}</h2>
+              <h2 className="text-wrap text-clip">{book.title}</h2>
               <p className="flex flex-row items-center gap-1">
                 <Star />
                 <span>{book.averageRating ?? '---'}</span>

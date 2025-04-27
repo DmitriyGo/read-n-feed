@@ -51,3 +51,5 @@ export * from './genres/ genre.repository.port';
 export * from './tags/tag.props';
 export * from './tags/tag.entity';
 export * from './tags/tag.repository.port';
+
+export * from './recommendations/recommendation.types';

@@ -1,5 +1,3 @@
-import { UserResponseDto } from '@read-n-feed/application';
-import { User } from '@read-n-feed/domain';
 import { useLayoutEffect, useRef } from 'react';
 import {
   Routes,
@@ -9,6 +7,7 @@ import {
 
 import { useAuth } from './hooks';
 import { axiosSecure } from './lib';
+import { RequestsLayout } from './pages/requests/layout';
 import { useAuthStore, useFilterStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
@@ -21,6 +20,10 @@ import {
   BookSearchPage,
   MyBookRequestsPage,
   AdminBookRequestsPage,
+  ReadPage,
+  MyFileRequestsPage,
+  AdminRequestsLayout,
+  AdminFileRequestsPage,
 } from '@/pages';
 
 export function App() {
@@ -60,27 +63,48 @@ export function App() {
       <RouteComponent path={Route.Home} element={<Layout />}>
         <RouteComponent index element={<HomePage />} />
 
+        {/* User */}
         <RouteComponent element={<RequiresRoleLayout userRole="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
 
           <RouteComponent
-            path={Route.Requests.MyRequests}
-            element={<MyBookRequestsPage />}
+            path={`${Route.Book.Details}/:id`}
+            element={<BookDetailsPage />}
           />
-        </RouteComponent>
-
-        <RouteComponent element={<RequiresRoleLayout userRole="ADMIN" />}>
           <RouteComponent
-            path={Route.Admin.BookRequests}
-            element={<AdminBookRequestsPage />}
+            path={Route.Book.Search}
+            element={<BookSearchPage />}
           />
+          <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
+
+          {/* Requests */}
+          <RouteComponent element={<RequestsLayout />}>
+            <RouteComponent
+              path={Route.Requests.MyBookRequests}
+              element={<MyBookRequestsPage />}
+            />
+
+            <RouteComponent
+              path={Route.Requests.MyFileRequests}
+              element={<MyFileRequestsPage />}
+            />
+          </RouteComponent>
         </RouteComponent>
 
-        <RouteComponent
-          path={`${Route.Book.Details}/:id`}
-          element={<BookDetailsPage />}
-        />
-        <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
+        {/* Admin */}
+        <RouteComponent element={<RequiresRoleLayout userRole="ADMIN" />}>
+          <RouteComponent element={<AdminRequestsLayout />}>
+            <RouteComponent
+              path={Route.Admin.BookRequests}
+              element={<AdminBookRequestsPage />}
+            />
+
+            <RouteComponent
+              path={Route.Admin.FileRequests}
+              element={<AdminFileRequestsPage />}
+            />
+          </RouteComponent>
+        </RouteComponent>
 
         <RouteComponent path="*" element={<NoFoundPage />} />
       </RouteComponent>

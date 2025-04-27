@@ -1,9 +1,13 @@
 import { Dispatch, ReactElement } from 'react';
 import { create } from 'zustand';
 
-import { SignInModal, SignUpModal } from '@/components/common/modals';
-import { CreateRequestBookModal } from '@/components/common/modals/request-for-create';
-import { UpdateRequestBookModal } from '@/components/common/modals/update-book-request';
+import {
+  CreateBookRequestModal,
+  CreateFileRequestModal,
+  SignInModal,
+  SignUpModal,
+  UpdateRequestBookModal,
+} from '@/components/common';
 
 export type ModalModeInfo = {
   component: ReactElement;
@@ -19,10 +23,13 @@ const ModalInfos = {
     component: <SignUpModal />,
   },
   CreateBookRequest: {
-    component: <CreateRequestBookModal />,
+    component: <CreateBookRequestModal />,
   },
   UpdateBookRequest: {
     component: <UpdateRequestBookModal />,
+  },
+  CreateFileRequest: {
+    component: <CreateFileRequestModal />,
   },
 } satisfies Record<string, ModalModeInfo>;
 

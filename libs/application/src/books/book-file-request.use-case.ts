@@ -12,7 +12,6 @@ import {
   IBookFileRequestRepository,
   IBookRepository,
   IBookFileRepository,
-  BookFile,
 } from '@read-n-feed/domain';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -80,6 +79,7 @@ export class BookFileRequestUseCase {
       const fileDto: CreateBookFileDto = {
         format: formatEnum,
         bookId: dto.bookId,
+        filename: dto.filename,
       };
 
       // Upload the file using BookFileUseCase with the proper DTO

@@ -1,5 +1,6 @@
-import { isDefined } from 'class-validator';
+import { isArray, isDefined } from 'class-validator';
 import { clsx, type ClassValue } from 'clsx';
+import { format } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -10,10 +11,27 @@ export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function clearObject(obj: Record<string, string> | object) {
+export function clearObject(obj: Record<string, unknown> | object) {
   return Object.fromEntries(
-    Object.entries(obj).filter(
-      ([_, v]) => isDefined(v) && v !== '' && v.length > 0,
-    ),
+    Object.entries(obj).filter(([_, v]) => {
+      if (!isDefined(v)) {
+        return false;
+      }
+
+      if (v === '') {
+        return false;
+      }
+
+      if (isArray(v)) {
+        return v.length > 0;
+      }
+
+      return true;
+    }),
   );
+}
+
+export function formatDate(date?: Date | string | null) {
+  if (!date) return '';
+  return format(new Date(date), 'MMM d, yyyy');
 }

@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isDefined } from '@read-n-feed/shared';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+
+import { FileUploadField } from '../file-upload-field';
+import { LanguageSelectField } from '../language-select-field';
 
 import {
   Button,
@@ -15,8 +17,9 @@ import {
   FormMessage,
   Textarea,
 } from '@/components/ui';
-import { useCreateBookRequest } from '@/hooks/write/book-requests';
-import { clearObject } from '@/lib';
+import { SupportedLanguages } from '@/constants';
+import { useCreateBookRequest } from '@/hooks';
+import { clearObject, validateFile, getFileExtension } from '@/lib';
 import { useModalStore } from '@/store';
 
 const formSchema = z.object({
@@ -27,11 +30,17 @@ const formSchema = z.object({
   publicationDate: z.string().optional(),
   publisher: z.string().optional(),
   tagLabels: z.string().optional(),
+  fileLanguage: z.enum(SupportedLanguages).optional(),
+  filename: z.string(),
+  language: z.enum(SupportedLanguages).optional(),
+  file: z.any().refine((file) => file instanceof File, {
+    message: 'File is required',
+  }),
 });
 
 type CreateRequestSchema = z.infer<typeof formSchema>;
 
-export function CreateRequestBookModal() {
+export function CreateBookRequestModal() {
   const { mutateAsync: createRequest } = useCreateBookRequest();
   const { setMode } = useModalStore();
 
@@ -45,24 +54,38 @@ export function CreateRequestBookModal() {
       publicationDate: '',
       publisher: '',
       tagLabels: '',
+      fileLanguage: SupportedLanguages[0],
+      language: SupportedLanguages[0],
+      filename: '',
     },
   });
 
   const onSubmit = async (values: CreateRequestSchema) => {
     try {
       const data = clearObject(values) as CreateRequestSchema;
+      const file = data.file as File;
+
+      const fileValidation = validateFile(file);
+      if (!fileValidation.valid) {
+        toast.error(fileValidation.error);
+        return;
+      }
+
+      const fileFormat = getFileExtension(file);
 
       await createRequest({
         ...data,
         authorNames: data.authorNames?.split(',').map((name) => name.trim()),
         genreNames: data.genreNames?.split(',').map((name) => name.trim()),
         tagLabels: data.tagLabels?.split(',').map((name) => name.trim()),
+        fileFormat: fileFormat,
+        file: file,
       });
 
       toast.success('Request created successfully');
       setMode(null);
-    } catch (error) {
-      toast.error(error as string);
+    } catch (error: any) {
+      toast.error(error.message ?? (error as string));
     }
   };
 
@@ -177,6 +200,48 @@ export function CreateRequestBookModal() {
               </FormControl>
               <FormMessage />
             </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="fileLanguage"
+          render={({ field }) => (
+            <LanguageSelectField field={field} label="File Language" />
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <LanguageSelectField field={field} label="Original Language" />
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="filename"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>File Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter file name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="file"
+          render={({ field }) => (
+            <FileUploadField
+              field={field}
+              label="Upload File"
+              required={true}
+            />
           )}
         />
 
