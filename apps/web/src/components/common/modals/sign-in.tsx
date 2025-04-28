@@ -29,14 +29,14 @@ const formSchema = (t: (key: string) => string) =>
       .min(8, t('passwordTooShort')),
   });
 
-type SingInFormSchema = z.infer<ReturnType<typeof formSchema>>;
+type SignInFormSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function SignInModal() {
   const { t } = useTranslation(['translation', 'validation']);
   const { mutateAsync: signIn } = useSignIn();
   const { setMode } = useModalStore();
 
-  const form = useForm<SingInFormSchema>({
+  const form = useForm<SignInFormSchema>({
     resolver: zodResolver(formSchema(t)),
     defaultValues: {
       email: '',
@@ -44,7 +44,7 @@ export function SignInModal() {
     },
   });
 
-  const onSubmit = async (values: SingInFormSchema) => {
+  const onSubmit = async (values: SignInFormSchema) => {
     try {
       await signIn({
         email: values.email,
