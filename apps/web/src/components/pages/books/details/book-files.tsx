@@ -1,5 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { Link2, PlusSquare } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
@@ -8,6 +9,7 @@ import { useBookFilesById } from '@/hooks';
 import { useModalStore } from '@/store';
 
 export const BookFiles = ({ bookId }: { bookId?: string }) => {
+  const { t } = useTranslation();
   const { data } = useBookFilesById(bookId);
 
   const { setMode, setParam } = useModalStore();
@@ -30,7 +32,7 @@ export const BookFiles = ({ bookId }: { bookId?: string }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <p className="text-lg ">Book Files</p>
+        <p className="text-lg ">{t('bookFiles')}</p>
 
         <Button className="aspect-square !p-1" onClick={handleNewFile}>
           <PlusSquare />
@@ -46,14 +48,16 @@ export const BookFiles = ({ bookId }: { bookId?: string }) => {
               className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
             >
               <p>
-                File name:&nbsp;
+                {t('fileName')}:&nbsp;
                 {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
                   ? bookFile.metadata['Title']
                   : bookFile.filename}
               </p>
 
               <p className="text-center">
-                <span>Format: {bookFile.format}</span>
+                <span>
+                  {t('format')}: {bookFile.format}
+                </span>
               </p>
 
               <div className="flex justify-end">

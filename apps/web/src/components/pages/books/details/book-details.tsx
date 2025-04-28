@@ -1,5 +1,6 @@
 import { BookResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
+import { useTranslation } from 'react-i18next';
 
 import {
   Badges,
@@ -12,6 +13,7 @@ import { useAuth } from '@/hooks';
 import { useLikeBook } from '@/hooks/write/books';
 
 export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
+  const { t } = useTranslation();
   const { mutate: likeBook } = useLikeBook();
   const { accessToken } = useAuth();
 
@@ -45,34 +47,43 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
             disabled={!isDefined(accessToken)}
             variant={book?.liked ? 'default' : 'outline'}
           >
-            {book?.liked ? 'Unlike' : 'Like'}
+            {book?.liked ? t('unlike') : t('like')}
           </Button>
         </div>
 
         <div className="space-y-2">
           <Description text={book?.description} />
-          <Badges label="Tags" tags={book?.tags?.map((tag) => tag.label)} />
-          <Badges label="Genres" tags={book?.genres?.map((tag) => tag.name)} />
+          <Badges
+            label={t('tags')}
+            tags={book?.tags?.map((tag) => tag.label)}
+          />
+          <Badges
+            label={t('genres')}
+            tags={book?.genres?.map((tag) => tag.name)}
+          />
 
           <PartiallyLoadedContent
-            label="Authors"
+            label={t('authors')}
             content={book?.authors?.map((author) => author.name).join(', ')}
           />
-          <PartiallyLoadedContent label="Publisher" content={book?.publisher} />
+          <PartiallyLoadedContent
+            label={t('publisher')}
+            content={book?.publisher}
+          />
           {isDefined(book?.publicationDate) && (
             <PartiallyLoadedContent
-              label="Published at"
+              label={t('publishedAt')}
               content={new Date(
                 String(book?.publicationDate),
               ).toLocaleDateString()}
             />
           )}
           <PartiallyLoadedContent
-            label="Average Rating"
+            label={t('averageRating')}
             content={book?.averageRating}
           />
           <PartiallyLoadedContent
-            label="Total Likes"
+            label={t('totalLikes')}
             content={book?.totalLikes}
           />
         </div>
