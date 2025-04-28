@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import {
   FormControl,
@@ -26,6 +27,7 @@ export function FileUploadField<TFieldValues extends FieldValues>({
   className,
   required = false,
 }: FileUploadFieldProps<TFieldValues>) {
+  const { t } = useTranslation();
   const [fileName, setFileName] = useState<string>('');
 
   const acceptString = acceptedFormats
@@ -55,7 +57,7 @@ export function FileUploadField<TFieldValues extends FieldValues>({
 
           {fileName && (
             <p className="text-sm text-muted-foreground truncate">
-              Selected: {fileName}
+              {t('selected')}: {fileName}
             </p>
           )}
         </div>

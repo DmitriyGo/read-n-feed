@@ -112,5 +112,11 @@
   "signUp": "Sign Up",
   "logIn": "Log In",
   "fileLanguage": "File Language",
-  "originalLanguage": "Original Language"
+  "originalLanguage": "Original Language",
+  "seeProfile": "See Profile",
+  "myRequests": "My Requests",
+  "logout": "LogOut",
+  "signIn": "SignIn",
+  "selected": "Selected",
+  "showLess": "Show less"
 }

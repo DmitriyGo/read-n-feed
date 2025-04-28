@@ -110,5 +110,11 @@
   "signUp": "Зареєструватися",
   "logIn": "Увійти",
   "fileLanguage": "Мова файлу",
-  "originalLanguage": "Оригінальна мова"
+  "originalLanguage": "Оригінальна мова",
+  "seeProfile": "Переглянути профіль",
+  "myRequests": "Мої запити",
+  "logout": "Вийти",
+  "signIn": "Увійти",
+  "selected": "Вибрано",
+  "showLess": "Показати менше"
 }

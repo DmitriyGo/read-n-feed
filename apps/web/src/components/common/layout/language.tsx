@@ -15,8 +15,6 @@ import { SupportedLanguagesMap } from '@/constants';
 export const ChangeLanguage = () => {
   const { t, i18n } = useTranslation();
 
-  console.log(i18n.language);
-
   return (
     <Popover>
       <PopoverTrigger asChild>
