@@ -5,6 +5,10 @@ export const SupportedLanguages = [
   'ua',
   'en',
 ] as const satisfies SupportedLanguage[];
+export const SupportedLanguagesMap: Record<SupportedLanguage, string> = {
+  ua: 'Українська',
+  en: 'English',
+};
 
 export type FileFormat = 'PDF' | 'EPUB' | 'MOBI';
 export const FileFormats = [

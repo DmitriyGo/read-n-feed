@@ -4,8 +4,7 @@ import {
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { ApiRoute } from '@/constants';
-import { QueryKey } from '@/constants/query-key';
+import { ApiRoute, QueryKey } from '@/constants';
 import { axiosSecure } from '@/lib';
 
 export const useCreateFileRequest = () => {

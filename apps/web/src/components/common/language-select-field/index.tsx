@@ -5,7 +5,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Label,
   RadioGroup,
   RadioGroupItem,
 } from '@/components/ui';
@@ -32,12 +31,11 @@ export function LanguageSelectField<TFieldValues extends FieldValues>({
           onValueChange={field.onChange}
         >
           {languages.map((lang) => (
-            <div key={lang} className="flex items-center space-x-2">
-              <RadioGroupItem value={lang} id={`${field.name}-${lang}`} />
-              <Label htmlFor={`${field.name}-${lang}`}>
-                {lang.toUpperCase()}
-              </Label>
-            </div>
+            <RadioGroupItem
+              value={lang}
+              id={`${field.name}-${lang}`}
+              label={lang}
+            />
           ))}
         </RadioGroup>
       </FormControl>

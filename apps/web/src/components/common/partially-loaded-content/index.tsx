@@ -1,5 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Skeleton } from '@/components/ui';
 import { cn } from '@/lib';
@@ -17,6 +18,8 @@ export const PartiallyLoadedContent = ({
   isLoading?: boolean;
   as?: 'div' | 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }>) => {
+  const { t } = useTranslation();
+
   const Slot = as ?? 'span';
 
   return (
@@ -25,7 +28,7 @@ export const PartiallyLoadedContent = ({
       {isDefined(content) && isLoading !== true ? (
         <Slot className="text-gray-400">{content}</Slot>
       ) : content === null && isLoading !== true ? (
-        <Slot className="text-gray-400">Not Given</Slot>
+        <Slot className="text-gray-400">{t('notGiven')}</Slot>
       ) : (
         <Skeleton className="min-h-full min-w-20" />
       )}

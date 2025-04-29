@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -36,6 +37,8 @@ export const FileRequestSearchFilters = ({
 }: {
   isAdmin?: boolean;
 }) => {
+  const { t } = useTranslation();
+
   const form = useForm<SearchBooksFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -83,9 +86,9 @@ export const FileRequestSearchFilters = ({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t('title')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Title" {...field} />
+                    <Input placeholder={t('title')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,19 +101,19 @@ export const FileRequestSearchFilters = ({
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{t('status')}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value ?? ''}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder={t('status')} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.values(AcceptedStatuses).map((status) => (
                         <SelectItem key={status} value={status}>
-                          {status}
+                          {t(status.toLowerCase())}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -127,9 +130,9 @@ export const FileRequestSearchFilters = ({
               name="bookId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Book ID</FormLabel>
+                  <FormLabel>{t('bookId')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Book ID" {...field} />
+                    <Input placeholder={t('bookId')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,7 +141,7 @@ export const FileRequestSearchFilters = ({
           )}
 
           <Button type="submit" className="w-full">
-            Save
+            {t('save')}
           </Button>
 
           <Button
@@ -147,7 +150,7 @@ export const FileRequestSearchFilters = ({
             className="w-full"
             onClick={handleClear}
           >
-            Clear
+            {t('clear')}
           </Button>
         </form>
       </Form>

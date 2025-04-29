@@ -4,6 +4,8 @@ import * as ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer, Bounce } from 'react-toastify';
 
+import './i18n';
+
 import App from './app';
 
 const queryClient = new QueryClient();

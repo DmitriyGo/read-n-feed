@@ -1,4 +1,5 @@
 import { isDefined } from '@read-n-feed/shared';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -15,6 +16,7 @@ import { useLogout } from '@/hooks/write';
 import { useModalStore } from '@/store';
 
 export const Profile = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { setMode } = useModalStore();
@@ -45,14 +47,14 @@ export const Profile = () => {
       <PopoverContent className="flex flex-col gap-4" align="end">
         {isDefined(accessToken) ? (
           <>
-            <Button onClick={handleSeeProfile}>See Profile</Button>
+            <Button onClick={handleSeeProfile}>{t('seeProfile')}</Button>
 
             <Button variant="outline" onClick={handleMyRequests}>
-              My Requests
+              {t('myRequests')}
             </Button>
 
             <Button onClick={handleLogout} variant="destructive">
-              LogOut
+              {t('logout')}
             </Button>
           </>
         ) : (
@@ -63,7 +65,7 @@ export const Profile = () => {
                 setMode('SignIn');
               }}
             >
-              SignIn
+              {t('signIn')}
             </Button>
             <Button
               variant="secondary"
@@ -71,7 +73,7 @@ export const Profile = () => {
                 setMode('SignUp');
               }}
             >
-              SignUp
+              {t('signUp')}
             </Button>
           </>
         )}

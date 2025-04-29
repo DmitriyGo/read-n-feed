@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
@@ -22,30 +23,32 @@ import { useCreateBookRequest } from '@/hooks';
 import { clearObject, validateFile, getFileExtension } from '@/lib';
 import { useModalStore } from '@/store';
 
-const formSchema = z.object({
-  title: z.string().nonempty('Title cannot be empty'),
-  description: z.string().optional(),
-  authorNames: z.string().optional(),
-  genreNames: z.string().optional(),
-  publicationDate: z.string().optional(),
-  publisher: z.string().optional(),
-  tagLabels: z.string().optional(),
-  fileLanguage: z.enum(SupportedLanguages).optional(),
-  filename: z.string(),
-  language: z.enum(SupportedLanguages).optional(),
-  file: z.any().refine((file) => file instanceof File, {
-    message: 'File is required',
-  }),
-});
+const formSchema = (t: (key: string) => string) =>
+  z.object({
+    title: z.string().nonempty(t('titleCannotBeEmpty')),
+    description: z.string().optional(),
+    authorNames: z.string().optional(),
+    genreNames: z.string().optional(),
+    publicationDate: z.string().optional(),
+    publisher: z.string().optional(),
+    tagLabels: z.string().optional(),
+    fileLanguage: z.enum(SupportedLanguages).optional(),
+    filename: z.string(),
+    language: z.enum(SupportedLanguages).optional(),
+    file: z.any().refine((file) => file instanceof File, {
+      message: t('fileIsRequired'),
+    }),
+  });
 
-type CreateRequestSchema = z.infer<typeof formSchema>;
+type CreateRequestSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function CreateBookRequestModal() {
+  const { t } = useTranslation(['translation', 'validation']);
   const { mutateAsync: createRequest } = useCreateBookRequest();
   const { setMode } = useModalStore();
 
   const form = useForm<CreateRequestSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       title: '',
       description: '',
@@ -82,7 +85,7 @@ export function CreateBookRequestModal() {
         file: file,
       });
 
-      toast.success('Request created successfully');
+      toast.success(t('requestCreatedSuccessfully'));
       setMode(null);
     } catch (error: any) {
       toast.error(error.message ?? (error as string));
@@ -97,9 +100,9 @@ export function CreateBookRequestModal() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Book Title</FormLabel>
+              <FormLabel>{t('bookTitle')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter book title" {...field} />
+                <Input placeholder={t('enterBookTitle')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,10 +114,10 @@ export function CreateBookRequestModal() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t('description')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter book description"
+                  placeholder={t('enterBookDescription')}
                   className="min-h-[100px]"
                   {...field}
                 />
@@ -129,10 +132,10 @@ export function CreateBookRequestModal() {
           name="authorNames"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Authors</FormLabel>
+              <FormLabel>{t('authors')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter author names separated by commas"
+                  placeholder={t('enterAuthorNamesSeparatedByCommas')}
                   {...field}
                 />
               </FormControl>
@@ -146,10 +149,10 @@ export function CreateBookRequestModal() {
           name="genreNames"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Genres</FormLabel>
+              <FormLabel>{t('genres')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter genres separated by commas"
+                  placeholder={t('enterGenresSeparatedByCommas')}
                   {...field}
                 />
               </FormControl>
@@ -163,7 +166,7 @@ export function CreateBookRequestModal() {
           name="publicationDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Publication Date</FormLabel>
+              <FormLabel>{t('publicationDate')}</FormLabel>
               <FormControl>
                 <Input type="date" placeholder="YYYY-MM-DD" {...field} />
               </FormControl>
@@ -177,9 +180,9 @@ export function CreateBookRequestModal() {
           name="publisher"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Publisher</FormLabel>
+              <FormLabel>{t('publisher')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter publisher name" {...field} />
+                <Input placeholder={t('enterPublisherName')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -191,10 +194,10 @@ export function CreateBookRequestModal() {
           name="tagLabels"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tags</FormLabel>
+              <FormLabel>{t('tags')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter tags separated by commas"
+                  placeholder={t('enterTagsSeparatedByCommas')}
                   {...field}
                 />
               </FormControl>
@@ -207,7 +210,7 @@ export function CreateBookRequestModal() {
           control={form.control}
           name="fileLanguage"
           render={({ field }) => (
-            <LanguageSelectField field={field} label="File Language" />
+            <LanguageSelectField field={field} label={t('fileLanguage')} />
           )}
         />
 
@@ -215,7 +218,7 @@ export function CreateBookRequestModal() {
           control={form.control}
           name="language"
           render={({ field }) => (
-            <LanguageSelectField field={field} label="Original Language" />
+            <LanguageSelectField field={field} label={t('originalLanguage')} />
           )}
         />
 
@@ -224,9 +227,9 @@ export function CreateBookRequestModal() {
           name="filename"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>File Name</FormLabel>
+              <FormLabel>{t('fileName')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter file name" {...field} />
+                <Input placeholder={t('enterFileName')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -239,14 +242,14 @@ export function CreateBookRequestModal() {
           render={({ field }) => (
             <FileUploadField
               field={field}
-              label="Upload File"
+              label={t('uploadFile')}
               required={true}
             />
           )}
         />
 
         <Button type="submit" className="w-full">
-          Submit Request
+          {t('submitRequest')}
         </Button>
       </form>
     </Form>

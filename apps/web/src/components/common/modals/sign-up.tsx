@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
@@ -16,70 +17,71 @@ import {
 import { useSignUp } from '@/hooks/write';
 import { useModalStore } from '@/store';
 
-const formSchema = z
-  .object({
-    email: z
-      .string()
-      .nonempty('Email cannot be empty')
-      .email('Incorrect email')
-      .trim(),
-    username: z
-      .string()
-      .nonempty('Username cannot be empty')
-      .min(3, 'Length of the username cannot be less than 3')
-      .max(20, 'Length of the username cannot be more than 20')
-      .trim(),
-    password: z
-      .string()
-      .nonempty('Password cannot be empty')
-      .min(8, 'Length of the password cannot be less than 8')
-      .trim(),
-    passwordRepeat: z
-      .string()
-      .nonempty('Password cannot be empty')
-      .min(8, 'Length of the password cannot be less than 8')
-      .trim(),
-    firstName: z
-      .string()
-      .refine(
-        (firstName) => {
-          return firstName === '' || firstName.length >= 3;
-        },
-        {
-          message: 'First name is too short',
-        },
-      )
-      .transform((value) => {
-        return value === '' ? undefined : value.trim();
-      }),
-    lastName: z
-      .string()
-      .refine(
-        (lastName) => {
-          return lastName === '' || lastName.length >= 3;
-        },
-        {
-          message: 'Last name is too short',
-        },
-      )
-      .transform((value) => {
-        return value === '' ? undefined : value.trim();
-      }),
-  })
-  .refine((data) => data.password === data.passwordRepeat, {
-    message: 'Passwords do not match',
-    path: ['passwordRepeat'],
-  });
+const formSchema = (t: (key: string) => string) =>
+  z
+    .object({
+      email: z
+        .string()
+        .nonempty(t('emailCannotBeEmpty'))
+        .email(t('incorrectEmail'))
+        .trim(),
+      username: z
+        .string()
+        .nonempty(t('usernameCannotBeEmpty'))
+        .min(3, t('usernameTooShort'))
+        .max(20, t('usernameTooLong'))
+        .trim(),
+      password: z
+        .string()
+        .nonempty(t('passwordCannotBeEmpty'))
+        .min(8, t('passwordTooShort'))
+        .trim(),
+      passwordRepeat: z
+        .string()
+        .nonempty(t('passwordCannotBeEmpty'))
+        .min(8, t('passwordTooShort'))
+        .trim(),
+      firstName: z
+        .string()
+        .refine(
+          (firstName) => {
+            return firstName === '' || firstName.length >= 3;
+          },
+          {
+            message: t('firstNameTooShort'),
+          },
+        )
+        .transform((value) => {
+          return value === '' ? undefined : value.trim();
+        }),
+      lastName: z
+        .string()
+        .refine(
+          (lastName) => {
+            return lastName === '' || lastName.length >= 3;
+          },
+          {
+            message: t('lastNameTooShort'),
+          },
+        )
+        .transform((value) => {
+          return value === '' ? undefined : value.trim();
+        }),
+    })
+    .refine((data) => data.password === data.passwordRepeat, {
+      message: t('passwordsDoNotMatch'),
+      path: ['passwordRepeat'],
+    });
 
-type SignUpFormSchema = z.infer<typeof formSchema>;
+type SignUpFormSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function SignUpModal() {
+  const { t } = useTranslation(['translation', 'validation']);
   const { mutateAsync: signUp } = useSignUp();
-
   const { setMode } = useModalStore();
 
   const form = useForm<SignUpFormSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       email: '',
       username: '',
@@ -114,9 +116,9 @@ export function SignUpModal() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('email')}</FormLabel>
               <FormControl>
-                <Input placeholder="your@email.com" {...field} />
+                <Input placeholder={t('emailPlaceholder')} {...field} />
               </FormControl>
 
               <FormMessage />
@@ -129,9 +131,9 @@ export function SignUpModal() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t('username')}</FormLabel>
               <FormControl>
-                <Input placeholder="john_doe" {...field} />
+                <Input placeholder={t('usernamePlaceholder')} {...field} />
               </FormControl>
 
               <FormMessage />
@@ -144,9 +146,13 @@ export function SignUpModal() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('password')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="asdASD123!" {...field} />
+                <Input
+                  type="password"
+                  placeholder={t('passwordPlaceholder')}
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />
@@ -159,9 +165,13 @@ export function SignUpModal() {
           name="passwordRepeat"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password Repeat</FormLabel>
+              <FormLabel>{t('passwordRepeat')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="asdASD123!" {...field} />
+                <Input
+                  type="password"
+                  placeholder={t('passwordPlaceholder')}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -173,9 +183,9 @@ export function SignUpModal() {
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <FormLabel>{t('firstName')}</FormLabel>
               <FormControl>
-                <Input placeholder="John" {...field} />
+                <Input placeholder={t('john')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -187,9 +197,9 @@ export function SignUpModal() {
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
+              <FormLabel>{t('lastName')}</FormLabel>
               <FormControl>
-                <Input placeholder="Doe" {...field} />
+                <Input placeholder={t('doe')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -199,7 +209,7 @@ export function SignUpModal() {
         <FormMessage />
 
         <Button type="submit" className="w-full">
-          Sign Up
+          {t('signUp')}
         </Button>
       </form>
     </Form>

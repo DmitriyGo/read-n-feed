@@ -1,6 +1,7 @@
 import { BookFileRequestResponseDto } from '@read-n-feed/application';
 import { format } from 'date-fns';
 import { Check, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
 import { PartiallyLoadedContent } from '@/components/common';
@@ -22,6 +23,7 @@ export const FileRequestItem = ({
 }: {
   fileRequest: BookFileRequestResponseDto;
 }) => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
 
   const { hasRole: isAdmin } = useHasRole('ADMIN');
@@ -69,7 +71,7 @@ export const FileRequestItem = ({
                   : 'destructive'
             }
           >
-            {fileRequest.status}
+            {t(fileRequest.status.toLowerCase())}
           </Badge>
 
           {fileRequest.status === 'PENDING' && (
@@ -89,29 +91,29 @@ export const FileRequestItem = ({
 
       <CardContent className="flex flex-row flex-wrap gap-4">
         <div className="border-l pl-4">
-          <h3 className="font-medium">Book Details</h3>
+          <h3 className="font-medium">{t('bookDetails')}</h3>
 
           <PartiallyLoadedContent
-            label="Book Name"
+            label={t('bookName')}
             content={fileRequest?.bookInfo?.title}
           />
 
           <Link to={`${Route.Book.Details}/${fileRequest.bookId}`}>
-            <Button>Open</Button>
+            <Button>{t('open')}</Button>
           </Link>
         </div>
 
         <div className="border-l pl-4">
-          <h3 className="font-medium">File details</h3>
+          <h3 className="font-medium">{t('fileDetails')}</h3>
 
           <PartiallyLoadedContent
-            label="File Size"
+            label={t('fileSize')}
             content={fileRequest?.fileInfo?.fileSize + ' KB'}
           />
 
           <div className="flex flex-wrap gap-4">
             <Link to={downloadUrl || ''} target="_blank">
-              <Button>Download</Button>
+              <Button>{t('download')}</Button>
             </Link>
 
             <Link
@@ -121,26 +123,26 @@ export const FileRequestItem = ({
                 'file-request',
               )}
             >
-              <Button>Read</Button>
+              <Button>{t('read')}</Button>
             </Link>
           </div>
         </div>
 
         <div className="border-l pl-4">
-          <h3 className="font-medium">Request Details</h3>
+          <h3 className="font-medium">{t('requestDetails')}</h3>
 
           <PartiallyLoadedContent
-            label="Requested on"
+            label={t('requestedOn')}
             content={formatDate(fileRequest?.createdAt)}
           />
           <PartiallyLoadedContent
-            label="Last Updated"
+            label={t('lastUpdated')}
             content={formatDate(fileRequest?.updatedAt)}
           />
 
           {fileRequest.status === 'APPROVED' && (
             <PartiallyLoadedContent
-              label="Approved on"
+              label={t('approvedOn')}
               content={formatDate(fileRequest?.approvedAt)}
             />
           )}
@@ -148,11 +150,11 @@ export const FileRequestItem = ({
           {fileRequest.status === 'REJECTED' && (
             <>
               <PartiallyLoadedContent
-                label="Rejected on"
+                label={t('rejectedOn')}
                 content={formatDate(fileRequest?.rejectedAt)}
               />
               <PartiallyLoadedContent
-                label="Rejection Reason"
+                label={t('rejectionReason')}
                 content={fileRequest?.rejectionReason}
                 className="text-red-500"
               />
@@ -161,7 +163,7 @@ export const FileRequestItem = ({
 
           {fileRequest.adminNotes && (
             <PartiallyLoadedContent
-              label="Admin Notes"
+              label={t('adminNotes')}
               content={fileRequest?.adminNotes}
               className="text-blue-500"
             />
