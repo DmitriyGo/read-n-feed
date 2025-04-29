@@ -11,7 +11,7 @@ import {
   useDeleteFileRequest,
   useHasRole,
   useGetDownloadUrl,
-  useVerifyFileRequest,
+  useVerifyRequest,
 } from '@/hooks';
 
 const formatDate = (date?: Date | null) => {
@@ -35,7 +35,7 @@ export const FileRequestItem = ({
   const downloadUrl = data?.data?.url;
 
   const { mutate: deleteFileRequest } = useDeleteFileRequest();
-  const { mutate: verifyFileRequest } = useVerifyFileRequest();
+  const { mutate: verifyFileRequest } = useVerifyRequest();
 
   const handleDelete = () => {
     deleteFileRequest({
@@ -46,6 +46,7 @@ export const FileRequestItem = ({
   const handleVerify = () => {
     verifyFileRequest({
       requestId: fileRequest.id,
+      typeOf: 'file',
       body: {
         status: 'APPROVED',
       },

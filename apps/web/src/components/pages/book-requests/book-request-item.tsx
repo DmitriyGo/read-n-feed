@@ -13,11 +13,7 @@ import {
 } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { Route } from '@/constants';
-import {
-  useBookRequestFilesById,
-  useHasRole,
-  useVerifyBookRequest,
-} from '@/hooks';
+import { useBookRequestFilesById, useHasRole, useVerifyRequest } from '@/hooks';
 import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
@@ -37,7 +33,7 @@ export const BookRequestItem = ({
   const { hasRole: isAdmin } = useHasRole('ADMIN');
   const isOnAdminPage = pathname.includes('admin');
 
-  const { mutate } = useVerifyBookRequest();
+  const { mutate } = useVerifyRequest();
 
   const { data } = useBookRequestFilesById(bookRequest.id);
   const bookRequestFiles = data?.data;
@@ -50,6 +46,7 @@ export const BookRequestItem = ({
   const handleVerify = () => {
     mutate({
       requestId: bookRequest.id,
+      typeOf: 'book',
       body: {
         status: 'APPROVED',
       },
