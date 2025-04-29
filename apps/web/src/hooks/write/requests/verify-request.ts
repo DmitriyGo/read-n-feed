@@ -23,7 +23,7 @@ export const useVerifyRequest = () => {
       body: AdminReviewDto;
     }) => {
       return await axiosSecure.post<BookRequestResponseDto>(
-        (typeOf
+        (typeOf === 'book'
           ? ApiRoute.BookRequests.Review
           : ApiRoute.FileRequestsAdmin.Review)(requestId),
         body,
@@ -33,7 +33,15 @@ export const useVerifyRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetMyBookRequests],
+            //FIX
+            queryKey: [
+              QueryKey.GetMyBookRequests,
+              QueryKey.GetAdminBookRequests,
+              QueryKey.GetBooksCatalog,
+              QueryKey.GetMyFileRequests,
+              QueryKey.GetAdminFileRequests,
+              QueryKey.GetBookFiles,
+            ],
             type: 'active',
           }),
         500,

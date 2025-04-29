@@ -1,6 +1,6 @@
 import { BookFileRequestResponseDto } from '@read-n-feed/application';
 import { format } from 'date-fns';
-import { Check, Trash2 } from 'lucide-react';
+import { FileQuestion, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ import {
   useGetDownloadUrl,
   useVerifyRequest,
 } from '@/hooks';
+import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
   return date ? format(new Date(date), 'MMM d, yyyy') : '';
@@ -26,6 +27,8 @@ export const FileRequestItem = ({
   const { t } = useTranslation();
   const { pathname } = useLocation();
 
+  const { setMode, setParam } = useModalStore();
+
   const { hasRole: isAdmin } = useHasRole('ADMIN');
   const isOnAdminPage = pathname.includes('admin');
 
@@ -35,7 +38,6 @@ export const FileRequestItem = ({
   const downloadUrl = data?.data?.url;
 
   const { mutate: deleteFileRequest } = useDeleteFileRequest();
-  const { mutate: verifyFileRequest } = useVerifyRequest();
 
   const handleDelete = () => {
     deleteFileRequest({
@@ -44,13 +46,9 @@ export const FileRequestItem = ({
   };
 
   const handleVerify = () => {
-    verifyFileRequest({
-      requestId: fileRequest.id,
-      typeOf: 'file',
-      body: {
-        status: 'APPROVED',
-      },
-    });
+    setParam('requestId', fileRequest.id);
+    setParam('requestType', 'file');
+    setMode('VerifyRequest');
   };
 
   return (
@@ -84,7 +82,7 @@ export const FileRequestItem = ({
           {/* Show the verify button only for admins on admin routes when the request is pending */}
           {isAdmin && isOnAdminPage && fileRequest.status === 'PENDING' && (
             <Button variant="outline" onClick={handleVerify}>
-              <Check />
+              <FileQuestion />
             </Button>
           )}
         </div>
