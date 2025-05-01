@@ -116,5 +116,13 @@
   "logout": "Вийти",
   "signIn": "Увійти",
   "selected": "Вибрано",
-  "showLess": "Показати менше"
+  "showLess": "Показати менше",
+  "decisionStatus": "Статус рішення",
+  "approve": "Схвалити",
+  "reject": "Відхилити",
+  "enterRejectionReason": "Введіть причину відхилення",
+  "enterAdminNotes": "Введіть нотатки адміністратора (необов'язково)",
+  "approveRequest": "Схвалити запит",
+  "rejectRequest": "Відхилити запит",
+  "requestVerifiedSuccessfully": "Запит успішно перевірено"
 }

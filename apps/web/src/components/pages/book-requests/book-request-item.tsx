@@ -1,7 +1,7 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { format } from 'date-fns';
-import { Check, FileEdit, Link2 } from 'lucide-react';
+import { FileQuestion, FileEdit, Link2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -13,11 +13,7 @@ import {
 } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { Route } from '@/constants';
-import {
-  useBookRequestFilesById,
-  useHasRole,
-  useVerifyBookRequest,
-} from '@/hooks';
+import { useBookRequestFilesById, useHasRole } from '@/hooks';
 import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
@@ -31,13 +27,12 @@ export const BookRequestItem = ({
 }) => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const { setMode, setParam } = useModalStore();
 
   const { hasRole: isAdmin } = useHasRole('ADMIN');
   const isOnAdminPage = pathname.includes('admin');
-
-  const { mutate } = useVerifyBookRequest();
 
   const { data } = useBookRequestFilesById(bookRequest.id);
   const bookRequestFiles = data?.data;
@@ -48,14 +43,10 @@ export const BookRequestItem = ({
   };
 
   const handleVerify = () => {
-    mutate({
-      requestId: bookRequest.id,
-      body: {
-        status: 'APPROVED',
-      },
-    });
+    setParam('requestId', bookRequest.id);
+    setParam('requestType', 'book');
+    setMode('VerifyRequest');
   };
-  const navigate = useNavigate();
 
   const handleClick = (fileId: string) => {
     navigate(Route.Book.Read(bookRequest.id, fileId, 'book'));
@@ -92,7 +83,7 @@ export const BookRequestItem = ({
           {/* Show the verify button only for admins on admin routes when the request is pending */}
           {isAdmin && isOnAdminPage && bookRequest.status === 'PENDING' && (
             <Button variant="outline" onClick={handleVerify}>
-              <Check />
+              <FileQuestion />
             </Button>
           )}
         </div>

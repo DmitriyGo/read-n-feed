@@ -9,5 +9,6 @@
   "usernameTooLong": "Length of the username cannot be more than 20",
   "passwordCannotBeEmpty": "Password cannot be empty",
   "passwordTooShort": "Length of the password cannot be less than 8",
-  "passwordsDoNotMatch": "Passwords do not match"
+  "passwordsDoNotMatch": "Passwords do not match",
+  "rejectionReasonRequired": "Rejection reason is required"
 }

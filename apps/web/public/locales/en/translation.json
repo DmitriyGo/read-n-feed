@@ -118,5 +118,13 @@
   "logout": "LogOut",
   "signIn": "SignIn",
   "selected": "Selected",
-  "showLess": "Show less"
+  "showLess": "Show less",
+  "decisionStatus": "Decision Status",
+  "approve": "Approve",
+  "reject": "Reject",
+  "enterRejectionReason": "Enter reason for rejection",
+  "enterAdminNotes": "Enter admin notes (optional)",
+  "approveRequest": "Approve Request",
+  "rejectRequest": "Reject Request",
+  "requestVerifiedSuccessfully": "Request verified successfully"
 }
