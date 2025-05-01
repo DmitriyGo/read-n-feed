@@ -19,6 +19,7 @@ export const BookRecommendations = () => {
         {forYouRecommendations?.length &&
           forYouRecommendations.map((book) => (
             <BookCard
+              key={book.bookId}
               isSimplified
               book={{
                 id: book.bookId,
