@@ -13,6 +13,7 @@ enum ApiControllers {
   ReadingProgress = 'reading-progress',
   FileRequests = 'book-file-requests',
   FileRequestsAdmin = 'admin/book-file-requests',
+  Recommendations = 'recommendations',
 }
 
 export const ApiRoute = {
@@ -139,5 +140,15 @@ export const ApiRoute = {
     Get: (tagId: string) => `${ApiControllers.Tags}/${tagId}`,
     Update: (tagId: string) => `${ApiControllers.Tags}/${tagId}`,
     Delete: (tagId: string) => `${ApiControllers.Tags}/${tagId}`,
+  },
+  Recommendations: {
+    GetPersonalized: `${ApiControllers.Recommendations}/`,
+    GetSimilar: (bookId: string) =>
+      `${ApiControllers.Recommendations}/similar/${bookId}`,
+    GetByGenre: (genreId: string) =>
+      `${ApiControllers.Recommendations}/genre/${genreId}`,
+    GetByAuthor: (authorId: string) =>
+      `${ApiControllers.Recommendations}/author/${authorId}`,
+    SaveFeedback: `${ApiControllers.Recommendations}/feedback`,
   },
 } as const satisfies Record<keyof typeof ApiControllers, RouteValue>;

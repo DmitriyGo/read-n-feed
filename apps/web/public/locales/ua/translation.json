@@ -124,5 +124,6 @@
   "enterAdminNotes": "Введіть нотатки адміністратора (необов'язково)",
   "approveRequest": "Схвалити запит",
   "rejectRequest": "Відхилити запит",
-  "requestVerifiedSuccessfully": "Запит успішно перевірено"
+  "requestVerifiedSuccessfully": "Запит успішно перевірено",
+  "recommendations": "Рекомендації"
 }
