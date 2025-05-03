@@ -18,6 +18,7 @@ import {
   CardHeader,
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from '@/components/ui';
 import { Route } from '@/constants';
@@ -142,9 +143,9 @@ export const BookRequestItem = ({
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <h3 className="font-medium">
+            <DialogTitle className="font-medium">
               {t('requestDetails', { ns: 'translation' })}
-            </h3>
+            </DialogTitle>
 
             <PartiallyLoadedContent
               label={t('requestedOn', { ns: 'translation' })}

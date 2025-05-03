@@ -23,10 +23,19 @@ export const PartiallyLoadedContent = ({
   const Slot = as ?? 'span';
 
   return (
-    <div className={cn('text-inherit justify-start flex flex-row', className)}>
-      {isDefined(label) && <Slot>{label}:&nbsp;</Slot>}
+    <div
+      className={cn(
+        'text-inherit justify-start flex flex-col lg:flex-row',
+        className,
+      )}
+    >
+      {isDefined(label) && (
+        <Slot className="w-fit lg:text-nowrap">{label}:&nbsp;</Slot>
+      )}
       {isDefined(content) && isLoading !== true ? (
-        <Slot className="text-gray-400">{content}</Slot>
+        <Slot className="text-gray-400 text-wrap truncate w-full">
+          {content}
+        </Slot>
       ) : content === null && isLoading !== true ? (
         <Slot className="text-gray-400">{t('notGiven')}</Slot>
       ) : (
