@@ -11,9 +11,10 @@ import {
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { useAuth } from '@/hooks';
 import { useLikeBook } from '@/hooks/write/books';
+import { formatDate } from '@/lib';
 
 export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutate: likeBook } = useLikeBook();
   const { accessToken } = useAuth();
 
@@ -55,11 +56,15 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
           <Description text={book?.description} />
           <Badges
             label={t('tags')}
-            tags={book?.tags?.map((tag) => tag.label)}
+            tags={book?.tags?.map((tag) =>
+              t(tag.label.toLocaleLowerCase(), { ns: 'badges' }),
+            )}
           />
           <Badges
             label={t('genres')}
-            tags={book?.genres?.map((tag) => tag.name)}
+            tags={book?.genres?.map((tag) =>
+              t(tag.name.toLocaleLowerCase(), { ns: 'badges' }),
+            )}
           />
 
           <PartiallyLoadedContent
@@ -73,9 +78,7 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
           {isDefined(book?.publicationDate) && (
             <PartiallyLoadedContent
               label={t('publishedAt')}
-              content={new Date(
-                String(book?.publicationDate),
-              ).toLocaleDateString()}
+              content={formatDate(book?.publicationDate)}
             />
           )}
           <PartiallyLoadedContent

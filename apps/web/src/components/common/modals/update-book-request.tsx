@@ -34,7 +34,7 @@ const formSchema = z.object({
 type CreateRequestSchema = z.infer<typeof formSchema>;
 
 export function UpdateRequestBookModal() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutateAsync: updateRequest } = useUpdateBookRequest();
   const { setMode, params, clearParams } = useModalStore();
 

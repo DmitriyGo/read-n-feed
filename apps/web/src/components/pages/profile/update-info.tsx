@@ -55,7 +55,7 @@ export const UpdateProfileInfo = () => {
   const { isSuccess } = useGetProfile();
   const { mutateAsync: updateProfile } = useUpdateProfile();
 
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   const form = useForm<UpdateProfileFormSchema>({
     resolver: zodResolver(formSchema),

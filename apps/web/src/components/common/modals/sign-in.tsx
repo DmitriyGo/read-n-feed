@@ -32,7 +32,7 @@ const formSchema = (t: (key: string) => string) =>
 type SignInFormSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function SignInModal() {
-  const { t } = useTranslation(['translation', 'validation']);
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutateAsync: signIn } = useSignIn();
   const { setMode } = useModalStore();
 

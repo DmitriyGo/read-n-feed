@@ -68,7 +68,7 @@ const PaginationPrevious = ({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   return (
     <PaginationLink
@@ -88,7 +88,7 @@ const PaginationNext = ({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   return (
     <PaginationLink
@@ -108,7 +108,7 @@ const PaginationEllipsis = ({
   className,
   ...props
 }: React.ComponentProps<'span'>) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   return (
     <span

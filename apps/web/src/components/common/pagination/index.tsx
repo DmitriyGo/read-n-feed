@@ -34,7 +34,7 @@ export const Pagination = ({
   setCurrentPage: (value: number) => void;
   className?: string;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   const handlePerPageChange = (value: PerPage) => {
     onPerPageChange(value);

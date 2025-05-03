@@ -22,7 +22,7 @@ import { Route } from '@/constants';
 import { useBreakpoint } from '@/hooks/use-breakpoint';
 
 export const BookCard = ({ book }: { book: BookResponseDto }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const isMd = useBreakpoint('md');
 
   const navigate = useNavigate();

@@ -32,7 +32,7 @@ const formSchema = (t: (key: string) => string) =>
 type CreateRequestSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function CreateFileRequestModal() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutateAsync: createRequest } = useCreateFileRequest();
   const { setMode, params, clearParams } = useModalStore();
 

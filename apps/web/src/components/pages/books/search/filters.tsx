@@ -37,7 +37,7 @@ const formSchema = z.object({
 type SearchBooksFormData = z.infer<typeof formSchema>;
 
 export const SearchFilters = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const form = useForm<SearchBooksFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {

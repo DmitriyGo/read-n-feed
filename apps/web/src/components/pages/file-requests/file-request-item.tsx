@@ -7,24 +7,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { PartiallyLoadedContent } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { Route } from '@/constants';
-import {
-  useDeleteFileRequest,
-  useHasRole,
-  useGetDownloadUrl,
-  useVerifyRequest,
-} from '@/hooks';
+import { useDeleteFileRequest, useHasRole, useGetDownloadUrl } from '@/hooks';
+import { formatDate } from '@/lib';
 import { useModalStore } from '@/store';
-
-const formatDate = (date?: Date | null) => {
-  return date ? format(new Date(date), 'MMM d, yyyy') : '';
-};
 
 export const FileRequestItem = ({
   fileRequest,
 }: {
   fileRequest: BookFileRequestResponseDto;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { pathname } = useLocation();
 
   const { setMode, setParam } = useModalStore();

@@ -12,11 +12,11 @@ export const AdminRequestsLayout = () => {
   const RequestsRoutes = useMemo(
     () => [
       {
-        name: t('User Book Requests'),
+        name: t('userBookRequests'),
         href: Route.Admin.BookRequests,
       },
       {
-        name: t('User File Requests'),
+        name: t('userFileRequests'),
         href: Route.Admin.FileRequests,
       },
     ],

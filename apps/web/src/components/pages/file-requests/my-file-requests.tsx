@@ -14,7 +14,7 @@ import { useFilterStore } from '@/store';
 export const MyFileRequestsBlock = () => {
   const [perPage, setPerPage] = useState<PerPage>(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   const { getFilter } = useFilterStore();
   const [urlSearchParams] = useSearchParams();
