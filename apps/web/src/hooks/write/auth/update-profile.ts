@@ -19,7 +19,7 @@ export const useUpdateProfile = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetProfile],
+            queryKey: [QueryKey.Users.Profile],
             type: 'active',
           }),
         500,

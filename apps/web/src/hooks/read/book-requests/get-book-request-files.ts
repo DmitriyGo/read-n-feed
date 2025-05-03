@@ -12,7 +12,7 @@ export const useBookRequestFilesById = (id?: string, enabled = true) => {
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.GetBookRequestFiles, accessToken, id],
+    queryKey: [QueryKey.BookFiles.ForRequest(id || ''), accessToken],
     queryFn: async () => {
       if (!isDefined(id)) {
         return;

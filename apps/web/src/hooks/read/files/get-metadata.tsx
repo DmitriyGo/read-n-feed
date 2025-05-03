@@ -17,7 +17,7 @@ export const useGetMetadata = ({
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.Metadata, accessToken, fileId],
+    queryKey: [QueryKey.BookFiles.Metadata(fileId || ''), accessToken],
     queryFn: async () => {
       if (!isDefined(fileId)) {
         return;

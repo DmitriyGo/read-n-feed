@@ -11,7 +11,7 @@ export const useGetProfile = () => {
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.GetProfile, accessToken],
+    queryKey: [QueryKey.Users.Profile, accessToken],
     queryFn: async () => {
       return axiosSecure.get<UserResponseDto>(ApiRoute.Users.Me);
     },

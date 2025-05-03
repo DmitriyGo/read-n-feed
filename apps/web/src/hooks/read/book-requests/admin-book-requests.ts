@@ -18,11 +18,7 @@ export const useAdminBookRequests = (data: {
   const urlParams = new URLSearchParams(clearObject(data));
 
   return useQuery({
-    queryKey: [
-      QueryKey.GetAdminBookRequests,
-      accessToken,
-      urlParams.toString(),
-    ],
+    queryKey: [QueryKey.BookRequests.All, accessToken, urlParams.toString()],
     queryFn: async () => {
       return axiosSecure.get<PaginatedBookRequestResponseDto>(
         `${ApiRoute.BookRequests.GetAll}?${urlParams}`,
