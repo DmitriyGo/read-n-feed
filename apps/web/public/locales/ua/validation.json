@@ -1,0 +1,14 @@
+{
+  "firstNameTooShort": "Ім'я занадто коротке",
+  "lastNameTooShort": "Прізвище занадто коротке",
+  "titleCannotBeEmpty": "Назва не може бути порожньою",
+  "emailCannotBeEmpty": "Електронна пошта не може бути порожньою",
+  "incorrectEmail": "Неправильна електронна пошта",
+  "usernameCannotBeEmpty": "Ім'я користувача не може бути порожнім",
+  "usernameTooShort": "Довжина імені користувача не може бути менше 3 символів",
+  "usernameTooLong": "Довжина імені користувача не може перевищувати 20 символів",
+  "passwordCannotBeEmpty": "Пароль не може бути порожнім",
+  "passwordTooShort": "Довжина пароля не може бути менше 8 символів",
+  "passwordsDoNotMatch": "Паролі не співпадають",
+  "rejectionReasonRequired": "Причина відхилення обов'язкова"
+}

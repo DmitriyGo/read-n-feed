@@ -1,5 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 
 import { BookRequestItem } from './book-request-item';
@@ -11,6 +12,7 @@ import { useMyBookRequests } from '@/hooks';
 import { useFilterStore, useModalStore } from '@/store';
 
 export const MyBookRequestsBlock = () => {
+  const { t } = useTranslation();
   const { setMode } = useModalStore();
 
   const [perPage, setPerPage] = useState<PerPage>(10);
@@ -35,12 +37,12 @@ export const MyBookRequestsBlock = () => {
     <div>
       <Card>
         <CardHeader>
-          <h2 className="text-2xl">Your book requests</h2>
+          <h2 className="text-2xl">{t('yourBookRequests')}</h2>
         </CardHeader>
 
         <CardContent className="space-y-4">
           <Button className="w-full text-base" onClick={handleCreateRequest}>
-            Create a New Request
+            {t('createNewRequest')}
           </Button>
 
           <div className="2xl:grid grid-cols-2 flex flex-col w-full gap-4">
@@ -52,7 +54,7 @@ export const MyBookRequestsBlock = () => {
                 />
               ))
             ) : (
-              <div>No requests</div>
+              <div>{t('noRequests')}</div>
             )}
           </div>
         </CardContent>

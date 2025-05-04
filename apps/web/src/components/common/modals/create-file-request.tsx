@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 import { FileUploadField } from '../file-upload-field';
-import { LanguageSelectField } from '../language-select-field';
 
 import {
   Button,
@@ -16,29 +16,30 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui';
-import { SupportedLanguages } from '@/constants';
 import { useCreateFileRequest } from '@/hooks';
 import { clearObject, validateFile, getFileExtension } from '@/lib';
 import { useModalStore } from '@/store';
 
-const formSchema = z.object({
-  // fileLanguage: z.enum(SupportedLanguages).optional(),
-  filename: z.string(),
-  file: z.any().refine((file) => file instanceof File, {
-    message: 'File is required',
-  }),
-});
+const formSchema = (t: (key: string) => string) =>
+  z.object({
+    // fileLanguage: z.enum(SupportedLanguages).optional(),
+    filename: z.string(),
+    file: z.any().refine((file) => file instanceof File, {
+      message: t('fileIsRequired'),
+    }),
+  });
 
-type CreateRequestSchema = z.infer<typeof formSchema>;
+type CreateRequestSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function CreateFileRequestModal() {
+  const { t } = useTranslation();
   const { mutateAsync: createRequest } = useCreateFileRequest();
   const { setMode, params, clearParams } = useModalStore();
 
   const bookId = params['bookId'] as string;
 
   const form = useForm<CreateRequestSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       // fileLanguage: SupportedLanguages[0],
       filename: '',
@@ -65,7 +66,7 @@ export function CreateFileRequestModal() {
         file: file,
       });
 
-      toast.success('Request created successfully');
+      toast.success(t('requestCreatedSuccessfully'));
       clearParams();
       setMode(null);
     } catch (error: any) {
@@ -89,9 +90,9 @@ export function CreateFileRequestModal() {
           name="filename"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>File Name</FormLabel>
+              <FormLabel>{t('fileName')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter file name" {...field} />
+                <Input placeholder={t('enterFileName')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,14 +105,14 @@ export function CreateFileRequestModal() {
           render={({ field }) => (
             <FileUploadField
               field={field}
-              label="Upload File"
+              label={t('uploadFile')}
               required={true}
             />
           )}
         />
 
         <Button type="submit" className="w-full">
-          Submit Request
+          {t('submitRequest')}
         </Button>
       </form>
     </Form>

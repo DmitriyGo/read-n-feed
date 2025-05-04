@@ -7,6 +7,7 @@ import {
   SignInModal,
   SignUpModal,
   UpdateRequestBookModal,
+  VerifyRequestModal,
 } from '@/components/common';
 
 export type ModalModeInfo = {
@@ -30,6 +31,9 @@ const ModalInfos = {
   },
   CreateFileRequest: {
     component: <CreateFileRequestModal />,
+  },
+  VerifyRequest: {
+    component: <VerifyRequestModal />,
   },
 } satisfies Record<string, ModalModeInfo>;
 

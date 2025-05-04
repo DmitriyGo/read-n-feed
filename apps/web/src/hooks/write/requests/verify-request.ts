@@ -9,19 +9,23 @@ import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
-export const useVerifyBookRequest = () => {
+export const useVerifyRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({
       requestId,
+      typeOf,
       body,
     }: {
       requestId: string;
+      typeOf: 'book' | 'file';
       body: AdminReviewDto;
     }) => {
       return await axiosSecure.post<BookRequestResponseDto>(
-        ApiRoute.BookRequests.Review(requestId),
+        (typeOf === 'book'
+          ? ApiRoute.BookRequests.Review
+          : ApiRoute.FileRequestsAdmin.Review)(requestId),
         body,
       );
     },
@@ -29,7 +33,15 @@ export const useVerifyBookRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetMyBookRequests],
+            //FIX
+            queryKey: [
+              QueryKey.GetMyBookRequests,
+              QueryKey.GetAdminBookRequests,
+              QueryKey.GetBooksCatalog,
+              QueryKey.GetMyFileRequests,
+              QueryKey.GetAdminFileRequests,
+              QueryKey.GetBookFiles,
+            ],
             type: 'active',
           }),
         500,

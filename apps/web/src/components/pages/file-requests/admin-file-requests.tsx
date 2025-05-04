@@ -1,5 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 
 import { FileRequestItem } from './file-request-item';
@@ -13,6 +14,7 @@ import { useFilterStore } from '@/store';
 export const AdminFileRequestsBlock = () => {
   const [perPage, setPerPage] = useState<PerPage>(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const { t } = useTranslation();
 
   const { getFilter } = useFilterStore();
   const [urlSearchParams] = useSearchParams();
@@ -30,7 +32,7 @@ export const AdminFileRequestsBlock = () => {
     <div>
       <Card>
         <CardHeader>
-          <h2 className="text-2xl">User file requests</h2>
+          <h2 className="text-2xl">{t('userFileRequests')}</h2>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -43,7 +45,7 @@ export const AdminFileRequestsBlock = () => {
                 />
               ))
             ) : (
-              <div>No requests</div>
+              <div>{t('noRequests')}</div>
             )}
           </div>
         </CardContent>

@@ -1,5 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Skeleton } from '@/components/ui';
 
@@ -10,6 +11,7 @@ export const Description = ({
   text?: string | null;
   length?: number;
 }) => {
+  const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
 
   const indexOfPreviousSpace = Math.max(
@@ -20,7 +22,8 @@ export const Description = ({
   return isDefined(text) ? (
     <p className="text-justify">
       <span>
-        Description: {showMore ? text : text.slice(0, indexOfPreviousSpace)}
+        {t('description')}:{' '}
+        {showMore ? text : text.slice(0, indexOfPreviousSpace)}
       </span>
 
       {text.length > length && (
@@ -31,7 +34,7 @@ export const Description = ({
           {showMore ? (
             <>
               <br />
-              Show less
+              {t('showLess')}
             </>
           ) : (
             '...'

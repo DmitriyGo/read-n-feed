@@ -1,21 +1,27 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui';
 import { Route } from '@/constants';
 
-const RequestsRoutes = [
-  {
-    name: 'My Book Requests',
-    href: Route.Requests.MyBookRequests,
-  },
-  {
-    name: 'My File Requests',
-    href: Route.Requests.MyFileRequests,
-  },
-];
-
 export const RequestsLayout = () => {
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+
+  const RequestsRoutes = useMemo(
+    () => [
+      {
+        name: t('myBookRequests'),
+        href: Route.Requests.MyBookRequests,
+      },
+      {
+        name: t('myFileRequests'),
+        href: Route.Requests.MyFileRequests,
+      },
+    ],
+    [i18n.language, t],
+  );
 
   return (
     <div>

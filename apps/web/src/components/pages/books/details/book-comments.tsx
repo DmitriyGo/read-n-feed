@@ -1,6 +1,7 @@
 import { CommentResponseDto, CreateCommentDto } from '@read-n-feed/application';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -26,6 +27,7 @@ interface CommentFormData {
 }
 
 export const BookComments = ({ bookId }: { bookId?: string }) => {
+  const { t } = useTranslation();
   const { data: commentsResponse, isLoading } = useCommentsForBook(bookId);
   const { data: profileData } = useGetProfile();
   const { mutate: createComment } = useCreateComment();
@@ -58,15 +60,15 @@ export const BookComments = ({ bookId }: { bookId?: string }) => {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-2xl font-semibold">Comments</h2>
+        <h2 className="text-2xl font-semibold">{t('comments')}</h2>
       </CardHeader>
       <CardContent className="space-y-4">
         {isLoading ? (
-          <p>Loading comments...</p>
+          <p>{t('loadingComments')}</p>
         ) : (
           <div className="space-y-4">
             {commentsResponse?.data?.length === 0 ? (
-              <p>No comments yet. Be the first to comment!</p>
+              <p>{t('noCommentsYet')}</p>
             ) : (
               <div className="space-y-4">
                 {commentsResponse?.data?.map((comment) => (
@@ -98,7 +100,7 @@ export const BookComments = ({ bookId }: { bookId?: string }) => {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        placeholder="Add a comment..."
+                        placeholder={t('addComment')}
                         className="min-h-[100px]"
                         {...field}
                       />
@@ -106,12 +108,12 @@ export const BookComments = ({ bookId }: { bookId?: string }) => {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Post Comment</Button>
+              <Button type="submit">{t('postComment')}</Button>
             </form>
           </Form>
         ) : (
           <div className="p-4 border border-dashed rounded-md text-center">
-            <p className="text-muted-foreground">Sign in to leave a comment</p>
+            <p className="text-muted-foreground">{t('signInToComment')}</p>
           </div>
         )}
       </CardContent>
@@ -136,6 +138,7 @@ const CommentItem = ({
   onStartEditing,
   onCancelEditing,
 }: CommentItemProps) => {
+  const { t } = useTranslation();
   const { mutate: deleteComment } = useDeleteComment(comment.id, bookId);
   const { mutate: updateComment } = useUpdateComment(comment.id, bookId);
 
@@ -178,9 +181,9 @@ const CommentItem = ({
               )}
             />
             <div className="flex space-x-2">
-              <Button type="submit">Save</Button>
+              <Button type="submit">{t('save')}</Button>
               <Button variant="outline" onClick={onCancelEditing}>
-                Cancel
+                {t('cancel')}
               </Button>
             </div>
           </form>
@@ -190,15 +193,15 @@ const CommentItem = ({
           <div className="flex justify-between items-start">
             <div>
               <p className="text-sm text-muted-foreground">
-                {comment.username || 'Anonymous'} •{' '}
+                {comment.username || t('anonymous')} •{' '}
                 {formatDate(comment.createdAt)}
-                {comment.createdAt !== comment.updatedAt && ' (edited)'}
+                {comment.createdAt !== comment.updatedAt && t('edited')}
               </p>
             </div>
             {isOwner && (
               <div className="flex space-x-2">
                 <Button variant="ghost" size="sm" onClick={onStartEditing}>
-                  Edit
+                  {t('edit')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -206,7 +209,7 @@ const CommentItem = ({
                   onClick={() => deleteComment()}
                   className="text-destructive hover:text-destructive"
                 >
-                  Delete
+                  {t('delete')}
                 </Button>
               </div>
             )}

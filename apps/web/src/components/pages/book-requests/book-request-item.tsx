@@ -1,7 +1,8 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { format } from 'date-fns';
-import { Check, FileEdit, Link2 } from 'lucide-react';
+import { FileQuestion, FileEdit, Link2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
@@ -12,11 +13,7 @@ import {
 } from '@/components/common';
 import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
 import { Route } from '@/constants';
-import {
-  useBookRequestFilesById,
-  useHasRole,
-  useVerifyBookRequest,
-} from '@/hooks';
+import { useBookRequestFilesById, useHasRole } from '@/hooks';
 import { useModalStore } from '@/store';
 
 const formatDate = (date?: Date | null) => {
@@ -28,14 +25,14 @@ export const BookRequestItem = ({
 }: {
   bookRequest: BookRequestResponseDto;
 }) => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const { setMode, setParam } = useModalStore();
 
   const { hasRole: isAdmin } = useHasRole('ADMIN');
   const isOnAdminPage = pathname.includes('admin');
-
-  const { mutate } = useVerifyBookRequest();
 
   const { data } = useBookRequestFilesById(bookRequest.id);
   const bookRequestFiles = data?.data;
@@ -46,14 +43,10 @@ export const BookRequestItem = ({
   };
 
   const handleVerify = () => {
-    mutate({
-      requestId: bookRequest.id,
-      body: {
-        status: 'APPROVED',
-      },
-    });
+    setParam('requestId', bookRequest.id);
+    setParam('requestType', 'book');
+    setMode('VerifyRequest');
   };
-  const navigate = useNavigate();
 
   const handleClick = (fileId: string) => {
     navigate(Route.Book.Read(bookRequest.id, fileId, 'book'));
@@ -78,7 +71,7 @@ export const BookRequestItem = ({
                   : 'destructive'
             }
           >
-            {bookRequest.status}
+            {t(bookRequest.status.toLowerCase())}
           </Badge>
 
           {bookRequest.status === 'PENDING' && (
@@ -90,7 +83,7 @@ export const BookRequestItem = ({
           {/* Show the verify button only for admins on admin routes when the request is pending */}
           {isAdmin && isOnAdminPage && bookRequest.status === 'PENDING' && (
             <Button variant="outline" onClick={handleVerify}>
-              <Check />
+              <FileQuestion />
             </Button>
           )}
         </div>
@@ -102,19 +95,19 @@ export const BookRequestItem = ({
         <div>
           <Description text={bookRequest?.description} />
 
-          <Badges label="Tags" tags={bookRequest?.tagLabels} />
-          <Badges label="Genres" tags={bookRequest?.genreNames} />
+          <Badges label={t('tags')} tags={bookRequest?.tagLabels} />
+          <Badges label={t('genres')} tags={bookRequest?.genreNames} />
 
           <PartiallyLoadedContent
-            label="Authors"
+            label={t('authors')}
             content={bookRequest?.authorNames?.join(', ')}
           />
           <PartiallyLoadedContent
-            label="Publisher"
+            label={t('publisher')}
             content={bookRequest?.publisher}
           />
           <PartiallyLoadedContent
-            label="Publication Date"
+            label={t('publicationDate')}
             content={
               bookRequest?.publicationDate
                 ? formatDate(bookRequest.publicationDate)
@@ -124,20 +117,20 @@ export const BookRequestItem = ({
         </div>
 
         <div className="border-l pl-4">
-          <h3 className="font-medium">Request Details</h3>
+          <h3 className="font-medium">{t('requestDetails')}</h3>
 
           <PartiallyLoadedContent
-            label="Requested on"
+            label={t('requestedOn')}
             content={formatDate(bookRequest?.createdAt)}
           />
           <PartiallyLoadedContent
-            label="Last Updated"
+            label={t('lastUpdated')}
             content={formatDate(bookRequest?.updatedAt)}
           />
 
           {bookRequest.status === 'APPROVED' && (
             <PartiallyLoadedContent
-              label="Approved on"
+              label={t('approvedOn')}
               content={formatDate(bookRequest?.approvedAt)}
             />
           )}
@@ -145,11 +138,11 @@ export const BookRequestItem = ({
           {bookRequest.status === 'REJECTED' && (
             <>
               <PartiallyLoadedContent
-                label="Rejected on"
+                label={t('rejectedOn')}
                 content={formatDate(bookRequest?.rejectedAt)}
               />
               <PartiallyLoadedContent
-                label="Rejection Reason"
+                label={t('rejectionReason')}
                 content={bookRequest?.rejectionReason}
                 className="text-red-500"
               />
@@ -158,7 +151,7 @@ export const BookRequestItem = ({
 
           {bookRequest.adminNotes && (
             <PartiallyLoadedContent
-              label="Admin Notes"
+              label={t('adminNotes')}
               content={bookRequest?.adminNotes}
               className="text-blue-500"
             />
@@ -172,14 +165,16 @@ export const BookRequestItem = ({
                 className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
               >
                 <p>
-                  File name:&nbsp;
+                  {t('fileName')}:&nbsp;
                   {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
                     ? bookFile.metadata['Title']
                     : bookFile.filename}
                 </p>
 
                 <p className="text-center">
-                  <span>Format: {bookFile.format}</span>
+                  <span>
+                    {t('format')}: {bookFile.format}
+                  </span>
                 </p>
 
                 <div className="flex justify-end">

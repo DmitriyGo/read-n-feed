@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { isDefined } from '@read-n-feed/shared';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
@@ -21,7 +22,7 @@ import { clearObject } from '@/lib';
 import { useModalStore } from '@/store';
 
 const formSchema = z.object({
-  title: z.string().nonempty('Title cannot be empty'),
+  title: z.string().nonempty('titleCannotBeEmpty'),
   description: z.string().optional(),
   authorNames: z.string().optional(),
   genreNames: z.string().optional(),
@@ -33,6 +34,7 @@ const formSchema = z.object({
 type CreateRequestSchema = z.infer<typeof formSchema>;
 
 export function UpdateRequestBookModal() {
+  const { t } = useTranslation();
   const { mutateAsync: updateRequest } = useUpdateBookRequest();
   const { setMode, params, clearParams } = useModalStore();
 
@@ -71,7 +73,7 @@ export function UpdateRequestBookModal() {
         },
       });
 
-      toast.success('Request updated successfully');
+      toast.success(t('requestUpdatedSuccessfully'));
       clearParams();
       setMode(null);
     } catch (error) {
@@ -101,9 +103,9 @@ export function UpdateRequestBookModal() {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Book Title</FormLabel>
+              <FormLabel>{t('bookTitle')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter book title" {...field} />
+                <Input placeholder={t('enterBookTitle')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,10 +117,10 @@ export function UpdateRequestBookModal() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t('description')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter book description"
+                  placeholder={t('enterBookDescription')}
                   className="min-h-[100px]"
                   {...field}
                 />
@@ -133,10 +135,10 @@ export function UpdateRequestBookModal() {
           name="authorNames"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Authors</FormLabel>
+              <FormLabel>{t('authors')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter author names separated by commas"
+                  placeholder={t('enterAuthorNamesSeparatedByCommas')}
                   {...field}
                 />
               </FormControl>
@@ -150,10 +152,10 @@ export function UpdateRequestBookModal() {
           name="genreNames"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Genres</FormLabel>
+              <FormLabel>{t('genres')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter genres separated by commas"
+                  placeholder={t('enterGenresSeparatedByCommas')}
                   {...field}
                 />
               </FormControl>
@@ -167,7 +169,7 @@ export function UpdateRequestBookModal() {
           name="publicationDate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Publication Date</FormLabel>
+              <FormLabel>{t('publicationDate')}</FormLabel>
               <FormControl>
                 <Input type="date" placeholder="YYYY-MM-DD" {...field} />
               </FormControl>
@@ -181,9 +183,9 @@ export function UpdateRequestBookModal() {
           name="publisher"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Publisher</FormLabel>
+              <FormLabel>{t('publisher')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter publisher name" {...field} />
+                <Input placeholder={t('enterPublisherName')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -195,10 +197,10 @@ export function UpdateRequestBookModal() {
           name="tagLabels"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tags</FormLabel>
+              <FormLabel>{t('tags')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter tags separated by commas"
+                  placeholder={t('enterTagsSeparatedByCommas')}
                   {...field}
                 />
               </FormControl>
@@ -208,7 +210,7 @@ export function UpdateRequestBookModal() {
         />
 
         <Button type="submit" className="w-full">
-          Submit Request
+          {t('submitRequest')}
         </Button>
       </form>
     </Form>

@@ -3,6 +3,7 @@ import { SearchBooksDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -36,6 +37,7 @@ const formSchema = z.object({
 type SearchBooksFormData = z.infer<typeof formSchema>;
 
 export const SearchFilters = () => {
+  const { t } = useTranslation();
   const form = useForm<SearchBooksFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -109,9 +111,9 @@ export const SearchFilters = () => {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{t('title')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Title" {...field} />
+                  <Input placeholder={t('title')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,9 +125,9 @@ export const SearchFilters = () => {
             name="authorName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Author Name</FormLabel>
+                <FormLabel>{t('authorName')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Author Name" {...field} />
+                  <Input placeholder={t('authorName')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -137,9 +139,9 @@ export const SearchFilters = () => {
             name="genreName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Genre</FormLabel>
+                <FormLabel>{t('genre')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Genre" {...field} />
+                  <Input placeholder={t('genre')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -151,9 +153,9 @@ export const SearchFilters = () => {
             name="tagName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tag</FormLabel>
+                <FormLabel>{t('tag')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Tag" {...field} />
+                  <Input placeholder={t('tag')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -165,20 +167,22 @@ export const SearchFilters = () => {
             name="sortBy"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sort By</FormLabel>
+                <FormLabel>{t('sortBy')}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value ?? ''}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sort By" />
+                      <SelectValue placeholder={t('sortBy')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="title">Title</SelectItem>
-                      <SelectItem value="createdAt">Created At</SelectItem>
+                      <SelectItem value="title">{t('title')}</SelectItem>
+                      <SelectItem value="createdAt">
+                        {t('createdAt')}
+                      </SelectItem>
                       <SelectItem value="publicationDate">
-                        Publication Date
+                        {t('publicationDate')}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -193,18 +197,18 @@ export const SearchFilters = () => {
             name="sortOrder"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sort Order</FormLabel>
+                <FormLabel>{t('sortOrder')}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value ?? ''}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sort Order" />
+                      <SelectValue placeholder={t('sortOrder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="asc">Ascending</SelectItem>
-                      <SelectItem value="desc">Descending</SelectItem>
+                      <SelectItem value="asc">{t('ascending')}</SelectItem>
+                      <SelectItem value="desc">{t('descending')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -214,7 +218,7 @@ export const SearchFilters = () => {
           />
 
           <Button type="submit" className="w-full">
-            Save
+            {t('save')}
           </Button>
 
           <Button
@@ -223,7 +227,7 @@ export const SearchFilters = () => {
             className="w-full"
             onClick={handleClear}
           >
-            Clear
+            {t('clear')}
           </Button>
         </form>
       </Form>

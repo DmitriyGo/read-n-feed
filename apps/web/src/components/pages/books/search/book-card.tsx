@@ -1,5 +1,6 @@
 import { BookResponseDto } from '@read-n-feed/application';
 import { Star, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -21,6 +22,7 @@ import { Route } from '@/constants';
 import { useBreakpoint } from '@/hooks/use-breakpoint';
 
 export const BookCard = ({ book }: { book: BookResponseDto }) => {
+  const { t } = useTranslation();
   const isMd = useBreakpoint('md');
 
   const navigate = useNavigate();
@@ -61,12 +63,12 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
               <br />
 
               <PartiallyLoadedContent
-                label="Publisher"
+                label={t('publisher')}
                 content={book.publisher}
               />
 
               <PartiallyLoadedContent
-                label="Total likes"
+                label={t('totalLikes')}
                 content={book.totalLikes}
               />
 

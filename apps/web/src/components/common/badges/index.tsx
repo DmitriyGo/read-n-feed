@@ -1,5 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge, Skeleton } from '@/components/ui';
 
@@ -12,6 +13,7 @@ export const Badges = ({
   tags: string[] | undefined | null;
   maxLength?: number;
 }) => {
+  const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
 
   return (
@@ -29,7 +31,7 @@ export const Badges = ({
               className="!text-blue-500 cursor-pointer"
               onClick={() => setShowMore((prev) => !prev)}
             >
-              {showMore ? <>Show less</> : '...'}
+              {showMore ? <>{t('showLess')}</> : '...'}
             </span>
           )}
         </>

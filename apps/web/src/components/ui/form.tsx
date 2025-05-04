@@ -9,6 +9,7 @@ import {
   FormProvider,
   useFormContext,
 } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { Label } from './label';
 
@@ -147,6 +148,9 @@ const FormMessage = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const { error, formMessageId } = useFormField();
+
+  const { t } = useTranslation('validation');
+
   const body = error ? String(error?.message) : children;
 
   if (!body) {
@@ -160,7 +164,11 @@ const FormMessage = React.forwardRef<
       className={cn('text-[0.8rem] font-medium text-destructive', className)}
       {...props}
     >
-      {body}
+      {typeof body === 'string'
+        ? t(body, {
+            ns: 'validation',
+          })
+        : body}
     </p>
   );
 });
