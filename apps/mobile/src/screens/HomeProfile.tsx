@@ -1,117 +1,237 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Button } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 
-export default function HomeProfile({ navigation }) {
-  const [email, setEmail] = React.useState<string>('');
-  const [username, setUsername] = React.useState<string>('');
-  let token: string | null = null;
+import { axiosInstance } from '../lib/axios';
 
-  // waiting for the token from the login, if not go back there
-  const getData = async (): Promise<void> => {
-    token = await AsyncStorage.getItem('token');
-    if (token) {
-      getSongs();
-    } else {
+interface UserProfile {
+  username: string;
+  email: string;
+  createdAt: string;
+}
+
+export default function HomeProfile({ navigation }: { navigation: any }) {
+  const [profile, setProfile] = React.useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+  const getProfile = async (): Promise<void> => {
+    try {
+      const response = await axiosInstance.get('/users/me');
+      setProfile(response.data);
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message || 'Failed to load profile';
+      Alert.alert('Error', errorMessage);
       navigation.navigate('HomeLogin');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // fct get all data Song from api
-  const getSongs = async (): Promise<void> => {
-    const response: Response = await fetch(`asd/profile`, {
-      method: 'GET',
-      headers: {
-        'Content-type': 'application/json',
-        auth_token: token,
-      },
-    });
-    const res: string = await response.json();
-    if (res.length === 0) {
+  const handleLogout = async (): Promise<void> => {
+    try {
+      await axiosInstance.post('/auth/logout');
+      await AsyncStorage.clear();
       navigation.navigate('HomeLogin');
-    }
-    if (response.status === 200) {
-      console.log(res);
-      setUsername(res.username);
-      setEmail(res.email);
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Failed to logout';
+      Alert.alert('Error', errorMessage);
     }
   };
 
-  // to navigation between pages
-  const disconnectClicked = (): void => {
-    AsyncStorage.clear();
-    navigation.navigate('HomeLogin');
+  const handleDeleteAccount = async (): Promise<void> => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await axiosInstance.delete('/users/me');
+              await AsyncStorage.clear();
+              navigation.navigate('HomeLogin');
+            } catch (err: any) {
+              const errorMessage =
+                err.response?.data?.message || 'Failed to delete account';
+              Alert.alert('Error', errorMessage);
+            }
+          },
+        },
+      ],
+    );
   };
 
-  // On component did mount once with the []
+  const handleChangePassword = async (): Promise<void> => {
+    try {
+      await axiosInstance.post('/auth/forgot-password', {
+        email: profile?.email,
+      });
+      Alert.alert(
+        'Success',
+        'Password reset instructions have been sent to your email',
+      );
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message || 'Failed to send reset instructions';
+      Alert.alert('Error', errorMessage);
+    }
+  };
+
   React.useEffect(() => {
-    getData();
+    getProfile();
   }, []);
-  return (
-    <View style={styles.inputWrapper}>
-      <Text style={styles.text}>Profile</Text>
-      <View style={styles.boxInput}>
-        <Text style={styles.text}>{username}</Text>
-        <Text style={styles.text}>{email}</Text>
-        <TouchableOpacity onPress={disconnectClicked}>
-          <View style={styles.button}>
-            <Text style={styles.text}>Change</Text>
-          </View>
-        </TouchableOpacity>
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4a90e2" />
       </View>
-      <Button title="disconnect" onPress={disconnectClicked} />
-      <Button title="Close Account" onPress={() => alert(':-X')} />
-      <Button title="Change password" onPress={() => alert('email send')} />
-    </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.profileContainer}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Profile</Text>
+        </View>
+
+        <View style={styles.infoContainer}>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Username</Text>
+            <Text style={styles.value}>{profile?.username}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Email</Text>
+            <Text style={styles.value}>{profile?.email}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Member Since</Text>
+            <Text style={styles.value}>
+              {profile?.createdAt
+                ? new Date(profile.createdAt).toLocaleDateString()
+                : 'N/A'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={[styles.button, styles.primaryButton]}
+            onPress={handleChangePassword}
+          >
+            <Text style={styles.buttonText}>Change Password</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.secondaryButton]}
+            onPress={handleLogout}
+          >
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.dangerButton]}
+            onPress={handleDeleteAccount}
+          >
+            <Text style={styles.buttonText}>Delete Account</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  inputWrapper: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'column',
-    backgroundColor: 'purple',
+    backgroundColor: '#f5f5f5',
   },
-  gradient: {
+  loadingContainer: {
     flex: 1,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: '100%',
-  },
-  boxInput: {
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
-  inputBox: {
-    color: 'black',
-    fontSize: 24,
-    backgroundColor: 'white',
-    borderRadius: 30,
+  profileContainer: {
+    padding: 20,
+  },
+  header: {
+    marginBottom: 30,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
     textAlign: 'center',
-    width: '80%',
-    margin: 2,
+  },
+  infoContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  label: {
+    fontSize: 16,
+    color: '#666',
+  },
+  value: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
+  actionsContainer: {
+    gap: 12,
   },
   button: {
-    padding: 10,
-    height: 50,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    borderRadius: 30,
-    width: '50%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
   },
-  text: {
-    textAlign: 'center',
-    color: 'grey',
-    fontSize: 24,
-    justifyContent: 'center',
+  primaryButton: {
+    backgroundColor: '#4a90e2',
   },
-  textError: {
-    textAlign: 'center',
-    color: 'red',
-    fontSize: 14,
-    justifyContent: 'center',
+  secondaryButton: {
+    backgroundColor: '#666',
+  },
+  dangerButton: {
+    backgroundColor: '#dc3545',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

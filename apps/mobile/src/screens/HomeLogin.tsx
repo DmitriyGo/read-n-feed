@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as React from 'react';
 import {
   StyleSheet,
@@ -8,47 +7,39 @@ import {
   TextInput,
   TouchableOpacity,
   Button,
+  ActivityIndicator,
 } from 'react-native';
 
-export default function HomeLogin({ navigation }) {
-  const [email, setEmail] = React.useState<string>('');
-  const [token, setToken] = React.useState<string>('');
-  const [password, setPassword] = React.useState<string>('');
-  const [error, showError] = React.useState<boolean>(false);
+import { axiosInstance } from '../lib/axios';
+import { validateLoginForm, LoginFormData } from '../utils/validation';
+
+export default function HomeLogin({ navigation }: { navigation: any }) {
+  const [formData, setFormData] = React.useState<LoginFormData>({
+    email: '',
+    password: '',
+  });
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const pressHandler = async (): Promise<void> => {
-    if (email && password) {
+    const { isValid, errors: validationErrors } = validateLoginForm(formData);
+    setErrors(validationErrors);
+
+    if (isValid) {
+      setIsLoading(true);
       try {
-        const response: Response = await fetch(`asd/signin`, {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify({ email: email, password: password }),
-        });
-        const res: JSON | boolean = await response.json();
-        console.log(res.token);
-        if (res === 'invalid password' || res === false) {
-          showError(true);
+        const response = await axiosInstance.post('/auth/login', formData);
+
+        if (response.data.accessToken) {
+          await AsyncStorage.setItem('token', response.data.accessToken);
+          navigation.navigate('HomeProfile');
         }
-        if (res.token) {
-          setToken(res.token);
-          saveData(res.token);
-        } else {
-          showError(true);
-          setTimeout(() => showError(false), 5000);
-          AsyncStorage.clear();
-          console.log('error delay');
-        }
-      } catch (err) {
-        showError(true);
-        alert('wrong login/password');
-        console.log('error', err.message);
+      } catch (err: any) {
+        const errorMessage = err.response?.data?.message || 'Login failed';
+        alert(errorMessage);
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      saveData('');
-      showError(true);
-      setTimeout(() => showError(false), 5000);
     }
   };
 
@@ -57,105 +48,111 @@ export default function HomeLogin({ navigation }) {
     navigation.navigate('HomeRegister');
   };
 
-  const saveData = async (token: string) => {
-    await AsyncStorage.setItem('token', token);
+  const handleInputChange = (field: keyof LoginFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
   };
 
-  const getData = async () => {
-    const jwt: string | null = await AsyncStorage.getItem('token');
-    if (jwt) {
-      navigation.navigate('ListPosts', { jwt: jwt });
-    }
-  };
-
-  React.useEffect(() => {
-    getData();
-  }, [token]);
   return (
-    <View style={styles.inputWrapper}>
-      <LinearGradient colors={['yellow', 'purple']} style={styles.gradient} />
-      <Text style={styles.text}>Home - Login </Text>
-      <Text style={styles.textError}>{error ? 'Error fields' : ''}</Text>
-      <View style={styles.boxInput}>
-        <TextInput
-          placeholder="Email"
-          value={email}
-          type="email"
-          style={styles.inputBox}
-          autoCapitalize={'none'}
-          onChangeText={(e) => {
-            setEmail(e);
-            showError(false);
-          }}
+    <View style={styles.container}>
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Welcome Back</Text>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Email"
+            autoCapitalize="none"
+            value={formData.email}
+            style={[styles.input, errors.email && styles.inputError]}
+            onChangeText={(text) => handleInputChange('email', text)}
+          />
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+          <TextInput
+            placeholder="Password"
+            autoCapitalize="none"
+            secureTextEntry
+            value={formData.password}
+            style={[styles.input, errors.password && styles.inputError]}
+            onChangeText={(text) => handleInputChange('password', text)}
+          />
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password}</Text>
+          )}
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={pressHandler}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Login</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <Button
+          title="Don't have an account? Register"
+          onPress={goToRegister}
         />
-        <TextInput
-          placeholder="Password"
-          value={password}
-          type="password"
-          style={styles.inputBox}
-          autoCapitalize={'none'}
-          onChangeText={(e) => {
-            setPassword(e);
-            showError(false);
-          }}
-        />
-        <TouchableOpacity onPress={pressHandler}>
-          <View style={styles.button}>
-            <Text style={styles.text}>Go</Text>
-          </View>
-        </TouchableOpacity>
       </View>
-      <Button title="Register" onPress={goToRegister} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  inputWrapper: {
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  formContainer: {
     flex: 1,
     justifyContent: 'center',
-    flexDirection: 'column',
-    backgroundColor: 'purple',
+    padding: 20,
   },
-  gradient: {
-    flex: 1,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: '100%',
-  },
-  boxInput: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  inputBox: {
-    color: 'black',
+  title: {
     fontSize: 24,
-    backgroundColor: 'white',
-    borderRadius: 30,
+    fontWeight: 'bold',
     textAlign: 'center',
-    width: '80%',
-    margin: 2,
+    marginBottom: 30,
+    color: '#333',
+  },
+  inputContainer: {
+    width: '100%',
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  inputError: {
+    borderColor: '#ff6b6b',
+  },
+  errorText: {
+    color: '#ff6b6b',
+    fontSize: 12,
+    marginBottom: 10,
+    marginLeft: 5,
   },
   button: {
-    padding: 10,
-    minWidth: 50,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    borderRadius: 30,
-    width: '50%',
+    backgroundColor: '#4a90e2',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
   },
-  text: {
-    textAlign: 'center',
-    color: 'grey',
-    fontSize: 24,
-    justifyContent: 'center',
-  },
-  textError: {
-    textAlign: 'center',
-    color: 'red',
-    fontSize: 14,
-    justifyContent: 'center',
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

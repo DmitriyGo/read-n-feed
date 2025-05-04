@@ -6,40 +6,42 @@ import {
   TextInput,
   TouchableOpacity,
   Button,
+  ActivityIndicator,
 } from 'react-native';
 
-export default function HomeRegister({ navigation }) {
-  const [email, setEmail] = React.useState<string>('');
-  const [username, setUsername] = React.useState<string>('');
-  const [password, setPassword] = React.useState<string>('');
-  const [error, showError] = React.useState<boolean>(false);
+import { axiosInstance } from '../lib/axios';
+import { validateRegisterForm, RegisterFormData } from '../utils/validation';
+
+export default function HomeRegister({ navigation }: { navigation: any }) {
+  const [formData, setFormData] = React.useState<RegisterFormData>({
+    email: '',
+    username: '',
+    password: '',
+  });
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   const pressHandler = async (): Promise<void> => {
-    if (email && password) {
-      const response: Response = await fetch(`asd/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: username,
-          email: email,
-          password: password,
-        }),
-      });
-      const res: JSON = await response.json();
-      if (response.status === 200) {
-        console.log(res);
-        alert('email sent');
-        navigation.navigate('HomeLogin');
-      } else {
-        alert('Error email or username exists');
-        showError(true);
-        setTimeout(() => showError(false), 5000);
+    const { isValid, errors: validationErrors } =
+      validateRegisterForm(formData);
+    setErrors(validationErrors);
+
+    if (isValid) {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.post('/auth/register', formData);
+
+        if (response.status === 201) {
+          alert('Registration successful! Please check your email.');
+          navigation.navigate('HomeLogin');
+        }
+      } catch (err: any) {
+        const errorMessage =
+          err.response?.data?.message || 'Registration failed';
+        alert(errorMessage);
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      showError(true);
-      setTimeout(() => showError(false), 5000);
     }
   };
 
@@ -47,104 +49,120 @@ export default function HomeRegister({ navigation }) {
     navigation.navigate('HomeLogin');
   };
 
-  const onEmailChange = (e: any) => {
-    const value = e.nativeEvent.text;
-    setEmail(value);
+  const handleInputChange = (field: keyof RegisterFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Remove the error for the field being changed
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
   };
+
   return (
-    <View style={styles.inputWrapper}>
-      <Text style={styles.text}>Welcome - Login</Text>
-      <Text style={styles.textError}>{error ? 'Error fields' : ''}</Text>
-      <View style={styles.boxInput}>
-        <TextInput
-          placeholder="Username"
-          autoCapitalize={'none'}
-          value={username}
-          style={styles.inputBox}
-          onChangeText={(e) => {
-            setUsername(e);
-            showError(false);
-          }}
-        />
-        <TextInput
-          placeholder="Email"
-          autoCapitalize={'none'}
-          value={email}
-          type="email"
-          style={styles.inputBox}
-          onChangeText={(e) => {
-            setEmail(e);
-            showError(false);
-          }}
-        />
-        <TextInput
-          placeholder="Password"
-          autoCapitalize={'none'}
-          value={password}
-          type="password"
-          style={styles.inputBox}
-          onChangeText={(e) => {
-            setPassword(e);
-            showError(false);
-          }}
-        />
-        <TouchableOpacity onPress={pressHandler}>
-          <View style={styles.button}>
-            <Text style={styles.text}>Go</Text>
-          </View>
-        </TouchableOpacity>
+    <View style={styles.container}>
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Welcome - Register</Text>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Username"
+            autoCapitalize="none"
+            value={formData.username}
+            style={[styles.input, errors.username && styles.inputError]}
+            onChangeText={(text) => handleInputChange('username', text)}
+          />
+          {errors.username && (
+            <Text style={styles.errorText}>{errors.username}</Text>
+          )}
+
+          <TextInput
+            placeholder="Email"
+            autoCapitalize="none"
+            value={formData.email}
+            style={[styles.input, errors.email && styles.inputError]}
+            onChangeText={(text) => handleInputChange('email', text)}
+          />
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+          <TextInput
+            placeholder="Password"
+            autoCapitalize="none"
+            secureTextEntry
+            value={formData.password}
+            style={[styles.input, errors.password && styles.inputError]}
+            onChangeText={(text) => handleInputChange('password', text)}
+          />
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password}</Text>
+          )}
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={pressHandler}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Register</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <Button title="Already have an account? Login" onPress={goToLogin} />
       </View>
-      <Button title="Login" onPress={goToLogin} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  inputWrapper: {
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  formContainer: {
     flex: 1,
     justifyContent: 'center',
-    flexDirection: 'column',
-    backgroundColor: 'purple',
+    padding: 20,
   },
-  gradient: {
-    flex: 1,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: '100%',
-  },
-  boxInput: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  inputBox: {
-    color: 'black',
+  title: {
     fontSize: 24,
-    backgroundColor: 'white',
-    borderRadius: 30,
+    fontWeight: 'bold',
     textAlign: 'center',
-    width: '80%',
-    margin: 2,
+    marginBottom: 30,
+    color: '#333',
+  },
+  inputContainer: {
+    width: '100%',
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  inputError: {
+    borderColor: '#ff6b6b',
+  },
+  errorText: {
+    color: '#ff6b6b',
+    fontSize: 12,
+    marginBottom: 10,
+    marginLeft: 5,
   },
   button: {
-    padding: 10,
-    height: 50,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    borderRadius: 30,
-    width: '50%',
+    backgroundColor: '#4a90e2',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
   },
-  text: {
-    textAlign: 'center',
-    color: 'grey',
-    fontSize: 24,
-    justifyContent: 'center',
-  },
-  textError: {
-    textAlign: 'center',
-    color: 'red',
-    fontSize: 14,
-    justifyContent: 'center',
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

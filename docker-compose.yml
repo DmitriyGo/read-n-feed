@@ -32,6 +32,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+    ports:
+        - "5432:5432"
 
 secrets:
   jwt_private_key:

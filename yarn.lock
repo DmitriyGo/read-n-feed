@@ -562,7 +562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-export-default-from@npm:^7.24.7":
+"@babel/plugin-proposal-export-default-from@npm:^7.24.7, @babel/plugin-proposal-export-default-from@npm:^7.25.9":
   version: 7.25.9
   resolution: "@babel/plugin-proposal-export-default-from@npm:7.25.9"
   dependencies:
@@ -673,7 +673,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-syntax-export-default-from@npm:^7.24.7":
+"@babel/plugin-syntax-export-default-from@npm:^7.24.7, @babel/plugin-syntax-export-default-from@npm:^7.25.9":
   version: 7.25.9
   resolution: "@babel/plugin-syntax-export-default-from@npm:7.25.9"
   dependencies:
@@ -1075,7 +1075,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-flow-strip-types@npm:^7.25.2, @babel/plugin-transform-flow-strip-types@npm:^7.25.9":
+"@babel/plugin-transform-flow-strip-types@npm:^7.25.2, @babel/plugin-transform-flow-strip-types@npm:^7.25.9, @babel/plugin-transform-flow-strip-types@npm:^7.26.5":
   version: 7.26.5
   resolution: "@babel/plugin-transform-flow-strip-types@npm:7.26.5"
   dependencies:
@@ -6367,6 +6367,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@read-n-feed/source@workspace:."
   dependencies:
+    "@babel/plugin-proposal-export-default-from": "npm:^7.25.9"
+    "@babel/plugin-syntax-export-default-from": "npm:^7.25.9"
+    "@babel/plugin-transform-flow-strip-types": "npm:^7.26.5"
     "@eslint/js": "npm:^9.18.0"
     "@expo/cli": "npm:~0.21.8"
     "@expo/metro-config": "npm:~0.19.4"
