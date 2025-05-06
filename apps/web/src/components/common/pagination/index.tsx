@@ -66,10 +66,7 @@ export const Pagination = ({
 
   return (
     <div
-      className={cn(
-        className,
-        'mt-4 w-full items-center justify-between md:flex',
-      )}
+      className={cn(className, 'w-full items-center justify-between md:flex')}
     >
       <div className="flex items-center gap-2">
         <p className="text-[12px] md:text-[14px] text-nowrap">

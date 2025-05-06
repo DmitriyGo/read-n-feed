@@ -126,5 +126,6 @@
   "enterAdminNotes": "Enter admin notes (optional)",
   "approveRequest": "Approve Request",
   "rejectRequest": "Reject Request",
-  "requestVerifiedSuccessfully": "Request verified successfully"
+  "requestVerifiedSuccessfully": "Request verified successfully",
+  "recommendations": "Recommendations"
 }

@@ -12,4 +12,5 @@ export const QueryKey = {
   GetFileRequestById: 'get-file-request-by-id',
   DownloadUrl: 'download-url',
   Metadata: 'metadata',
+  Recommendations: 'recommendations',
 };

@@ -1,5 +1,6 @@
 import { BookResponseDto } from '@read-n-feed/application';
 import { Star, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,7 +22,15 @@ import {
 import { Route } from '@/constants';
 import { useBreakpoint } from '@/hooks/use-breakpoint';
 
-export const BookCard = ({ book }: { book: BookResponseDto }) => {
+export const BookCard = ({
+  book,
+  isSimplified = false,
+}: {
+  book: BookResponseDto;
+  isSimplified?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const { t } = useTranslation();
   const isMd = useBreakpoint('md');
 
@@ -33,17 +42,13 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip open={isOpen && !isSimplified} onOpenChange={setIsOpen}>
         <TooltipTrigger asChild>
           <div className="w-min h-fit p-4" onClick={handleClick}>
             <BookCover book={book} />
 
             <div className="flex flex-col space-y-1 justify-between">
               <h2 className="text-wrap text-clip">{book.title}</h2>
-              <p className="flex flex-row items-center gap-1">
-                <Star />
-                <span>{book.averageRating ?? '---'}</span>
-              </p>
             </div>
           </div>
         </TooltipTrigger>
@@ -57,8 +62,14 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
         >
           <Card className="max-w-[90vw] md:max-w-[450px] ">
             <CardHeader>{book.title}</CardHeader>
+
             <CardContent className="space-y-2">
               <Description text={book.description} />
+
+              {/* <p className="flex flex-row items-center gap-1">
+                <Star />
+                <span>{book.averageRating ?? '---'}</span>
+              </p> */}
 
               <br />
 
@@ -71,21 +82,6 @@ export const BookCard = ({ book }: { book: BookResponseDto }) => {
                 label={t('totalLikes')}
                 content={book.totalLikes}
               />
-
-              <div className="flex flow-row justify-between gap-2">
-                <Button
-                  variant={book.liked === true ? 'outline' : 'ghost'}
-                  className="w-full"
-                >
-                  <ThumbsUp />
-                </Button>
-                <Button
-                  variant={book.liked === false ? 'outline' : 'ghost'}
-                  className="w-full"
-                >
-                  <ThumbsDown />
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </TooltipContent>
