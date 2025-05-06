@@ -37,6 +37,14 @@ export class PrismaBookLikeRepository implements IBookLikeRepository {
     });
   }
 
+  async findByUser(userId: string): Promise<BookLike[]> {
+    const records = await this.prisma.bookLike.findMany({
+      where: { userId },
+      include: { book: true },
+    });
+    return records.map((record) => this.toDomain(record));
+  }
+
   private toDomain(record: LikeFromDb): BookLike {
     return new BookLike({ ...record });
   }

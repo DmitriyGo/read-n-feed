@@ -40,6 +40,10 @@ export * from './likes/book-like.props';
 export * from './likes/book-like.entity';
 export * from './likes/book-like.repository.port';
 
+export * from './favorites/book-favorite.props';
+export * from './favorites/book-favorite.entity';
+export * from './favorites/book-favorite.repository.port';
+
 export * from './progress/reading-progress.props';
 export * from './progress/reading-progress.entity';
 export * from './progress/reading-progress.repository.port';

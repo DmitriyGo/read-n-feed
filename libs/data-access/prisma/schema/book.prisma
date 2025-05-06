@@ -16,6 +16,7 @@ model Book {
   genres          BookGenre[]
   tags            BookTag[]
   likes           BookLike[]
+  favorites       BookFavorite[]
   comments        BookComment[]
   progress        ReadingProgress[]
   bookFiles       BookFile[]
