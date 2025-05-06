@@ -125,5 +125,6 @@
   "approveRequest": "Схвалити запит",
   "rejectRequest": "Відхилити запит",
   "requestVerifiedSuccessfully": "Запит успішно перевірено",
-  "viewDetails": "Переглянути деталі"
+  "viewDetails": "Переглянути деталі",
+  "recommendations": "Рекомендації"
 }

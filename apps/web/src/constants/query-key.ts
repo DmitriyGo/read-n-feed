@@ -54,4 +54,7 @@ export const QueryKey = {
     All: 'tags.all',
     Details: (tagId: string) => ['tags.details', tagId],
   },
+  Recommendations: {
+    Personal: 'recommendations.personal',
+  },
 };

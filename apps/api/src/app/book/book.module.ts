@@ -5,6 +5,8 @@ import {
   PrismaAuthorRepository,
   PrismaGenreRepository,
   PrismaTagRepository,
+  PrismaBookLikeRepository,
+  PrismaBookFavoriteRepository,
 } from '@read-n-feed/data-access';
 
 import { BookController } from './book.controller';
@@ -31,6 +33,14 @@ import { BookController } from './book.controller';
     {
       provide: 'ITagRepository',
       useClass: PrismaTagRepository,
+    },
+    {
+      provide: 'IBookLikeRepository',
+      useClass: PrismaBookLikeRepository,
+    },
+    {
+      provide: 'IBookFavoriteRepository',
+      useClass: PrismaBookFavoriteRepository,
     },
   ],
 })

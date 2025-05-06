@@ -4,3 +4,4 @@ export * from './books';
 export * from './file-requests';
 export * from './files';
 export * from './comments';
+export * from './recommendations';

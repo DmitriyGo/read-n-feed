@@ -151,7 +151,8 @@ export class PrismaRecommendationRepository
             if (genres.has(userGenre.genreId)) {
               // Weight by how important this genre is to user
               genreScore +=
-                (userGenre.count / userGenres.length) * genreWeighting;
+                (Number(userGenre.count) / Number(userGenres.length)) *
+                Number(genreWeighting);
             }
           });
 
@@ -195,7 +196,8 @@ export class PrismaRecommendationRepository
             if (authors.has(userAuthor.authorId)) {
               // Weight by how important this author is to user
               authorScore +=
-                (userAuthor.count / userAuthors.length) * authorWeighting;
+                (Number(userAuthor.count) / Number(userAuthors.length)) *
+                Number(authorWeighting);
             }
           });
 
@@ -238,7 +240,9 @@ export class PrismaRecommendationRepository
           userTags.forEach((userTag) => {
             if (tags.has(userTag.tagId)) {
               // Weight by how important this tag is to user
-              tagScore += (userTag.count / userTags.length) * tagWeighting;
+              tagScore +=
+                (Number(userTag.count) / Number(userTags.length)) *
+                Number(tagWeighting);
             }
           });
 
