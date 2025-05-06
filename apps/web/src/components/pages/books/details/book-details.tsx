@@ -1,5 +1,6 @@
 import { BookResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
+import { Heart, HeartOff, Star, StarOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -9,13 +10,13 @@ import {
   PartiallyLoadedContent,
 } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { useAuth } from '@/hooks';
-import { useLikeBook } from '@/hooks/write/books';
+import { useAuth, useFavouriteBook, useLikeBook } from '@/hooks';
 import { formatDate } from '@/lib';
 
 export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
   const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutate: likeBook } = useLikeBook();
+  const { mutate: favouriteBook } = useFavouriteBook();
   const { accessToken } = useAuth();
 
   const handleLike = () => {
@@ -29,27 +30,47 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
     });
   };
 
+  // const handleFavourite = () => {
+  //   if (!book) {
+  //     return;
+  //   }
+
+  //   favouriteBook({
+  //     bookId: book.id,
+  //     userWantsToFavourite: !book.favoured,
+  //   });
+  // };
+
   return (
     <Card className="[&:p]:text-sm">
-      <CardHeader>
+      <CardHeader className="flex flex-row justify-between">
         <PartiallyLoadedContent
           as="h2"
           className="!text-2xl font-semibold [&>*]:!text-white"
           content={book?.title}
         />
-      </CardHeader>
 
-      <CardContent className="flex flex-row gap-4">
-        <div className="flex-[0_1_0%] flex-col flex justify-between space-y-2">
-          <BookCover book={book} />
+        <div className="space-x-4">
           <Button
-            className="w-full"
             onClick={handleLike}
             disabled={!isDefined(accessToken)}
             variant={book?.liked ? 'default' : 'outline'}
           >
-            {book?.liked ? t('unlike') : t('like')}
+            {book?.liked ? <Heart /> : <HeartOff />}
           </Button>
+          {/* <Button
+            onClick={handleFavourite}
+            disabled={!isDefined(accessToken)}
+            variant={book?.favoured ? 'default' : 'outline'}
+          >
+            {book?.liked ? <Star /> : <StarOff />}
+          </Button> */}
+        </div>
+      </CardHeader>
+
+      <CardContent className="flex flex-row gap-4">
+        <div className="flex-[0_1_0%]">
+          <BookCover book={book} />
         </div>
 
         <div className="space-y-2">
