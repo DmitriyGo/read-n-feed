@@ -126,5 +126,6 @@
   "rejectRequest": "Відхилити запит",
   "requestVerifiedSuccessfully": "Запит успішно перевірено",
   "viewDetails": "Переглянути деталі",
-  "recommendations": "Рекомендації"
+  "recommendations": "Рекомендації",
+  "yourLikedBooks": "Ваші вподобані книги"
 }

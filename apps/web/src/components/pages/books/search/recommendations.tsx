@@ -8,7 +8,7 @@ import { usePersonalizedRecommendations } from '@/hooks';
 export const BookRecommendations = () => {
   const { t } = useTranslation();
 
-  const { data } = usePersonalizedRecommendations({});
+  const { data } = usePersonalizedRecommendations({ includeRead: false });
 
   const forYouRecommendations = data?.data.forYou.books;
 
