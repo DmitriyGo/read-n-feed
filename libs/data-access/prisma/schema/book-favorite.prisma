@@ -1,0 +1,11 @@
+model BookFavorite {
+  userId    String   @map("user_id")
+  bookId    String   @map("book_id")
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bookId])
+  @@map("book_favorite")
+}

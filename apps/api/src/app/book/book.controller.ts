@@ -127,6 +127,79 @@ export class BookController {
     };
   }
 
+  @Get('most-liked/:limit')
+  @ApiOperation({ summary: 'Get the most liked books' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns top N books by totalLikes',
+    type: BookResponseDto,
+    isArray: true,
+  })
+  async getMostLikedBooks(
+    @Param('limit', ParseIntPipe) limit: number,
+  ): Promise<BookResponseDto[]> {
+    const results = await this.bookUseCase.getMostLikedBooks(limit);
+
+    // Get relationship information for each book
+    return await Promise.all(
+      results.map(async (book) => {
+        try {
+          const relationships = await this.bookUseCase.getBookWithRelationships(
+            book.id,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            authors: relationships?.authors || [],
+            genres: relationships?.genres || [],
+            tags: relationships?.tags || [],
+          };
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `Error getting relationships for book ${book.id}: ${errorMessage}`,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            authors: [],
+            genres: [],
+            tags: [],
+          };
+        }
+      }),
+    );
+  }
+
+  @Get('liked')
+  @ApiOperation({ summary: 'Get all books liked by the current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of books liked by the user',
+    type: [BookResponseDto],
+  })
+  async getLikedBooks(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BookResponseDto[]> {
+    const books = await this.bookUseCase.getLikedBooks(user.id);
+    return books.map((book) => this.toResponseDto(book));
+  }
+
+  @Get('favorites')
+  @ApiOperation({ summary: "Get all books in the current user's favorites" })
+  @ApiResponse({
+    status: 200,
+    description: "Returns a list of books in the user's favorites",
+    type: [BookResponseDto],
+  })
+  async getFavoriteBooks(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BookResponseDto[]> {
+    const books = await this.bookUseCase.getFavoriteBooks(user.id);
+    return books.map((book) => this.toResponseDto(book));
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get Book by ID' })
   @ApiResponse({
@@ -224,51 +297,6 @@ export class BookController {
   @ApiNotFoundResponse({ description: 'Book not found' })
   async deleteBook(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.bookUseCase.deleteBook(id);
-  }
-
-  @Get('most-liked/:limit')
-  @ApiOperation({ summary: 'Get the most liked books' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns top N books by totalLikes',
-    type: BookResponseDto,
-    isArray: true,
-  })
-  async getMostLikedBooks(
-    @Param('limit', ParseIntPipe) limit: number,
-  ): Promise<BookResponseDto[]> {
-    const results = await this.bookUseCase.getMostLikedBooks(limit);
-
-    // Get relationship information for each book
-    return await Promise.all(
-      results.map(async (book) => {
-        try {
-          const relationships = await this.bookUseCase.getBookWithRelationships(
-            book.id,
-          );
-
-          return {
-            ...this.toResponseDto(book),
-            authors: relationships?.authors || [],
-            genres: relationships?.genres || [],
-            tags: relationships?.tags || [],
-          };
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : String(error);
-          this.logger.error(
-            `Error getting relationships for book ${book.id}: ${errorMessage}`,
-          );
-
-          return {
-            ...this.toResponseDto(book),
-            authors: [],
-            genres: [],
-            tags: [],
-          };
-        }
-      }),
-    );
   }
 
   @Get(':id/related')
@@ -568,6 +596,36 @@ export class BookController {
     @CurrentUser() user: JwtPayload,
   ): Promise<void> {
     await this.bookUseCase.unlikeBook(id, user.id);
+  }
+
+  @Post(':id/favorite')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Add a book to favorites' })
+  @ApiResponse({
+    status: 204,
+    description: 'Book added to favorites successfully',
+  })
+  @ApiNotFoundResponse({ description: 'Book not found' })
+  async addToFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<void> {
+    await this.bookUseCase.addToFavorites(id, user.id);
+  }
+
+  @Delete(':id/favorite')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove a book from favorites' })
+  @ApiResponse({
+    status: 204,
+    description: 'Book removed from favorites successfully',
+  })
+  @ApiNotFoundResponse({ description: 'Book not found' })
+  async removeFromFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<void> {
+    await this.bookUseCase.removeFromFavorites(id, user.id);
   }
 
   private toResponseDto(book: any): BookResponseDto {
