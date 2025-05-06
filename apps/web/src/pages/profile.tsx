@@ -1,4 +1,5 @@
 import {
+  FavouriteBooks,
   LikedBooks,
   ShowProfileInfo,
   UpdateProfileInfo,
@@ -12,6 +13,8 @@ export const ProfilePage = () => {
       <UpdateProfileInfo />
 
       <LikedBooks />
+
+      <FavouriteBooks />
     </>
   );
 };

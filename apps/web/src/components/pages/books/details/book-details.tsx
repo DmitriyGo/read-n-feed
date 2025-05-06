@@ -30,16 +30,17 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
     });
   };
 
-  // const handleFavourite = () => {
-  //   if (!book) {
-  //     return;
-  //   }
+  const handleFavourite = () => {
+    if (!book) {
+      return;
+    }
 
-  //   favouriteBook({
-  //     bookId: book.id,
-  //     userWantsToFavourite: !book.favoured,
-  //   });
-  // };
+    favouriteBook({
+      bookId: book.id,
+      userWantsToFavourite: true,
+      // userWantsToFavourite: !book.favoured,
+    });
+  };
 
   return (
     <Card className="[&:p]:text-sm">
@@ -58,13 +59,14 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
           >
             {book?.liked ? <Heart /> : <HeartOff />}
           </Button>
-          {/* <Button
+          <Button
             onClick={handleFavourite}
             disabled={!isDefined(accessToken)}
-            variant={book?.favoured ? 'default' : 'outline'}
+            variant={'default'}
+            // variant={book?.favoured ? 'default' : 'outline'}
           >
             {book?.liked ? <Star /> : <StarOff />}
-          </Button> */}
+          </Button>
         </div>
       </CardHeader>
 

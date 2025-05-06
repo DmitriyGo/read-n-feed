@@ -15,7 +15,7 @@ export const LikedBooks = () => {
   return (
     <Card>
       <CardHeader>{t('yourLikedBooks')}:</CardHeader>
-      <CardContent className="flex flex-row gap-4 p-0">
+      <CardContent className="flex flex-row gap-4 p-0 overflow-auto">
         {likedBooks?.length &&
           likedBooks.map((book) => (
             <BookCard key={book.id} isSimplified book={book} />

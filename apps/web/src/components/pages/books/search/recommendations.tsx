@@ -15,7 +15,7 @@ export const BookRecommendations = () => {
   return (
     <Card>
       <CardHeader>{t('recommendations')}:</CardHeader>
-      <CardContent className="flex flex-row gap-4 p-0">
+      <CardContent className="flex flex-row gap-4 p-0 overflow-auto">
         {forYouRecommendations?.length &&
           forYouRecommendations.map((book) => (
             <BookCard

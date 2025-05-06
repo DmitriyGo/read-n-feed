@@ -129,5 +129,6 @@
   "requestVerifiedSuccessfully": "Request verified successfully",
   "viewDetails": "View Details",
   "recommendations": "Recommendations",
-  "yourLikedBooks": "Your Liked Books"
+  "yourLikedBooks": "Your Liked Books",
+  "favorites": "Favorites"
 }
