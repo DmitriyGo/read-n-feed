@@ -16,8 +16,12 @@ export const ShowProfileInfo = () => {
         <h2 className="!text-xl font-semibold">{t('yourProfile')}</h2>
       </CardHeader>
 
-      <CardContent className="flex flex-row gap-4">
-        <Avatar src={profileData?.avatarUrl} alt="avatar" className="size-48" />
+      <CardContent className="grid md:grid-cols-[auto_auto] xl:grid-cols-[auto_auto_auto] gap-4">
+        <Avatar
+          src={profileData?.avatarUrl}
+          alt="avatar"
+          className="size-48 mx-auto"
+        />
 
         <Card>
           <CardHeader>
@@ -43,7 +47,7 @@ export const ShowProfileInfo = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="md:col-span-2 xl:col-span-1">
           <CardHeader>
             <p>{t('additionalData')}:</p>
           </CardHeader>
