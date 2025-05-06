@@ -13,7 +13,7 @@ export const Badges = ({
   tags: string[] | undefined | null;
   maxLength?: number;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const [showMore, setShowMore] = useState(false);
 
   return (

@@ -27,7 +27,7 @@ export function FileUploadField<TFieldValues extends FieldValues>({
   className,
   required = false,
 }: FileUploadFieldProps<TFieldValues>) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const [fileName, setFileName] = useState<string>('');
 
   const acceptString = acceptedFormats

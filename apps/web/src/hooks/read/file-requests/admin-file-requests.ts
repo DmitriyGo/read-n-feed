@@ -18,11 +18,7 @@ export const useAdminFileRequests = (data: {
   const urlParams = new URLSearchParams(clearObject(data));
 
   return useQuery({
-    queryKey: [
-      QueryKey.GetAdminFileRequests,
-      accessToken,
-      urlParams.toString(),
-    ],
+    queryKey: [QueryKey.FileRequests.All, accessToken, urlParams.toString()],
     queryFn: async () => {
       return axiosSecure.get<PaginatedBookFileRequestResponseDto>(
         `${ApiRoute.FileRequestsAdmin.GetAll}?${urlParams}`,

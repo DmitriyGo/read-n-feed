@@ -11,7 +11,7 @@ export const useBookById = (id?: string) => {
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.GetBookById, id, accessToken],
+    queryKey: [QueryKey.Books.Details(id || ''), accessToken],
     queryFn: async () => {
       if (!isDefined(id)) {
         return;

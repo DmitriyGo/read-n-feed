@@ -4,7 +4,8 @@ import {
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { ApiRoute, QueryKey } from '@/constants';
+import { ApiRoute } from '@/constants';
+import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib';
 
 export const useCreateFileRequest = () => {
@@ -31,7 +32,7 @@ export const useCreateFileRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetMyFileRequests],
+            queryKey: [QueryKey.FileRequests.MyRequests],
             type: 'active',
           }),
         500,

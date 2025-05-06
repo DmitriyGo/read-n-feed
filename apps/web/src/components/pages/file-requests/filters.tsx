@@ -37,7 +37,7 @@ export const FileRequestSearchFilters = ({
 }: {
   isAdmin?: boolean;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   const form = useForm<SearchBooksFormData>({
     resolver: zodResolver(formSchema),

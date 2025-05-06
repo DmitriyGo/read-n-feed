@@ -31,7 +31,7 @@ export const BookCard = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const isMd = useBreakpoint('md');
 
   const navigate = useNavigate();

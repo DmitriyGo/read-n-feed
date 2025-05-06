@@ -11,7 +11,7 @@ export const Description = ({
   text?: string | null;
   length?: number;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const [showMore, setShowMore] = useState(false);
 
   const indexOfPreviousSpace = Math.max(

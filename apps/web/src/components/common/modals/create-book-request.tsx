@@ -43,7 +43,7 @@ const formSchema = (t: (key: string) => string) =>
 type CreateRequestSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function CreateBookRequestModal() {
-  const { t } = useTranslation(['translation', 'validation']);
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutateAsync: createRequest } = useCreateBookRequest();
   const { setMode } = useModalStore();
 

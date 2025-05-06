@@ -24,7 +24,11 @@ export const usePersonalizedRecommendations = ({
   );
 
   return useQuery({
-    queryKey: [QueryKey.Recommendations, accessToken, urlParams.toString()],
+    queryKey: [
+      QueryKey.Recommendations.Personal,
+      accessToken,
+      urlParams.toString(),
+    ],
     queryFn: async () => {
       return axiosSecure.get<PersonalizedRecommendationsResponseDto>(
         `${ApiRoute.Recommendations.GetPersonalized}?${urlParams}`,

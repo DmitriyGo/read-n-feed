@@ -27,7 +27,7 @@ interface CommentFormData {
 }
 
 export const BookComments = ({ bookId }: { bookId?: string }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { data: commentsResponse, isLoading } = useCommentsForBook(bookId);
   const { data: profileData } = useGetProfile();
   const { mutate: createComment } = useCreateComment();
@@ -138,7 +138,7 @@ const CommentItem = ({
   onStartEditing,
   onCancelEditing,
 }: CommentItemProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutate: deleteComment } = useDeleteComment(comment.id, bookId);
   const { mutate: updateComment } = useUpdateComment(comment.id, bookId);
 

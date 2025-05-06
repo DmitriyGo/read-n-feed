@@ -16,7 +16,7 @@ export const useGetDownloadUrl = ({
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.DownloadUrl, accessToken, fileId],
+    queryKey: [QueryKey.BookFiles.DownloadUrl(fileId || ''), accessToken],
     queryFn: async () => {
       if (!isDefined(fileId)) {
         return;

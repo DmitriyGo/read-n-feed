@@ -24,15 +24,17 @@ export const useUpdateBookRequest = () => {
         dto,
       );
     },
-    onSuccess: () => {
-      setTimeout(
-        () =>
-          queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetMyBookRequests],
-            type: 'active',
-          }),
-        500,
-      );
+    onSuccess: (_, { id }) => {
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.BookRequests.MyRequests],
+          type: 'active',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.BookRequests.Details(id)],
+          type: 'active',
+        });
+      }, 500);
     },
     onError: (error) => {
       console.error(error);

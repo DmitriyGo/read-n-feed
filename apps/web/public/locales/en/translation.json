@@ -127,5 +127,6 @@
   "approveRequest": "Approve Request",
   "rejectRequest": "Reject Request",
   "requestVerifiedSuccessfully": "Request verified successfully",
+  "viewDetails": "View Details",
   "recommendations": "Recommendations"
 }

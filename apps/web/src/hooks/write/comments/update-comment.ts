@@ -2,6 +2,7 @@ import { CommentResponseDto, UpdateCommentDto } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { ApiRoute } from '@/constants';
+import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib/axios';
 
 export const useUpdateComment = (commentId: string, bookId: string) => {
@@ -16,7 +17,7 @@ export const useUpdateComment = (commentId: string, bookId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['comments', 'book', bookId],
+        queryKey: [QueryKey.Comments.ForBook(bookId)],
       });
     },
     onError: (error) => {

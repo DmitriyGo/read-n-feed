@@ -18,15 +18,24 @@ export const PartiallyLoadedContent = ({
   isLoading?: boolean;
   as?: 'div' | 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }>) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   const Slot = as ?? 'span';
 
   return (
-    <div className={cn('text-inherit justify-start flex flex-row', className)}>
-      {isDefined(label) && <Slot>{label}:&nbsp;</Slot>}
+    <div
+      className={cn(
+        'text-inherit justify-start flex flex-col lg:flex-row',
+        className,
+      )}
+    >
+      {isDefined(label) && (
+        <Slot className="w-fit lg:text-nowrap">{label}:&nbsp;</Slot>
+      )}
       {isDefined(content) && isLoading !== true ? (
-        <Slot className="text-gray-400">{content}</Slot>
+        <Slot className="text-gray-400 text-wrap truncate w-full">
+          {content}
+        </Slot>
       ) : content === null && isLoading !== true ? (
         <Slot className="text-gray-400">{t('notGiven')}</Slot>
       ) : (

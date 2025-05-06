@@ -76,7 +76,7 @@ const formSchema = (t: (key: string) => string) =>
 type SignUpFormSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function SignUpModal() {
-  const { t } = useTranslation(['translation', 'validation']);
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutateAsync: signUp } = useSignUp();
   const { setMode } = useModalStore();
 

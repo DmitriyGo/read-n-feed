@@ -22,7 +22,7 @@ import { useModalStore } from '@/store';
 const formSchema = z
   .object({
     status: z.enum(['APPROVED', 'REJECTED']),
-    rejectionReason: z.string().min(1, 'rejectionReasonRequired').optional(),
+    rejectionReason: z.string().optional(),
     adminNotes: z.string().optional(),
   })
   .refine(
@@ -40,7 +40,7 @@ const formSchema = z
 type VerifyRequestSchema = z.infer<typeof formSchema>;
 
 export function VerifyRequestModal() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutateAsync: verifyRequest } = useVerifyRequest();
   const { setMode, params, clearParams } = useModalStore();
 

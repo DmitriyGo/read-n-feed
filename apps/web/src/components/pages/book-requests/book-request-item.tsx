@@ -1,6 +1,5 @@
 import { BookRequestResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
-import { format } from 'date-fns';
 import { FileQuestion, FileEdit, Link2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -11,21 +10,28 @@ import {
   Description,
   PartiallyLoadedContent,
 } from '@/components/common';
-import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui';
 import { Route } from '@/constants';
 import { useBookRequestFilesById, useHasRole } from '@/hooks';
+import { formatDate } from '@/lib';
 import { useModalStore } from '@/store';
-
-const formatDate = (date?: Date | null) => {
-  return date ? format(new Date(date), 'MMM d, yyyy') : '';
-};
 
 export const BookRequestItem = ({
   bookRequest,
 }: {
   bookRequest: BookRequestResponseDto;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'badges']);
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -95,19 +101,33 @@ export const BookRequestItem = ({
         <div>
           <Description text={bookRequest?.description} />
 
-          <Badges label={t('tags')} tags={bookRequest?.tagLabels} />
-          <Badges label={t('genres')} tags={bookRequest?.genreNames} />
+          <Badges
+            label={t('tags', { ns: 'translation' })}
+            tags={bookRequest?.tagLabels?.map((tag) =>
+              t(tag.toLocaleLowerCase(), {
+                ns: 'badges',
+              }),
+            )}
+          />
+          <Badges
+            label={t('genres', { ns: 'badges' })}
+            tags={bookRequest?.genreNames?.map((genre) =>
+              t(genre.toLocaleLowerCase(), {
+                ns: 'badges',
+              }),
+            )}
+          />
 
           <PartiallyLoadedContent
-            label={t('authors')}
+            label={t('authors', { ns: 'translation' })}
             content={bookRequest?.authorNames?.join(', ')}
           />
           <PartiallyLoadedContent
-            label={t('publisher')}
+            label={t('publisher', { ns: 'translation' })}
             content={bookRequest?.publisher}
           />
           <PartiallyLoadedContent
-            label={t('publicationDate')}
+            label={t('publicationDate', { ns: 'translation' })}
             content={
               bookRequest?.publicationDate
                 ? formatDate(bookRequest.publicationDate)
@@ -116,76 +136,86 @@ export const BookRequestItem = ({
           />
         </div>
 
-        <div className="border-l pl-4">
-          <h3 className="font-medium">{t('requestDetails')}</h3>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="w-full">
+              {t('viewDetails', { ns: 'translation' })}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle className="font-medium">
+              {t('requestDetails', { ns: 'translation' })}
+            </DialogTitle>
 
-          <PartiallyLoadedContent
-            label={t('requestedOn')}
-            content={formatDate(bookRequest?.createdAt)}
-          />
-          <PartiallyLoadedContent
-            label={t('lastUpdated')}
-            content={formatDate(bookRequest?.updatedAt)}
-          />
-
-          {bookRequest.status === 'APPROVED' && (
             <PartiallyLoadedContent
-              label={t('approvedOn')}
-              content={formatDate(bookRequest?.approvedAt)}
+              label={t('requestedOn', { ns: 'translation' })}
+              content={formatDate(bookRequest?.createdAt)}
             />
-          )}
-
-          {bookRequest.status === 'REJECTED' && (
-            <>
-              <PartiallyLoadedContent
-                label={t('rejectedOn')}
-                content={formatDate(bookRequest?.rejectedAt)}
-              />
-              <PartiallyLoadedContent
-                label={t('rejectionReason')}
-                content={bookRequest?.rejectionReason}
-                className="text-red-500"
-              />
-            </>
-          )}
-
-          {bookRequest.adminNotes && (
             <PartiallyLoadedContent
-              label={t('adminNotes')}
-              content={bookRequest?.adminNotes}
-              className="text-blue-500"
+              label={t('lastUpdated', { ns: 'translation' })}
+              content={formatDate(bookRequest?.updatedAt)}
             />
-          )}
 
-          <div className="border-l pl-4">
-            {bookRequestFiles?.map((bookFile) => (
-              <div
-                key={bookFile.id}
-                onClick={() => handleClick(bookFile.id)}
-                className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
-              >
-                <p>
-                  {t('fileName')}:&nbsp;
-                  {isDefined(bookFile.metadata) && 'Title' in bookFile.metadata
-                    ? bookFile.metadata['Title']
-                    : bookFile.filename}
-                </p>
+            {bookRequest.status === 'APPROVED' && (
+              <PartiallyLoadedContent
+                label={t('approvedOn', { ns: 'translation' })}
+                content={formatDate(bookRequest?.approvedAt)}
+              />
+            )}
 
-                <p className="text-center">
-                  <span>
-                    {t('format')}: {bookFile.format}
-                  </span>
-                </p>
+            {bookRequest.status === 'REJECTED' && (
+              <>
+                <PartiallyLoadedContent
+                  label={t('rejectedOn', { ns: 'translation' })}
+                  content={formatDate(bookRequest?.rejectedAt)}
+                />
+                <PartiallyLoadedContent
+                  label={t('rejectionReason', { ns: 'translation' })}
+                  content={bookRequest?.rejectionReason}
+                  className="text-red-500"
+                />
+              </>
+            )}
 
-                <div className="flex justify-end">
-                  <a href={bookFile.downloadUrl}>
-                    <Link2 />
-                  </a>
+            {bookRequest.adminNotes && (
+              <PartiallyLoadedContent
+                label={t('adminNotes', { ns: 'translation' })}
+                content={bookRequest?.adminNotes}
+                className="text-blue-500"
+              />
+            )}
+
+            <div className="border-l pl-4">
+              {bookRequestFiles?.map((bookFile) => (
+                <div
+                  key={bookFile.id}
+                  onClick={() => handleClick(bookFile.id)}
+                  className="border p-2 flex flex-row [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
+                >
+                  <p>
+                    {t('fileName', { ns: 'translation' })}:&nbsp;
+                    {isDefined(bookFile.metadata) &&
+                    'Title' in bookFile.metadata
+                      ? bookFile.metadata['Title']
+                      : bookFile.filename}
+                  </p>
+
+                  <p className="text-center">
+                    <span>
+                      {t('format', { ns: 'translation' })}: {bookFile.format}
+                    </span>
+                  </p>
+
+                  <div className="flex justify-end">
+                    <a href={bookFile.downloadUrl}>
+                      <Link2 />
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

@@ -12,7 +12,7 @@ import { useMyBookRequests } from '@/hooks';
 import { useFilterStore, useModalStore } from '@/store';
 
 export const MyBookRequestsBlock = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { setMode } = useModalStore();
 
   const [perPage, setPerPage] = useState<PerPage>(10);

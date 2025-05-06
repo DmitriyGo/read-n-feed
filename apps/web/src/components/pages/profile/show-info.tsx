@@ -8,7 +8,7 @@ export const ShowProfileInfo = () => {
   const { data, isLoading } = useGetProfile();
   const profileData = data?.data;
 
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   return (
     <Card className="[&:p]:text-sm">

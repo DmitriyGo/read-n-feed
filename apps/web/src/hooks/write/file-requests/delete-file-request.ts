@@ -18,7 +18,7 @@ export const useDeleteFileRequest = () => {
       setTimeout(
         () =>
           queryClient.invalidateQueries({
-            queryKey: [QueryKey.GetMyFileRequests],
+            queryKey: [QueryKey.FileRequests.MyRequests],
             type: 'active',
           }),
         500,

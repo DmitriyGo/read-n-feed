@@ -33,5 +33,5 @@ export function clearObject(obj: Record<string, unknown> | object) {
 
 export function formatDate(date?: Date | string | null) {
   if (!date) return '';
-  return format(new Date(date), 'MMM d, yyyy');
+  return new Date(date).toLocaleDateString();
 }

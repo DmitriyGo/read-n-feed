@@ -16,7 +16,7 @@ export const PDFReader = ({
   const [numPages, setNumPages] = useState<number>();
   const [scale, setScale] = useState<number>(1);
 
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);

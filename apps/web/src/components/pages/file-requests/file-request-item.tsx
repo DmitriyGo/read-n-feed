@@ -1,3 +1,4 @@
+import { DialogTrigger } from '@radix-ui/react-dialog';
 import { BookFileRequestResponseDto } from '@read-n-feed/application';
 import { format } from 'date-fns';
 import { FileQuestion, Trash2 } from 'lucide-react';
@@ -5,26 +6,27 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
 import { PartiallyLoadedContent } from '@/components/common';
-import { Badge, Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { Route } from '@/constants';
 import {
-  useDeleteFileRequest,
-  useHasRole,
-  useGetDownloadUrl,
-  useVerifyRequest,
-} from '@/hooks';
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui';
+import { Route } from '@/constants';
+import { useDeleteFileRequest, useHasRole, useGetDownloadUrl } from '@/hooks';
+import { formatDate } from '@/lib';
 import { useModalStore } from '@/store';
-
-const formatDate = (date?: Date | null) => {
-  return date ? format(new Date(date), 'MMM d, yyyy') : '';
-};
 
 export const FileRequestItem = ({
   fileRequest,
 }: {
   fileRequest: BookFileRequestResponseDto;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { pathname } = useLocation();
 
   const { setMode, setParam } = useModalStore();
@@ -127,47 +129,56 @@ export const FileRequestItem = ({
           </div>
         </div>
 
-        <div className="border-l pl-4">
-          <h3 className="font-medium">{t('requestDetails')}</h3>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="w-full">
+              {t('viewDetails')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle className="font-medium">
+              {t('requestDetails')}
+            </DialogTitle>
 
-          <PartiallyLoadedContent
-            label={t('requestedOn')}
-            content={formatDate(fileRequest?.createdAt)}
-          />
-          <PartiallyLoadedContent
-            label={t('lastUpdated')}
-            content={formatDate(fileRequest?.updatedAt)}
-          />
-
-          {fileRequest.status === 'APPROVED' && (
             <PartiallyLoadedContent
-              label={t('approvedOn')}
-              content={formatDate(fileRequest?.approvedAt)}
+              label={t('requestedOn')}
+              content={formatDate(fileRequest?.createdAt)}
             />
-          )}
-
-          {fileRequest.status === 'REJECTED' && (
-            <>
-              <PartiallyLoadedContent
-                label={t('rejectedOn')}
-                content={formatDate(fileRequest?.rejectedAt)}
-              />
-              <PartiallyLoadedContent
-                label={t('rejectionReason')}
-                content={fileRequest?.rejectionReason}
-                className="text-red-500"
-              />
-            </>
-          )}
-
-          {fileRequest.adminNotes && (
             <PartiallyLoadedContent
-              label={t('adminNotes')}
-              content={fileRequest?.adminNotes}
-              className="text-blue-500"
+              label={t('lastUpdated')}
+              content={formatDate(fileRequest?.updatedAt)}
             />
-          )}
-        </div>
+
+            {fileRequest.status === 'APPROVED' && (
+              <PartiallyLoadedContent
+                label={t('approvedOn')}
+                content={formatDate(fileRequest?.approvedAt)}
+              />
+            )}
+
+            {fileRequest.status === 'REJECTED' && (
+              <>
+                <PartiallyLoadedContent
+                  label={t('rejectedOn')}
+                  content={formatDate(fileRequest?.rejectedAt)}
+                />
+                <PartiallyLoadedContent
+                  label={t('rejectionReason')}
+                  content={fileRequest?.rejectionReason}
+                  className="text-red-500"
+                />
+              </>
+            )}
+
+            {fileRequest.adminNotes && (
+              <PartiallyLoadedContent
+                label={t('adminNotes')}
+                content={fileRequest?.adminNotes}
+                className="text-blue-500"
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

@@ -29,23 +29,33 @@ export const useVerifyRequest = () => {
         body,
       );
     },
-    onSuccess: () => {
-      setTimeout(
-        () =>
-          queryClient.invalidateQueries({
-            //FIX
-            queryKey: [
-              QueryKey.GetMyBookRequests,
-              QueryKey.GetAdminBookRequests,
-              QueryKey.GetBooksCatalog,
-              QueryKey.GetMyFileRequests,
-              QueryKey.GetAdminFileRequests,
-              QueryKey.GetBookFiles,
-            ],
-            type: 'active',
-          }),
-        500,
-      );
+    onSuccess: (_, { requestId }) => {
+      setTimeout(() => {
+        // More specific invalidation based on request type
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.BookRequests.All],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.BookRequests.MyRequests],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.FileRequests.All],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.FileRequests.MyRequests],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.Books.Catalog],
+        });
+
+        // Invalidate specific request details
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.BookRequests.Details(requestId)],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QueryKey.FileRequests.Details(requestId)],
+        });
+      }, 500);
 
       toast.success('Book request verified successfully');
     },

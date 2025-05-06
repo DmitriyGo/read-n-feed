@@ -17,7 +17,11 @@ export const useMyFileRequests = (data: {
   const urlParams = new URLSearchParams(clearObject(data));
 
   return useQuery({
-    queryKey: [QueryKey.GetMyFileRequests, accessToken, urlParams.toString()],
+    queryKey: [
+      QueryKey.FileRequests.MyRequests,
+      accessToken,
+      urlParams.toString(),
+    ],
     queryFn: async () => {
       return axiosSecure.get<PaginatedBookFileRequestResponseDto>(
         `${ApiRoute.FileRequests.MyRequests}?${urlParams}`,

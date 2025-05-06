@@ -16,7 +16,7 @@ import { useLogout } from '@/hooks/write';
 import { useModalStore } from '@/store';
 
 export const Profile = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const navigate = useNavigate();
 
   const { setMode } = useModalStore();

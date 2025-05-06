@@ -9,7 +9,7 @@ import { useBookFilesById } from '@/hooks';
 import { useModalStore } from '@/store';
 
 export const BookFiles = ({ bookId }: { bookId?: string }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { data } = useBookFilesById(bookId);
 
   const { setMode, setParam } = useModalStore();
