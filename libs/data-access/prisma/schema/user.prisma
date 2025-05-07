@@ -31,6 +31,7 @@ model User {
   firstName String? @map("first_name")
   lastName  String? @map("last_name")
   avatarUrl String? @map("avatar_url")
+  age       Int?    @map("age")
 
   preferredLanguage String? @map("preferred_language")
 

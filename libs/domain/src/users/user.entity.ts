@@ -27,6 +27,10 @@ export class User {
     return this.props.isBlocked;
   }
 
+  get age() {
+    return this.props.age;
+  }
+
   blockUser() {
     this.props.isBlocked = true;
     this.props.updatedAt = new Date();

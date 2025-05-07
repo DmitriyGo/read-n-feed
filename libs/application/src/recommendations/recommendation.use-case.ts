@@ -18,7 +18,6 @@ import {
   SimilarBooksResponseDto,
 } from './recommendation.dto';
 
-// Types for the response DTOs
 export class BookRecommendationDto {
   bookId: string;
   score: number;
@@ -69,14 +68,11 @@ export class RecommendationUseCase {
     private readonly authorRepo: IAuthorRepository,
   ) {}
 
-  /**
-   * Get comprehensive personalized recommendations for a user
-   */
   async getPersonalizedRecommendations(
     userId: string,
-    options: { limit?: number; includeRead?: boolean } = {},
+    options: { limit?: number; includeRead?: boolean; age?: number } = {},
   ): Promise<PersonalizedRecommendationsResponseDto> {
-    const { limit = 20, includeRead = false } = options;
+    const { limit = 20, includeRead = false, age } = options;
 
     try {
       // Check if user exists
@@ -166,23 +162,32 @@ export class RecommendationUseCase {
             )
           : [];
 
-      // Enhance recommendations with book details
+      // Get user age from options or from user profile
+      const userAge = age !== undefined ? age : user.age;
+
+      // Enhance recommendations with book details and filter by age
       const enhancedPersonalRecommendations =
         await this.enhanceRecommendationsWithBookDetails(
           personalizedRecommendations,
+          userAge ?? undefined,
         );
 
       const enhancedTrendingRecommendations =
-        await this.enhanceRecommendationsWithBookDetails(trendingBooks);
+        await this.enhanceRecommendationsWithBookDetails(
+          trendingBooks,
+          userAge ?? undefined,
+        );
 
       const enhancedGenreRecommendations =
         await this.enhanceRecommendationsWithBookDetails(
           genreBasedRecommendations,
+          userAge ?? undefined,
         );
 
       const enhancedAuthorRecommendations =
         await this.enhanceRecommendationsWithBookDetails(
           authorBasedRecommendations,
+          userAge ?? undefined,
         );
 
       // Build the response with recommendation groups
@@ -241,12 +246,10 @@ export class RecommendationUseCase {
     }
   }
 
-  /**
-   * Get similar books to a specified book
-   */
   async getSimilarBooks(
     bookId: string,
     limit = 10,
+    age?: number,
   ): Promise<SimilarBooksResponseDto> {
     try {
       // Validate book exists
@@ -261,9 +264,9 @@ export class RecommendationUseCase {
         limit,
       );
 
-      // Enhance recommendations with book details
+      // Enhance recommendations with book details and filter by age
       const enhancedRecommendations =
-        await this.enhanceRecommendationsWithBookDetails(similarBooks);
+        await this.enhanceRecommendationsWithBookDetails(similarBooks, age);
 
       return {
         originalBookId: bookId,
@@ -278,12 +281,10 @@ export class RecommendationUseCase {
     }
   }
 
-  /**
-   * Get recommendations based on a specific genre
-   */
   async getRecommendationsByGenre(
     genreId: string,
     limit = 10,
+    age?: number,
   ): Promise<RecommendationGroupDto> {
     try {
       // Validate genre exists
@@ -299,9 +300,9 @@ export class RecommendationUseCase {
           limit,
         );
 
-      // Enhance recommendations with book details
+      // Enhance recommendations with book details and filter by age
       const enhancedRecommendations =
-        await this.enhanceRecommendationsWithBookDetails(recommendations);
+        await this.enhanceRecommendationsWithBookDetails(recommendations, age);
 
       return {
         id: `genre-${genreId}`,
@@ -317,12 +318,10 @@ export class RecommendationUseCase {
     }
   }
 
-  /**
-   * Get recommendations based on a specific author
-   */
   async getRecommendationsByAuthor(
     authorId: string,
     limit = 10,
+    age?: number,
   ): Promise<RecommendationGroupDto> {
     try {
       // Validate author exists
@@ -338,9 +337,9 @@ export class RecommendationUseCase {
           limit,
         );
 
-      // Enhance recommendations with book details
+      // Enhance recommendations with book details and filter by age
       const enhancedRecommendations =
-        await this.enhanceRecommendationsWithBookDetails(recommendations);
+        await this.enhanceRecommendationsWithBookDetails(recommendations, age);
 
       return {
         id: `author-${authorId}`,
@@ -356,9 +355,6 @@ export class RecommendationUseCase {
     }
   }
 
-  /**
-   * Save user feedback about a recommendation to improve future recommendations
-   */
   async saveRecommendationFeedback(
     userId: string,
     bookId: string,
@@ -381,9 +377,6 @@ export class RecommendationUseCase {
     }
   }
 
-  /**
-   * Helper function to get user's preferred genres based on reading history and likes
-   */
   private async getUserPreferredGenres(userId: string): Promise<string[]> {
     // Get books that user has read or liked
     const readBookIds =
@@ -413,9 +406,6 @@ export class RecommendationUseCase {
       .slice(0, 5); // Get top 5 genres
   }
 
-  /**
-   * Helper function to get user's preferred authors based on reading history and likes
-   */
   private async getUserPreferredAuthors(userId: string): Promise<string[]> {
     // Get books that user has read or liked
     const readBookIds =
@@ -445,13 +435,11 @@ export class RecommendationUseCase {
       .slice(0, 5); // Get top 5 authors
   }
 
-  /**
-   * Helper function to enhance recommendations with book details
-   */
   private async enhanceRecommendationsWithBookDetails(
     recommendations: BookRecommendation[],
+    userAge?: number,
   ): Promise<BookRecommendationDto[]> {
-    return Promise.all(
+    const enhancedRecommendations = await Promise.all(
       recommendations.map(async (rec) => {
         const book = await this.bookRepo.findById(rec.bookId);
         if (!book) {
@@ -460,6 +448,19 @@ export class RecommendationUseCase {
             score: rec.score,
             sources: rec.sources,
           };
+        }
+
+        // Skip books that are not appropriate for the user's age
+        // If user age is undefined, hide all age-restricted books
+        if (
+          (userAge === undefined &&
+            book.ageRestriction &&
+            book.ageRestriction > 0) ||
+          (userAge !== undefined &&
+            book.ageRestriction &&
+            book.ageRestriction > userAge)
+        ) {
+          return null;
         }
 
         const bookRelationships = await this.bookRepo.findByIdWithRelationships(
@@ -501,9 +502,13 @@ export class RecommendationUseCase {
             coverImageUrl: book.coverImageUrl,
             authors,
             genres,
+            ageRestriction: book.ageRestriction || 0,
           },
         };
       }),
     );
+
+    // Filter out null values (books that were not appropriate for the user's age)
+    return enhancedRecommendations.filter(Boolean) as BookRecommendationDto[];
   }
 }
