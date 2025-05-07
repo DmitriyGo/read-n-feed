@@ -292,6 +292,12 @@ export class BookResponseDto {
   })
   liked?: boolean;
 
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Whether the current user has added this book to favorites',
+  })
+  favoured?: boolean;
+
   @ApiProperty()
   createdAt: Date;
 
