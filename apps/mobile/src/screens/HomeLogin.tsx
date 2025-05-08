@@ -32,7 +32,10 @@ export default function HomeLogin({ navigation }: { navigation: any }) {
 
         if (response.data.accessToken) {
           await AsyncStorage.setItem('token', response.data.accessToken);
-          navigation.navigate('HomeProfile');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
         }
       } catch (err: any) {
         const errorMessage = err.response?.data?.message || 'Login failed';

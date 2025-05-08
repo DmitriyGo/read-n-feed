@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 
 import { axiosInstance } from '../lib/axios';
@@ -16,11 +17,17 @@ interface UserProfile {
   username: string;
   email: string;
   createdAt: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  avatarUrl?: string | null;
+  roles: string[];
+  isBlocked: boolean;
 }
 
 export default function HomeProfile({ navigation }: { navigation: any }) {
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [isUpdating, setIsUpdating] = React.useState<boolean>(false);
 
   const getProfile = async (): Promise<void> => {
     try {
@@ -30,7 +37,10 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
       const errorMessage =
         err.response?.data?.message || 'Failed to load profile';
       Alert.alert('Error', errorMessage);
-      navigation.navigate('HomeLogin');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Auth' }],
+      });
     } finally {
       setIsLoading(false);
     }
@@ -40,55 +50,67 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
     try {
       await axiosInstance.post('/auth/logout');
       await AsyncStorage.clear();
-      navigation.navigate('HomeLogin');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Auth' }],
+      });
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Failed to logout';
       Alert.alert('Error', errorMessage);
     }
   };
 
-  const handleDeleteAccount = async (): Promise<void> => {
-    Alert.alert(
-      'Delete Account',
-      'Are you sure you want to delete your account? This action cannot be undone.',
+  const handleUpdateProfile = async (): Promise<void> => {
+    Alert.prompt(
+      'Update Profile',
+      'Enter your first name',
       [
         {
           text: 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await axiosInstance.delete('/users/me');
-              await AsyncStorage.clear();
-              navigation.navigate('HomeLogin');
-            } catch (err: any) {
-              const errorMessage =
-                err.response?.data?.message || 'Failed to delete account';
-              Alert.alert('Error', errorMessage);
-            }
+          text: 'Next',
+          onPress: async (firstName) => {
+            Alert.prompt(
+              'Update Profile',
+              'Enter your last name',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Update',
+                  onPress: async (lastName) => {
+                    try {
+                      setIsUpdating(true);
+                      await axiosInstance.patch('/users/me', {
+                        firstName,
+                        lastName,
+                      });
+                      await getProfile();
+                      Alert.alert('Success', 'Profile updated successfully');
+                    } catch (err: any) {
+                      const errorMessage =
+                        err.response?.data?.message ||
+                        'Failed to update profile';
+                      Alert.alert('Error', errorMessage);
+                    } finally {
+                      setIsUpdating(false);
+                    }
+                  },
+                },
+              ],
+              'plain-text',
+              profile?.lastName || '',
+            );
           },
         },
       ],
+      'plain-text',
+      profile?.firstName || '',
     );
-  };
-
-  const handleChangePassword = async (): Promise<void> => {
-    try {
-      await axiosInstance.post('/auth/forgot-password', {
-        email: profile?.email,
-      });
-      Alert.alert(
-        'Success',
-        'Password reset instructions have been sent to your email',
-      );
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message || 'Failed to send reset instructions';
-      Alert.alert('Error', errorMessage);
-    }
   };
 
   React.useEffect(() => {
@@ -104,21 +126,72 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} scrollIndicatorInsets={{ right: 1 }}>
       <View style={styles.profileContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Profile</Text>
+          <Text style={styles.title}>Your Profile</Text>
+        </View>
+
+        <View style={styles.avatarContainer}>
+          {profile?.avatarUrl ? (
+            <Image source={{ uri: profile.avatarUrl }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text style={styles.avatarPlaceholderText}>
+                {profile?.username?.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.infoContainer}>
+          <Text style={styles.sectionTitle}>Essential Data</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Email</Text>
+            <Text style={styles.value}>{profile?.email}</Text>
+          </View>
+
           <View style={styles.infoRow}>
             <Text style={styles.label}>Username</Text>
             <Text style={styles.value}>{profile?.username}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.label}>Email</Text>
-            <Text style={styles.value}>{profile?.email}</Text>
+            <Text style={styles.label}>First Name</Text>
+            <Text style={styles.value}>{profile?.firstName || 'Not set'}</Text>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Last Name</Text>
+            <Text style={styles.value}>{profile?.lastName || 'Not set'}</Text>
+          </View>
+        </View>
+
+        <View style={styles.infoContainer}>
+          <Text style={styles.sectionTitle}>Additional Data</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Status</Text>
+            <View
+              style={[
+                styles.statusBadge,
+                profile?.isBlocked ? styles.blockedBadge : styles.activeBadge,
+              ]}
+            >
+              <Text style={styles.statusText}>
+                {profile?.isBlocked ? 'Blocked' : 'Active'}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.infoRow}>
+            <Text style={styles.label}>Roles</Text>
+            <View style={styles.rolesContainer}>
+              {profile?.roles.map((role) => (
+                <View key={role} style={styles.roleBadge}>
+                  <Text style={styles.roleText}>{role}</Text>
+                </View>
+              ))}
+            </View>
           </View>
 
           <View style={styles.infoRow}>
@@ -134,23 +207,19 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
         <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={[styles.button, styles.primaryButton]}
-            onPress={handleChangePassword}
+            onPress={handleUpdateProfile}
+            disabled={isUpdating}
           >
-            <Text style={styles.buttonText}>Change Password</Text>
+            <Text style={styles.buttonText}>
+              {isUpdating ? 'Updating...' : 'Update Profile'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.secondaryButton]}
+            style={[styles.button, styles.warningButton]}
             onPress={handleLogout}
           >
             <Text style={styles.buttonText}>Logout</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.dangerButton]}
-            onPress={handleDeleteAccount}
-          >
-            <Text style={styles.buttonText}>Delete Account</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -173,13 +242,34 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  avatarPlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarPlaceholderText: {
+    fontSize: 48,
+    color: '#666',
   },
   infoContainer: {
     backgroundColor: '#fff',
@@ -195,13 +285,19 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 15,
+  },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#f0f0f0',
   },
   label: {
     fontSize: 16,
@@ -212,26 +308,54 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
   },
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  activeBadge: {
+    backgroundColor: '#e6f4ea',
+  },
+  blockedBadge: {
+    backgroundColor: '#fce8e6',
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  rolesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  roleBadge: {
+    backgroundColor: '#e8f0fe',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  roleText: {
+    fontSize: 14,
+    color: '#1a73e8',
+    fontWeight: '500',
+  },
   actionsContainer: {
     gap: 12,
   },
   button: {
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: 'center',
   },
   primaryButton: {
-    backgroundColor: '#4a90e2',
+    backgroundColor: '#1a73e8',
   },
-  secondaryButton: {
-    backgroundColor: '#666',
-  },
-  dangerButton: {
+  warningButton: {
     backgroundColor: '#dc3545',
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
