@@ -31,7 +31,8 @@ import {
   BookFileResponseDto,
 } from '@read-n-feed/application';
 import { JwtPayload } from '@read-n-feed/domain';
-import { Response } from 'express';
+import { Response, Express } from 'express';
+import 'multer';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
 import { Public } from '../auth/guards/public.decorator';

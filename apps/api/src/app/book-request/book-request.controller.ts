@@ -38,6 +38,8 @@ import {
   toBookRequestResponseDto,
 } from '@read-n-feed/application';
 import { JwtPayload } from '@read-n-feed/domain';
+import { Express } from 'express';
+import 'multer';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
 import { AdminOnly } from '../auth/guards/roles.decorator';
