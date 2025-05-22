@@ -1,4 +1,9 @@
-import { ShowProfileInfo, UpdateProfileInfo } from '@/components/pages';
+import {
+  FavouriteBooks,
+  LikedBooks,
+  ShowProfileInfo,
+  UpdateProfileInfo,
+} from '@/components/pages';
 
 export const ProfilePage = () => {
   return (
@@ -6,6 +11,10 @@ export const ProfilePage = () => {
       <ShowProfileInfo />
 
       <UpdateProfileInfo />
+
+      <LikedBooks />
+
+      <FavouriteBooks />
     </>
   );
 };

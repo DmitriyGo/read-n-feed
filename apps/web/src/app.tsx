@@ -41,6 +41,22 @@ export function App() {
 
       init(searchParams);
 
+      const accessToken = localStorage.getItem('accessToken');
+
+      if (accessToken) {
+        try {
+          setAccessToken(accessToken);
+
+          await axiosSecure.get(ApiRoute.Users.Me);
+
+          return setIsReady(true);
+        } catch {
+          clearAccessToken();
+          localStorage.removeItem('accessToken');
+          console.error('Access token is invalid!');
+        }
+      }
+
       try {
         hasStarted.current = true;
         const {

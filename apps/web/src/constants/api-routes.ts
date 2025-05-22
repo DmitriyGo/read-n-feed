@@ -43,6 +43,8 @@ export const ApiRoute = {
       limit
         ? `${ApiControllers.Books}/most-liked/${limit}`
         : `${ApiControllers.Books}/most-liked`,
+    Liked: `${ApiControllers.Books}/liked`,
+    Favorites: `${ApiControllers.Books}/favorites`,
     Related: (bookId: string) => `${ApiControllers.Books}/${bookId}/related`,
     Authors: {
       Get: (bookId: string) => `${ApiControllers.Books}/${bookId}/authors`,
@@ -61,6 +63,9 @@ export const ApiRoute = {
     },
     Like: (bookId: string) => `${ApiControllers.Books}/${bookId}/like`,
     Unlike: (bookId: string) => `${ApiControllers.Books}/${bookId}/like`,
+    Favorite: (bookId: string) => `${ApiControllers.Books}/${bookId}/favorite`,
+    Unfavorite: (bookId: string) =>
+      `${ApiControllers.Books}/${bookId}/favorite`,
   },
   ReadingProgress: {
     Save: `${ApiControllers.ReadingProgress}/`,

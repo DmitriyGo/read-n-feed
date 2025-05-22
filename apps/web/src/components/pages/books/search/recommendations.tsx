@@ -8,14 +8,14 @@ import { usePersonalizedRecommendations } from '@/hooks';
 export const BookRecommendations = () => {
   const { t } = useTranslation();
 
-  const { data } = usePersonalizedRecommendations({});
+  const { data } = usePersonalizedRecommendations({ includeRead: false });
 
   const forYouRecommendations = data?.data.forYou.books;
 
   return (
     <Card>
       <CardHeader>{t('recommendations')}:</CardHeader>
-      <CardContent className="flex flex-row gap-4 p-0">
+      <CardContent className="flex flex-row gap-4 p-0 overflow-auto">
         {forYouRecommendations?.length &&
           forYouRecommendations.map((book) => (
             <BookCard

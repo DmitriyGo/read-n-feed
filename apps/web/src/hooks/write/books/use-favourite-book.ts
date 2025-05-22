@@ -4,29 +4,26 @@ import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
 import { axiosSecure } from '@/lib/axios';
 
-export const useLikeBook = () => {
+export const useFavouriteBook = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({
       bookId,
-      userWantsToLike,
+      userWantsToFavourite,
     }: {
-      userWantsToLike: boolean;
+      userWantsToFavourite: boolean;
       bookId: string;
     }) => {
-      if (userWantsToLike) {
-        return axiosSecure.post(ApiRoute.Books.Like(bookId));
+      if (userWantsToFavourite) {
+        return axiosSecure.post(ApiRoute.Books.Favorite(bookId));
       } else {
-        return axiosSecure.delete(ApiRoute.Books.Unlike(bookId));
+        return axiosSecure.delete(ApiRoute.Books.Unfavorite(bookId));
       }
     },
     onSuccess: (_, { bookId }) => {
       queryClient.invalidateQueries({
         queryKey: [QueryKey.Books.Details(bookId)],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QueryKey.Books.Liked],
       });
     },
   });

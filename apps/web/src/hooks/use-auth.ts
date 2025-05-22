@@ -10,6 +10,7 @@ export const useAuth = () => {
       throw new Error('Incorrect access token!');
     }
 
+    localStorage.setItem('accessToken', newAccessToken);
     setAccessToken(newAccessToken);
   };
 

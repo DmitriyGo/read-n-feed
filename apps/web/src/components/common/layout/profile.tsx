@@ -1,6 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
   Avatar,
@@ -30,14 +30,6 @@ export const Profile = () => {
     logout();
   };
 
-  const handleSeeProfile = () => {
-    navigate(Route.Profile);
-  };
-
-  const handleMyRequests = () => {
-    navigate(Route.Requests.MyBookRequests);
-  };
-
   return (
     <Popover>
       <PopoverTrigger>
@@ -47,11 +39,14 @@ export const Profile = () => {
       <PopoverContent className="flex flex-col gap-4" align="end">
         {isDefined(accessToken) ? (
           <>
-            <Button onClick={handleSeeProfile}>{t('seeProfile')}</Button>
-
-            <Button variant="outline" onClick={handleMyRequests}>
-              {t('myRequests')}
-            </Button>
+            <Link to={Route.Profile}>
+              <Button className="w-full">{t('seeProfile')}</Button>
+            </Link>
+            <Link to={Route.Requests.MyBookRequests}>
+              <Button className="w-full" variant="outline">
+                {t('myRequests')}
+              </Button>
+            </Link>
 
             <Button onClick={handleLogout} variant="destructive">
               {t('logout')}

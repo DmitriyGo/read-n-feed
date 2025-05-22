@@ -1,8 +1,7 @@
 import { BookResponseDto } from '@read-n-feed/application';
-import { Star, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   BookCover,
@@ -10,7 +9,6 @@ import {
   PartiallyLoadedContent,
 } from '@/components/common';
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -34,23 +32,20 @@ export const BookCard = ({
   const { t } = useTranslation(['translation', 'validation', 'badges']);
   const isMd = useBreakpoint('md');
 
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate(`${Route.Book.Details}/${book.id}`);
-  };
-
   return (
     <TooltipProvider>
       <Tooltip open={isOpen && !isSimplified} onOpenChange={setIsOpen}>
         <TooltipTrigger asChild>
-          <div className="w-min h-fit p-4" onClick={handleClick}>
+          <Link
+            to={`${Route.Book.Details}/${book.id}`}
+            className="w-min h-fit p-4"
+          >
             <BookCover book={book} />
 
             <div className="flex flex-col space-y-1 justify-between">
               <h2 className="text-wrap text-clip">{book.title}</h2>
             </div>
-          </div>
+          </Link>
         </TooltipTrigger>
 
         <TooltipContent
