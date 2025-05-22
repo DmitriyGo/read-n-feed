@@ -94,9 +94,16 @@ export class BookController {
             book.id,
           );
 
+          // Check if the book is in the user's favorites
+          let favoured = false;
+          if (user?.id) {
+            favoured = await this.bookUseCase.isInFavorites(book.id, user.id);
+          }
+
           return {
             ...this.toResponseDto(book),
             liked: likedStatusMap.has(book.id),
+            favoured,
             authors: relationships?.authors || [],
             genres: relationships?.genres || [],
             tags: relationships?.tags || [],
@@ -110,6 +117,8 @@ export class BookController {
 
           return {
             ...this.toResponseDto(book),
+            liked: false,
+            favoured: false,
             authors: [],
             genres: [],
             tags: [],
@@ -137,8 +146,16 @@ export class BookController {
   })
   async getMostLikedBooks(
     @Param('limit', ParseIntPipe) limit: number,
+    @CurrentUser() user: JwtPayload,
   ): Promise<BookResponseDto[]> {
     const results = await this.bookUseCase.getMostLikedBooks(limit);
+    const bookIds = results.map((book) => book.id);
+
+    // Get liked status for all books
+    const likedStatusMap = await this.bookUseCase.getBatchLikedStatus(
+      bookIds,
+      user?.id,
+    );
 
     // Get relationship information for each book
     return await Promise.all(
@@ -148,8 +165,16 @@ export class BookController {
             book.id,
           );
 
+          // Check if the book is in the user's favorites
+          let favoured = false;
+          if (user?.id) {
+            favoured = await this.bookUseCase.isInFavorites(book.id, user.id);
+          }
+
           return {
             ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured,
             authors: relationships?.authors || [],
             genres: relationships?.genres || [],
             tags: relationships?.tags || [],
@@ -163,6 +188,8 @@ export class BookController {
 
           return {
             ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: false,
             authors: [],
             genres: [],
             tags: [],
@@ -183,7 +210,46 @@ export class BookController {
     @CurrentUser() user: JwtPayload,
   ): Promise<BookResponseDto[]> {
     const books = await this.bookUseCase.getLikedBooks(user.id);
-    return books.map((book) => this.toResponseDto(book));
+
+    return await Promise.all(
+      books.map(async (book) => {
+        try {
+          const relationships = await this.bookUseCase.getBookWithRelationships(
+            book.id,
+          );
+
+          // Check if the book is in the user's favorites
+          const favoured = await this.bookUseCase.isInFavorites(
+            book.id,
+            user.id,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: true,
+            favoured,
+            authors: relationships?.authors || [],
+            genres: relationships?.genres || [],
+            tags: relationships?.tags || [],
+          };
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `Error getting relationships for book ${book.id}: ${errorMessage}`,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: true,
+            favoured: false,
+            authors: [],
+            genres: [],
+            tags: [],
+          };
+        }
+      }),
+    );
   }
 
   @Get('favorites')
@@ -197,7 +263,48 @@ export class BookController {
     @CurrentUser() user: JwtPayload,
   ): Promise<BookResponseDto[]> {
     const books = await this.bookUseCase.getFavoriteBooks(user.id);
-    return books.map((book) => this.toResponseDto(book));
+    const bookIds = books.map((book) => book.id);
+
+    // Get liked status for all books
+    const likedStatusMap = await this.bookUseCase.getBatchLikedStatus(
+      bookIds,
+      user.id,
+    );
+
+    // Get relationship information for each book
+    return await Promise.all(
+      books.map(async (book) => {
+        try {
+          const relationships = await this.bookUseCase.getBookWithRelationships(
+            book.id,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: true, // These are books in the user's favorites
+            authors: relationships?.authors || [],
+            genres: relationships?.genres || [],
+            tags: relationships?.tags || [],
+          };
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `Error getting relationships for book ${book.id}: ${errorMessage}`,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: true,
+            authors: [],
+            genres: [],
+            tags: [],
+          };
+        }
+      }),
+    );
   }
 
   @Get(':id')
@@ -216,17 +323,22 @@ export class BookController {
     if (!result) throw new NotFoundException(`Book with id=${id} not found`);
 
     let liked = false;
+    let favoured = false;
     if (user?.id) {
       const likedMap = await this.bookUseCase.getBatchLikedStatus(
         [id],
         user.id,
       );
       liked = likedMap.has(id);
+
+      // Check if the book is in the user's favorites
+      favoured = await this.bookUseCase.isInFavorites(id, user.id);
     }
 
     return {
       ...this.toResponseDto(result.book),
       liked,
+      favoured,
       authors: result.authors,
       genres: result.genres,
       tags: result.tags,
@@ -249,7 +361,20 @@ export class BookController {
       genreIds,
       tagIds,
     );
-    return this.toResponseDto(book);
+
+    // Get relationship information for the book
+    const relationships = await this.bookUseCase.getBookWithRelationships(
+      book.id,
+    );
+
+    return {
+      ...this.toResponseDto(book),
+      liked: false, // Newly created book is not liked by anyone
+      favoured: false, // Newly created book is not in anyone's favorites
+      authors: relationships?.authors || [],
+      genres: relationships?.genres || [],
+      tags: relationships?.tags || [],
+    };
   }
 
   @Put(':id')
@@ -265,6 +390,7 @@ export class BookController {
   async updateBook(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateBookDto,
+    @CurrentUser() user: JwtPayload,
   ): Promise<BookResponseDto> {
     const { authorIds, genreIds, tagIds, ...bookData } = dto;
     const updated = await this.bookUseCase.updateBook(
@@ -281,8 +407,24 @@ export class BookController {
     const result = await this.bookUseCase.getBookWithRelationships(id);
     if (!result) throw new NotFoundException(`Book with id=${id} not found`);
 
+    // Check if the book is liked and in favorites
+    let liked = false;
+    let favoured = false;
+    if (user?.id) {
+      const likedMap = await this.bookUseCase.getBatchLikedStatus(
+        [id],
+        user.id,
+      );
+      liked = likedMap.has(id);
+
+      // Check if the book is in the user's favorites
+      favoured = await this.bookUseCase.isInFavorites(id, user.id);
+    }
+
     return {
       ...this.toResponseDto(result.book),
+      liked,
+      favoured,
       authors: result.authors,
       genres: result.genres,
       tags: result.tags,
@@ -315,10 +457,18 @@ export class BookController {
   })
   @ApiNotFoundResponse({ description: 'Book not found' })
   async getRelatedBooks(
+    @CurrentUser() user: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ): Promise<BookResponseDto[]> {
     const relatedBooks = await this.bookUseCase.getRelatedBooks(id, limit || 5);
+    const bookIds = relatedBooks.map((book) => book.id);
+
+    // Get liked status for all books
+    const likedStatusMap = await this.bookUseCase.getBatchLikedStatus(
+      bookIds,
+      user?.id,
+    );
 
     // Get relationship information for each book
     return await Promise.all(
@@ -328,8 +478,16 @@ export class BookController {
             book.id,
           );
 
+          // Check if the book is in the user's favorites
+          let favoured = false;
+          if (user?.id) {
+            favoured = await this.bookUseCase.isInFavorites(book.id, user.id);
+          }
+
           return {
             ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured,
             authors: relationships?.authors || [],
             genres: relationships?.genres || [],
             tags: relationships?.tags || [],
@@ -343,6 +501,8 @@ export class BookController {
 
           return {
             ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: false,
             authors: [],
             genres: [],
             tags: [],

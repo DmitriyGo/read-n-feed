@@ -8,6 +8,7 @@ export interface BookProps {
   language?: string | null;
   averageRating?: number | null;
   totalLikes?: number | null;
+  ageRestriction?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }

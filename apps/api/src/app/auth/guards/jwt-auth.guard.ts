@@ -21,41 +21,41 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    return super.canActivate(context);
+  }
+
+  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
+    if (user) {
+      return user;
+    }
+
     if (isPublic) {
-      return true;
+      return undefined;
     }
 
-    return super.canActivate(context);
-  }
+    this.logger.warn(
+      `Authentication failed: ${err?.message || 'No user found'} - Token info: ${
+        info?.message || 'N/A'
+      }`,
+    );
 
-  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
-    if (err || !user) {
-      this.logger.warn(
-        `Authentication failed: ${err?.message || 'No user found'} - Token info: ${
-          info?.message || 'N/A'
-        }`,
-      );
-
-      if (info?.name === 'TokenExpiredError') {
-        throw new UnauthorizedException(
-          'Your session has expired. Please log in again.',
-        );
-      }
-
-      if (info?.name === 'JsonWebTokenError') {
-        throw new UnauthorizedException('Invalid authentication token.');
-      }
-
+    if (info?.name === 'TokenExpiredError') {
       throw new UnauthorizedException(
-        err?.message || 'You are not authorized to access this resource',
+        'Your session has expired. Please log in again.',
       );
     }
 
-    return user;
+    if (info?.name === 'JsonWebTokenError') {
+      throw new UnauthorizedException('Invalid authentication token.');
+    }
+
+    throw new UnauthorizedException(
+      err?.message || 'You are not authorized to access this resource',
+    );
   }
 }

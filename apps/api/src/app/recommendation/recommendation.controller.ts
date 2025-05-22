@@ -43,6 +43,7 @@ export class RecommendationController {
   })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'includeRead', required: false, type: Boolean })
+  @ApiQuery({ name: 'age', required: false, type: Number, description: 'User age for age-appropriate content filtering' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns personalized recommendations for the user',
@@ -55,6 +56,7 @@ export class RecommendationController {
     return this.recommendationUseCase.getPersonalizedRecommendations(user.id, {
       limit: query.limit,
       includeRead: query.includeRead,
+      age: query.age,
     });
   }
 
@@ -66,6 +68,7 @@ export class RecommendationController {
     description: 'Book ID to find similar books for',
   })
   @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'age', required: false, type: Number, description: 'User age for age-appropriate content filtering' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns books similar to the specified book',
@@ -75,7 +78,7 @@ export class RecommendationController {
     @Param('bookId', ParseUUIDPipe) bookId: string,
     @Query() query: GetSimilarBooksQueryDto,
   ): Promise<SimilarBooksResponseDto> {
-    return this.recommendationUseCase.getSimilarBooks(bookId, query.limit);
+    return this.recommendationUseCase.getSimilarBooks(bookId, query.limit, query.age);
   }
 
   @Get('genre/:genreId')
@@ -86,6 +89,7 @@ export class RecommendationController {
     description: 'Genre ID to get recommendations for',
   })
   @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'age', required: false, type: Number, description: 'User age for age-appropriate content filtering' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns recommended books for the specified genre',
@@ -94,8 +98,9 @@ export class RecommendationController {
   async getRecommendationsByGenre(
     @Param('genreId', ParseUUIDPipe) genreId: string,
     @Query('limit') limit?: number,
+    @Query('age') age?: number,
   ): Promise<RecommendationGroupResponseDto> {
-    return this.recommendationUseCase.getRecommendationsByGenre(genreId, limit);
+    return this.recommendationUseCase.getRecommendationsByGenre(genreId, limit, age);
   }
 
   @Get('author/:authorId')
@@ -106,6 +111,7 @@ export class RecommendationController {
     description: 'Author ID to get recommendations for',
   })
   @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'age', required: false, type: Number, description: 'User age for age-appropriate content filtering' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns recommended books for the specified author',
@@ -114,10 +120,12 @@ export class RecommendationController {
   async getRecommendationsByAuthor(
     @Param('authorId', ParseUUIDPipe) authorId: string,
     @Query('limit') limit?: number,
+    @Query('age') age?: number,
   ): Promise<RecommendationGroupResponseDto> {
     return this.recommendationUseCase.getRecommendationsByAuthor(
       authorId,
       limit,
+      age,
     );
   }
 

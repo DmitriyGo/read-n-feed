@@ -11,7 +11,7 @@ export interface UserProps {
   provider: Provider;
   roles: UserRole[];
   isBlocked: boolean;
-
+  age?: number | null;
   username: string;
   firstName?: string | null;
   lastName?: string | null;

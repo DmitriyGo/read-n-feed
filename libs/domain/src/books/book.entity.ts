@@ -43,6 +43,10 @@ export class Book {
     return this.props.totalLikes;
   }
 
+  get ageRestriction() {
+    return this.props.ageRestriction;
+  }
+
   updateTitle(newTitle: string) {
     this.props.title = newTitle.trim();
     this.props.updatedAt = new Date();
