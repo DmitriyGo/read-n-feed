@@ -11,6 +11,7 @@ import {
   UsePipes,
   ValidationPipe,
   Logger,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -30,7 +31,9 @@ import {
   UserUseCase,
 } from '@read-n-feed/application';
 import { BookComment } from '@read-n-feed/domain';
+import { JwtPayload } from '@read-n-feed/domain';
 
+import { CurrentUser } from '../auth/guards/current-user.decorator';
 import { Public } from '../auth/guards/public.decorator';
 
 @ApiBearerAuth()
@@ -131,11 +134,21 @@ export class CommentController {
   @ApiOperation({ summary: 'Delete a comment by ID' })
   @ApiResponse({ status: 204, description: 'Comment deleted successfully' })
   @ApiNotFoundResponse({ description: 'Comment not found' })
-  async deleteComment(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async deleteComment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<void> {
     // check existence first
     const existing = await this.commentUseCase.getCommentById(id);
     if (!existing)
       throw new NotFoundException(`Comment with id=${id} not found`);
+
+    // Only allow the comment's author or an admin to delete
+    if (existing.userId !== user.id && !user.roles.includes('ADMIN')) {
+      throw new ForbiddenException(
+        'You are not allowed to delete this comment',
+      );
+    }
 
     await this.commentUseCase.deleteComment(id);
   }

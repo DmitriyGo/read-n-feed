@@ -799,6 +799,8 @@ export class BookController {
       publisher: props.publisher ?? undefined,
       averageRating: props.averageRating ?? undefined,
       totalLikes: props.totalLikes,
+      language: props.language ?? undefined,
+      ageRestriction: props.ageRestriction ?? undefined,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
     };

@@ -38,7 +38,7 @@ export class AuthUseCase {
       firstName: dto.firstName ?? null,
       lastName: dto.lastName ?? null,
       avatarUrl: dto.avatarUrl ?? null,
-
+      age: dto.age ?? null,
       provider: 'LOCAL',
       roles: ['USER'],
       isBlocked: false,

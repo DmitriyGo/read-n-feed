@@ -36,6 +36,10 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   avatarUrl?: string;
+
+  @ApiProperty({ example: 30, required: false })
+  @IsOptional()
+  age?: number;
 }
 
 export class LoginDto {

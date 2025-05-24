@@ -94,6 +94,20 @@ export class CreateBookDto {
   @IsUUID(4, { each: true })
   @Transform(({ value }) => transformToArray(value))
   tagIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Book language (e.g., en, fr, es)' })
+  @IsOptional()
+  @IsString()
+  language?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Age restriction (minimum age)',
+    example: 12,
+  })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  ageRestriction?: number | null;
 }
 
 export class UpdateBookDto {
@@ -169,6 +183,17 @@ export class UpdateBookDto {
   @IsUUID(4, { each: true })
   @Transform(({ value }) => transformToArray(value))
   tagIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Book language (e.g., en, fr, es)' })
+  @IsOptional()
+  @IsString()
+  language?: string | null;
+
+  @ApiPropertyOptional({ description: 'Age restriction (minimum age)' })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  ageRestriction?: number | null;
 }
 
 export class SearchBooksDto {
@@ -312,4 +337,15 @@ export class BookResponseDto {
 
   @ApiPropertyOptional({ type: [TagInfo] })
   tags?: TagInfo[];
+
+  @ApiPropertyOptional({ description: 'Book language (e.g., en, fr, es)' })
+  @IsOptional()
+  @IsString()
+  language?: string | null;
+
+  @ApiPropertyOptional({ description: 'Age restriction (minimum age)' })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  ageRestriction?: number | null;
 }
