@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 import { FileUploadField } from '../file-upload-field';
+import { LanguageSelectField } from '../language-select-field';
 
 import {
   Button,
@@ -16,14 +17,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui';
+import { SupportedLanguages } from '@/constants';
 import { useCreateFileRequest } from '@/hooks';
 import { clearObject, validateFile, getFileExtension } from '@/lib';
 import { useModalStore } from '@/store';
 
 const formSchema = (t: (key: string) => string) =>
   z.object({
-    // fileLanguage: z.enum(SupportedLanguages).optional(),
-    filename: z.string(),
+    fileLanguage: z.enum(SupportedLanguages).optional(),
+    filename: z.string().min(5, 'fileNameTooShort'),
     file: z.any().refine((file) => file instanceof File, {
       message: t('fileIsRequired'),
     }),
@@ -41,7 +43,7 @@ export function CreateFileRequestModal() {
   const form = useForm<CreateRequestSchema>({
     resolver: zodResolver(formSchema(t)),
     defaultValues: {
-      // fileLanguage: SupportedLanguages[0],
+      fileLanguage: SupportedLanguages[0],
       filename: '',
     },
   });
@@ -77,13 +79,13 @@ export function CreateFileRequestModal() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* <FormField
+        <FormField
           control={form.control}
           name="fileLanguage"
           render={({ field }) => (
-            <LanguageSelectField field={field} label="File Language" />
+            <LanguageSelectField field={field} label={t('fileLanguage')} />
           )}
-        /> */}
+        />
 
         <FormField
           control={form.control}

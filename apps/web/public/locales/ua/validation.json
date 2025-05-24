@@ -10,5 +10,6 @@
   "passwordCannotBeEmpty": "Пароль не може бути порожнім",
   "passwordTooShort": "Довжина пароля не може бути менше 8 символів",
   "passwordsDoNotMatch": "Паролі не співпадають",
-  "rejectionReasonRequired": "Причина відхилення обов'язкова"
+  "rejectionReasonRequired": "Причина відхилення обов'язкова",
+  "fileNameTooShort": "Назва файлу занадто коротка, має бути не менше 5 символів"
 }
