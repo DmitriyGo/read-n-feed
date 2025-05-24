@@ -51,7 +51,7 @@ export class User {
     this.props.preferredReadingFormats =
       partial.preferredReadingFormats ?? this.props.preferredReadingFormats;
     this.props.metadata = partial.metadata ?? this.props.metadata;
-
+    if (partial.age !== undefined) this.props.age = partial.age;
     this.props.updatedAt = new Date();
   }
 
