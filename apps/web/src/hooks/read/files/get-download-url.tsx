@@ -3,8 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
-import { useAuth } from '@/hooks/use-auth';
-import { axiosSecure } from '@/lib';
+import { axiosBase } from '@/lib';
 
 export const useGetDownloadUrl = ({
   fileId,
@@ -13,19 +12,15 @@ export const useGetDownloadUrl = ({
   fileId?: string | null;
   enabled?: boolean;
 }) => {
-  const { accessToken } = useAuth();
-
   return useQuery({
-    queryKey: [QueryKey.BookFiles.DownloadUrl(fileId || ''), accessToken],
+    queryKey: [...QueryKey.BookFiles.DownloadUrl(fileId || 'none')],
     queryFn: async () => {
       if (!isDefined(fileId)) {
-        return;
+        return null;
       }
 
-      return axiosSecure.get<{ url: string }>(
-        ApiRoute.BookFiles.GetUrl(fileId),
-      );
+      return axiosBase.get<{ url: string }>(ApiRoute.BookFiles.GetUrl(fileId));
     },
-    enabled: isDefined(accessToken) && enabled,
+    enabled: enabled,
   });
 };

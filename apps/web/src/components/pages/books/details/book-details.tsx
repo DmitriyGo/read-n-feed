@@ -1,7 +1,8 @@
 import { BookResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
-import { Heart, HeartOff, Star, StarOff } from 'lucide-react';
+import { Heart, HeartOff, Star, StarOff, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Badges,
@@ -10,14 +11,38 @@ import {
   PartiallyLoadedContent,
 } from '@/components/common';
 import { Button, Card, CardContent, CardHeader } from '@/components/ui';
-import { useAuth, useFavouriteBook, useLikeBook } from '@/hooks';
+import { Route } from '@/constants';
+import {
+  useAuth,
+  useDeleteBook,
+  useFavouriteBook,
+  useHasRole,
+  useLikeBook,
+} from '@/hooks';
 import { formatDate } from '@/lib';
 
 export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
   const { t } = useTranslation(['translation', 'validation', 'badges']);
+  const navigate = useNavigate();
+
   const { mutate: likeBook } = useLikeBook();
   const { mutate: favouriteBook } = useFavouriteBook();
+  const { mutate: deleteBook } = useDeleteBook();
+
   const { accessToken } = useAuth();
+  const { hasRole: isAdmin } = useHasRole('ADMIN');
+
+  const handleDelete = () => {
+    if (!book) {
+      return;
+    }
+
+    deleteBook({
+      bookId: book.id,
+    });
+
+    navigate(Route.Book.Search);
+  };
 
   const handleLike = () => {
     if (!book) {
@@ -51,6 +76,11 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
         />
 
         <div className="space-x-4">
+          {isAdmin && (
+            <Button onClick={handleDelete} variant={'destructive'}>
+              <Trash2 />
+            </Button>
+          )}
           <Button
             onClick={handleLike}
             disabled={!isDefined(accessToken)}
