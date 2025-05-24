@@ -14,6 +14,7 @@ import {
   FormItem,
   Textarea,
 } from '@/components/ui';
+import { useHasRole } from '@/hooks';
 import { useGetProfile, useCommentsForBook } from '@/hooks/read';
 import {
   useCreateComment,
@@ -138,6 +139,8 @@ const CommentItem = ({
   onStartEditing,
   onCancelEditing,
 }: CommentItemProps) => {
+  const { hasRole: isAdmin } = useHasRole('ADMIN');
+
   const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutate: deleteComment } = useDeleteComment(comment.id, bookId);
   const { mutate: updateComment } = useUpdateComment(comment.id, bookId);

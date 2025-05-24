@@ -25,6 +25,9 @@ export const useFavouriteBook = () => {
       queryClient.invalidateQueries({
         queryKey: [QueryKey.Books.Details(bookId)],
       });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKey.Books.Favoured],
+      });
     },
   });
 };

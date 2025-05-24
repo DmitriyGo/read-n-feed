@@ -37,8 +37,7 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
 
     favouriteBook({
       bookId: book.id,
-      userWantsToFavourite: true,
-      // userWantsToFavourite: !book.favoured,
+      userWantsToFavourite: !book.favoured,
     });
   };
 
@@ -62,10 +61,9 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
           <Button
             onClick={handleFavourite}
             disabled={!isDefined(accessToken)}
-            variant={'default'}
-            // variant={book?.favoured ? 'default' : 'outline'}
+            variant={book?.favoured ? 'default' : 'outline'}
           >
-            {book?.liked ? <Star /> : <StarOff />}
+            {book?.favoured ? <Star /> : <StarOff />}
           </Button>
         </div>
       </CardHeader>

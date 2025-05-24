@@ -13,6 +13,7 @@ export const QueryKey = {
     Files: (bookId: string) => ['books.files', bookId],
     MostLiked: 'books.mostLiked',
     Liked: 'books.liked',
+    Favoured: 'books.favoured',
     Related: (bookId: string) => ['books.related', bookId],
     Authors: (bookId: string) => ['books.authors', bookId],
     Genres: (bookId: string) => ['books.genres', bookId],
