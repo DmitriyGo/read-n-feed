@@ -201,11 +201,13 @@ const CommentItem = ({
                 {comment.createdAt !== comment.updatedAt && t('edited')}
               </p>
             </div>
-            {isOwner && (
-              <div className="flex space-x-2">
+            <div className="flex space-x-2">
+              {isOwner && (
                 <Button variant="ghost" size="sm" onClick={onStartEditing}>
                   {t('edit')}
                 </Button>
+              )}
+              {(isOwner || isAdmin) && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -214,8 +216,8 @@ const CommentItem = ({
                 >
                   {t('delete')}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           <p className="mt-2">{comment.content}</p>
         </>
