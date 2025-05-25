@@ -2,7 +2,7 @@ import { BookFormatDto } from '@read-n-feed/application';
 import { isDefined, shouldBeUnreachable } from '@read-n-feed/shared';
 import { useParams } from 'react-router-dom';
 
-import { PDFReader } from '@/components/pages';
+import { EpubReader, PDFReader } from '@/components/pages';
 import {
   useBookFilesById,
   useBookRequestFilesById,
@@ -59,7 +59,7 @@ export const ReadPage = () => {
     case 'PDF':
       return <PDFReader downloadUrl={downloadUrl} filename={bookFileName} />;
     case 'EPUB':
-      return <p>EPUB READER NOT IMPLEMENTED YET</p>;
+      return <EpubReader downloadUrl={downloadUrl} filename={bookFileName} />;
     case 'FB2':
       return <p>FB2 READER NOT IMPLEMENTED YET</p>;
     case 'MOBI':

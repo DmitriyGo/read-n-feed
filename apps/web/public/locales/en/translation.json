@@ -133,5 +133,6 @@
   "favorites": "Favorites",
   "age": "Age",
   "agePlaceholder": "Your age (optional)",
-  "invalidAge": "Invalid age"
+  "invalidAge": "Invalid age",
+  "width": "Width"
 }

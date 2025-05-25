@@ -21,7 +21,7 @@ export const BookFile = ({ bookFile }: { bookFile: BookFileResponseDto }) => {
       return;
     }
 
-    navigate(Route.Book.Read(bookFile.bookId, fileId, 'request'));
+    navigate(Route.Book.Read(bookFile.bookId, fileId, 'book'));
   };
 
   return (
