@@ -130,5 +130,8 @@
   "viewDetails": "View Details",
   "recommendations": "Recommendations",
   "yourLikedBooks": "Your Liked Books",
-  "favorites": "Favorites"
+  "favorites": "Favorites",
+  "age": "Age",
+  "agePlaceholder": "Your age (optional)",
+  "invalidAge": "Invalid age"
 }

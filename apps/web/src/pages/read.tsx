@@ -17,7 +17,10 @@ export const ReadPage = () => {
     type: 'book' | 'request' | 'file-request';
   }>();
 
-  const { data: bookData } = useBookFilesById(bookOrRequestId, type === 'book');
+  const { data: bookData } = useBookFilesById(
+    bookOrRequestId ?? '',
+    type === 'book',
+  );
   const { data: requestData } = useBookRequestFilesById(
     bookOrRequestId,
     type === 'request',

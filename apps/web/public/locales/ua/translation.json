@@ -129,5 +129,7 @@
   "recommendations": "Рекомендації",
   "yourLikedBooks": "Ваші вподобані книги",
   "favorites": "Улюблені",
-  "submitRequest": "Надіслати запит"
+  "submitRequest": "Надіслати запит",
+  "age": "Вік",
+  "agePlaceholder": "Ваш вік (необов'язково)"
 }
