@@ -73,11 +73,11 @@ export default function HomeRegister() {
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome - Register</Text>
+        <Text style={styles.title}>Ласкаво просимо - Зареєструйтеся</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Username"
+            placeholder="Імʼя користувача"
             autoCapitalize="none"
             value={formData.username}
             style={[styles.input, errors.username && styles.inputError]}
@@ -97,7 +97,7 @@ export default function HomeRegister() {
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
           <TextInput
-            placeholder="Password"
+            placeholder="Пароль"
             autoCapitalize="none"
             secureTextEntry
             value={formData.password}
@@ -116,12 +116,12 @@ export default function HomeRegister() {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Register</Text>
+              <Text style={styles.buttonText}>Зареєструватися</Text>
             )}
           </TouchableOpacity>
         </View>
 
-        <Button title="Already have an account? Login" onPress={goToLogin} />
+        <Button title="Вже маєте акаунт? Увійти" onPress={goToLogin} />
       </View>
     </View>
   );

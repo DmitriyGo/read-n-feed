@@ -69,7 +69,7 @@ export default function HomeLogin() {
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.title}>Ласкаво просимо</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -82,7 +82,7 @@ export default function HomeLogin() {
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
           <TextInput
-            placeholder="Password"
+            placeholder="Пароль"
             autoCapitalize="none"
             secureTextEntry
             value={formData.password}
@@ -101,15 +101,12 @@ export default function HomeLogin() {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={styles.buttonText}>Увійти</Text>
             )}
           </TouchableOpacity>
         </View>
 
-        <Button
-          title="Don't have an account? Register"
-          onPress={goToRegister}
-        />
+        <Button title="Немає акаунту? Зареєструватися" onPress={goToRegister} />
       </View>
     </View>
   );

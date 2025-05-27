@@ -1,14 +1,14 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Не валідна адреса електронної пошти'),
   password: z.string(),
 });
 
 export const registerSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  username: z.string().min(3, 'Username ust be at least 3 characters'),
+  email: z.string().email('Не валідна адреса електронної пошти'),
+  password: z.string().min(6, 'Пароль має бути не менше 6 символів'),
+  username: z.string().min(3, 'Імʼя користувача має бути не менше 3 символів'),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

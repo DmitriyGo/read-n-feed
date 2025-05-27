@@ -1,0 +1,49 @@
+{
+  "welcomeText": "Welcome to Read-n-Feed",
+  "welcomeSubtitle": "Your reading companion",
+  "yourProfile": "Your Profile",
+  "language": "Language",
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "home": "Home",
+    "profile": "Profile",
+    "bookRequests": "My Book Requests"
+  },
+  "profile": {
+    "updateProfile": "Update Profile",
+    "enterFirstName": "Enter your first name",
+    "enterLastName": "Enter your last name",
+    "next": "Next",
+    "essentialData": "Essential Data",
+    "username": "Username",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "notSet": "Not set",
+    "additionalData": "Additional Data",
+    "status": "Status",
+    "blocked": "Blocked",
+    "active": "Active",
+    "roles": "Roles",
+    "memberSince": "Member Since",
+    "updating": "Updating...",
+    "logout": "Logout"
+  },
+  "bookRequests": {
+    "status": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "createRequest": "Create Request",
+    "noRequests": "No requests found",
+    "read": "Read",
+    "authors": "Authors",
+    "genres": "Genres"
+  }
+}

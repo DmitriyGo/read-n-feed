@@ -1,5 +1,5 @@
-import { useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
-import React, { useState } from 'react';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Text, ActivityIndicator } from 'react-native-paper';
 import { WebView } from 'react-native-webview';
@@ -14,35 +14,33 @@ export const BookReaderScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      let isMounted = true;
-      setIsLoading(true);
-      setError(null);
-      axiosInstance
-        .get<{ url: string }>(`book-files/url/${fileId}`)
-        .then((response) => {
-          if (isMounted) {
-            if (response.data.url) {
-              setFileUrl(response.data.url);
-            } else {
-              setError('No download URL available for this file.');
-            }
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+    setError(null);
+    axiosInstance
+      .get<{ url: string }>(`book-files/url/${fileId}`)
+      .then((response) => {
+        if (isMounted) {
+          if (response.data.url) {
+            setFileUrl(response.data.url);
+          } else {
+            setError('No download URL available for this file.');
           }
-        })
-        .catch((err) => {
-          if (isMounted) {
-            setError('Failed to load file');
-          }
-        })
-        .finally(() => {
-          if (isMounted) setIsLoading(false);
-        });
-      return () => {
-        isMounted = false;
-      };
-    }, [fileId]),
-  );
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setError('Failed to load file');
+        }
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [fileId]);
 
   if (error) {
     return (
