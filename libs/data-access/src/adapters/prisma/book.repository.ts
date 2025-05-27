@@ -36,6 +36,11 @@ export class PrismaBookRepository implements IBookRepository {
       await tx.bookTag.deleteMany({ where: { bookId } });
       await tx.bookLike.deleteMany({ where: { bookId } });
       await tx.bookFavorite.deleteMany({ where: { bookId } });
+      await tx.bookComment.deleteMany({ where: { bookId } });
+      await tx.readingProgress.deleteMany({ where: { bookId } });
+      await tx.bookFile.deleteMany({ where: { bookId } });
+      await tx.bookFileRequest.deleteMany({ where: { bookId } });
+      await tx.bookRequest.deleteMany({ where: { resultingBookId: bookId } });
       // Now delete the book itself
       await tx.book.delete({ where: { id: bookId } });
     });
