@@ -15,4 +15,5 @@ export interface BookFileRequestProps {
   rejectedBy?: string | null;
   rejectionReason?: string | null;
   adminNotes?: string | null;
+  language?: string | null;
 }

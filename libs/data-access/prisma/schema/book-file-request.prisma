@@ -19,6 +19,7 @@ model BookFileRequest {
   rejectedBy      String?               @map("rejected_by")
   rejectionReason String?               @map("rejection_reason")
   adminNotes      String?               @map("admin_notes")
+  language        String?               @map("language")
 
   // Relations
   book Book      @relation(fields: [bookId], references: [id])

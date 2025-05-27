@@ -60,6 +60,7 @@ export class BookFileRequestUseCase {
       format: dto.format.toUpperCase(),
       status: 'PENDING',
       adminNotes: dto.notes || null,
+      language: dto.language || null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

@@ -77,6 +77,11 @@ export class BookFileRequestUserController {
           description: 'Custom display filename (supports Unicode characters)',
           example: 'Преступление и наказание.epub',
         },
+        language: {
+          type: 'string',
+          description: 'Language code (e.g., en, ua) for the book file request',
+          example: 'en',
+        },
       },
       required: ['file', 'bookId', 'format'],
     },

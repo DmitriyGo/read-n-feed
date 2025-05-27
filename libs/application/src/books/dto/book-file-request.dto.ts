@@ -35,6 +35,14 @@ export class CreateBookFileRequestDto {
   @IsOptional()
   filename?: string;
 
+  @ApiPropertyOptional({
+    description: 'Language code (e.g., en, ua) for the book file request',
+    example: 'en',
+  })
+  @IsString()
+  @IsOptional()
+  language?: string;
+
   // Note: The file itself will be handled by Multer as an uploaded file
 }
 
@@ -139,6 +147,12 @@ export class BookFileRequestResponseDto {
     fileSize: number;
     mimeType: string;
   } | null;
+
+  @ApiPropertyOptional({
+    description: 'Language code (e.g., en, ua) for the book file request',
+    example: 'en',
+  })
+  language?: string | null;
 }
 
 export class PaginatedBookFileRequestResponseDto {
