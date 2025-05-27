@@ -28,6 +28,7 @@ export class AuthUseCase {
 
   async register(dto: RegisterDto): Promise<User> {
     await this.ensureEmailIsUnique(dto.email);
+    await this.ensureUsernameIsUnique(dto.username);
 
     const hashedPassword = hashSync(dto.password, 12);
     const user = new User({
@@ -90,6 +91,15 @@ export class AuthUseCase {
     if (existing) {
       throw new UnauthorizedException(
         `User with email "${email}" already exists.`,
+      );
+    }
+  }
+
+  private async ensureUsernameIsUnique(username: string) {
+    const existing = await this.userRepo.findByUsername(username);
+    if (existing) {
+      throw new UnauthorizedException(
+        `User with username "${username}" already exists.`,
       );
     }
   }
