@@ -79,6 +79,10 @@ export class BookFileController {
           type: 'string',
           description: 'Custom display filename',
         },
+        language: {
+          type: 'string',
+          description: 'Language code (e.g., en, ru) for the book file',
+        },
       },
       required: ['file', 'format'],
     },

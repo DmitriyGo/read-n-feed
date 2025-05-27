@@ -20,6 +20,7 @@ model BookFile {
   isValidated   Boolean @default(false) @map("is_validated")
   checksum      String? @map("checksum")
   bookRequestId String? @map("book_request_id")
+  language      String? @map("language")
 
   // Relations
   book            Book?             @relation(fields: [bookId], references: [id], onDelete: Cascade)

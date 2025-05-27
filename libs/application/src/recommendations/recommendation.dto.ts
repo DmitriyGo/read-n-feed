@@ -14,7 +14,9 @@ export class GetRecommendationsQueryDto {
   @IsOptional()
   includeRead?: boolean;
 
-  @ApiPropertyOptional({ description: 'User age for age-appropriate content filtering' })
+  @ApiPropertyOptional({
+    description: 'User age for age-appropriate content filtering',
+  })
   @IsNumber()
   @IsOptional()
   age?: number;
@@ -26,7 +28,9 @@ export class GetSimilarBooksQueryDto {
   @IsOptional()
   limit?: number;
 
-  @ApiPropertyOptional({ description: 'User age for age-appropriate content filtering' })
+  @ApiPropertyOptional({
+    description: 'User age for age-appropriate content filtering',
+  })
   @IsNumber()
   @IsOptional()
   age?: number;
@@ -56,7 +60,10 @@ export class BookDetailDto {
   @ApiPropertyOptional({ type: [Object] })
   genres?: { id: string; name: string }[];
 
-  @ApiPropertyOptional({ description: 'Minimum age required to access this book (0 means no restriction)' })
+  @ApiPropertyOptional({
+    description:
+      'Minimum age required to access this book (0 means no restriction)',
+  })
   ageRestriction?: number;
 }
 
