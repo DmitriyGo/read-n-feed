@@ -29,7 +29,16 @@ export class PrismaBookRepository implements IBookRepository {
   }
 
   async delete(bookId: string): Promise<void> {
-    await this.prisma.book.delete({ where: { id: bookId } });
+    await this.prisma.$transaction(async (tx) => {
+      // Remove all relations first
+      await tx.bookAuthor.deleteMany({ where: { bookId } });
+      await tx.bookGenre.deleteMany({ where: { bookId } });
+      await tx.bookTag.deleteMany({ where: { bookId } });
+      await tx.bookLike.deleteMany({ where: { bookId } });
+      await tx.bookFavorite.deleteMany({ where: { bookId } });
+      // Now delete the book itself
+      await tx.book.delete({ where: { id: bookId } });
+    });
   }
 
   async findById(bookId: string): Promise<Book | null> {
