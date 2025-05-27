@@ -34,6 +34,7 @@ export class PrismaBookFileRequestRepository
         rejectedBy: props.rejectedBy,
         rejectionReason: props.rejectionReason,
         adminNotes: props.adminNotes,
+        language: props.language,
       },
     });
   }
@@ -55,6 +56,7 @@ export class PrismaBookFileRequestRepository
         rejectedBy: props.rejectedBy,
         rejectionReason: props.rejectionReason,
         adminNotes: props.adminNotes,
+        language: props.language,
       },
     });
   }
@@ -156,6 +158,7 @@ export class PrismaBookFileRequestRepository
       rejectedBy: record.rejectedBy,
       rejectionReason: record.rejectionReason,
       adminNotes: record.adminNotes,
+      language: record.language,
     });
   }
 }

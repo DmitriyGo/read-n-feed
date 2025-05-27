@@ -66,6 +66,10 @@ export class BookFileRequest {
     return this.props.adminNotes;
   }
 
+  get language(): string | null | undefined {
+    return this.props.language;
+  }
+
   associateFile(fileId: string): void {
     this.props.fileId = fileId;
     this.props.updatedAt = new Date();
