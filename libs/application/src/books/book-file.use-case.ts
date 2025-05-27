@@ -250,11 +250,13 @@ export class BookFileUseCase {
         filePath,
         fileSize: fileBuffer.length,
         createdAt: new Date(),
-        filename: displayFilename,
+        filename: dto.filename || originalFilename,
         mimeType,
         metadata,
         isValidated: isValidFile,
         checksum: metadata['checksum'],
+        language:
+          dto.language || (metadata ? metadata['language'] : null) || null,
       });
 
       // Save to database

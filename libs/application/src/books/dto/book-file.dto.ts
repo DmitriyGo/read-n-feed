@@ -49,6 +49,14 @@ export class CreateBookFileDto {
   })
   @IsOptional()
   metadata?: Record<string, any>;
+
+  @ApiPropertyOptional({
+    description: 'Language code (e.g., en, ru) for the book file',
+    example: 'en',
+  })
+  @IsString()
+  @IsOptional()
+  language?: string;
 }
 
 export class BookFileResponseDto {
@@ -86,6 +94,9 @@ export class BookFileResponseDto {
 
   @ApiPropertyOptional({ example: 'https://example.com/files/book.pdf' })
   downloadUrl?: string;
+
+  @ApiPropertyOptional({ example: 'en' })
+  language?: string | null;
 }
 
 export function toBookFileResponseDto(
@@ -106,6 +117,7 @@ export function toBookFileResponseDto(
     mimeType: props.mimeType,
     isValidated: props.isValidated,
     metadata: props.metadata,
+    language: props.language,
   };
 
   if (includeUrl && url) {

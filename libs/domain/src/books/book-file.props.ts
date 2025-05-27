@@ -15,4 +15,5 @@ export interface BookFileProps {
   metadata?: Record<string, any> | null; // Extended metadata from the file
   isValidated?: boolean; // Flag indicating if the file has been validated
   checksum?: string | null; // File checksum for integrity verification
+  language?: string | null; // Language code (e.g., 'en', 'ru')
 }

@@ -58,6 +58,10 @@ export class BookFile {
     return this.props.checksum;
   }
 
+  get language() {
+    return this.props.language;
+  }
+
   // Methods to update the entity
 
   setMetadata(metadata: Record<string, any>) {
@@ -119,6 +123,9 @@ export class BookFile {
     }
     if (props.checksum !== undefined) {
       this.props.checksum = props.checksum;
+    }
+    if (props.language !== undefined) {
+      this.props.language = props.language;
     }
     this.props.updatedAt = new Date();
   }
