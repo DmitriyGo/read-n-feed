@@ -44,6 +44,24 @@
     "noRequests": "No requests found",
     "read": "Read",
     "authors": "Authors",
-    "genres": "Genres"
+    "genres": "Genres",
+    "form": {
+      "title": "Book Title",
+      "titlePlaceholder": "Enter book title",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter book description",
+      "authors": "Authors",
+      "authorsPlaceholder": "Enter author names separated by commas",
+      "genres": "Genres",
+      "genresPlaceholder": "Enter genres separated by commas",
+      "publicationDate": "Publication Date",
+      "publicationDatePlaceholder": "YYYY-MM-DD",
+      "publisher": "Publisher",
+      "publisherPlaceholder": "Enter publisher name",
+      "tags": "Tags",
+      "tagsPlaceholder": "Enter tags separated by commas",
+      "selectFile": "Select File",
+      "submit": "Submit Request"
+    }
   }
 }

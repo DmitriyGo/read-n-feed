@@ -98,7 +98,15 @@ export const BookRequestsScreen = () => {
   };
 
   const renderRequestItem = ({ item }: { item: RequestWithFiles }) => (
-    <Card style={styles.card} mode="elevated">
+    <Card
+      style={styles.card}
+      mode="elevated"
+      onPress={() => {
+        if (item.status === 'PENDING') {
+          navigation.navigate('EditBookRequest', { bookRequest: item });
+        }
+      }}
+    >
       <Card.Content>
         <Text variant="titleLarge" style={styles.title}>
           {item.title}
@@ -113,7 +121,9 @@ export const BookRequestsScreen = () => {
                 {t('bookRequests.authors')}:
               </Text>
               <Text variant="bodySmall" style={styles.metadataValue}>
-                {item.authorNames.join(', ')}
+                {Array.isArray(item.authorNames)
+                  ? item.authorNames.join(', ')
+                  : item.authorNames || ''}
               </Text>
             </View>
           )}
@@ -123,7 +133,9 @@ export const BookRequestsScreen = () => {
                 {t('bookRequests.genres')}:
               </Text>
               <Text variant="bodySmall" style={styles.metadataValue}>
-                {item.genreNames.join(', ')}
+                {Array.isArray(item.genreNames)
+                  ? item.genreNames.join(', ')
+                  : item.genreNames || ''}
               </Text>
             </View>
           )}

@@ -1,4 +1,5 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
+import { BookRequestResponseDto } from '@read-n-feed/application';
 
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
@@ -8,6 +9,7 @@ export type RootStackParamList = {
     fileId: string;
     bookId: string;
   };
+  EditBookRequest: { bookRequest: BookRequestResponseDto };
 };
 
 export type AuthStackParamList = {

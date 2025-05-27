@@ -44,6 +44,24 @@
     "noRequests": "Запитів не знайдено",
     "read": "Читати",
     "authors": "Автори",
-    "genres": "Жанри"
+    "genres": "Жанри",
+    "form": {
+      "title": "Назва книги",
+      "titlePlaceholder": "Введіть назву книги",
+      "description": "Опис",
+      "descriptionPlaceholder": "Введіть опис книги",
+      "authors": "Автори",
+      "authorsPlaceholder": "Введіть імена авторів через кому",
+      "genres": "Жанри",
+      "genresPlaceholder": "Введіть жанри через кому",
+      "publicationDate": "Дата публікації",
+      "publicationDatePlaceholder": "РРРР-ММ-ДД",
+      "publisher": "Видавець",
+      "publisherPlaceholder": "Введіть назву видавця",
+      "tags": "Теги",
+      "tagsPlaceholder": "Введіть теги через кому",
+      "selectFile": "Вибрати файл",
+      "submit": "Відправити запит"
+    }
   }
 }

@@ -11,6 +11,7 @@ import i18n from './i18n';
 import { BookReaderScreen } from './screens/BookReaderScreen';
 import { BookRequestsScreen } from './screens/BookRequestsScreen';
 import { CreateBookRequestScreen } from './screens/CreateBookRequestScreen';
+import { EditBookRequestScreen } from './screens/EditBookRequestScreen';
 import HomeLogin from './screens/HomeLogin';
 import HomeProfile from './screens/HomeProfile';
 import HomeRegister from './screens/HomeRegister';
@@ -105,6 +106,18 @@ function App() {
             options={{
               headerShown: true,
               title: 'Book Reader',
+              headerStyle: {
+                backgroundColor: '#4a90e2',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <Stack.Screen
+            name="EditBookRequest"
+            component={EditBookRequestScreen}
+            options={{
+              headerShown: true,
+              title: 'Edit Book Request',
               headerStyle: {
                 backgroundColor: '#4a90e2',
               },

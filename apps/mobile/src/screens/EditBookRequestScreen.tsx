@@ -1,5 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { BookRequestResponseDto } from '@read-n-feed/application';
 import * as DocumentPicker from 'expo-document-picker';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { z } from 'zod';
 
@@ -18,6 +20,7 @@ import { axiosInstance } from '../lib/axios';
 import { RootStackParamList } from '../types/navigation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type RoutePropType = RouteProp<RootStackParamList, 'EditBookRequest'>;
 
 type FormData = {
   title: string;
@@ -44,20 +47,30 @@ const formSchema = (t: (key: string) => string) =>
     filename: z.string().optional(),
   });
 
-export const CreateBookRequestScreen = () => {
+export const EditBookRequestScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RoutePropType>();
+  const { bookRequest } = route.params;
   const [file, setFile] = useState<DocumentPicker.DocumentPickerAsset | null>(
     null,
   );
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    description: '',
-    authorNames: '',
-    genreNames: '',
-    publicationDate: '',
-    publisher: '',
-    tagLabels: '',
+    title: bookRequest.title || '',
+    description: bookRequest.description || '',
+    authorNames: Array.isArray(bookRequest.authorNames)
+      ? bookRequest.authorNames.join(', ')
+      : bookRequest.authorNames || '',
+    genreNames: Array.isArray(bookRequest.genreNames)
+      ? bookRequest.genreNames.join(', ')
+      : bookRequest.genreNames || '',
+    publicationDate: bookRequest.publicationDate
+      ? String(bookRequest.publicationDate)
+      : '',
+    publisher: bookRequest.publisher || '',
+    tagLabels: Array.isArray(bookRequest.tagLabels)
+      ? bookRequest.tagLabels.join(', ')
+      : bookRequest.tagLabels || '',
     filename: '',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
@@ -84,26 +97,7 @@ export const CreateBookRequestScreen = () => {
     try {
       const validatedData = formSchema(t).parse(formData);
       setErrors({});
-      if (!file) {
-        setErrors((prev) => ({
-          ...prev,
-          filename: t('bookRequests.form.fileIsRequired'),
-        }));
-        setIsLoading(false);
-        return;
-      }
-      const fileExtension = file.name.split('.').pop()?.toUpperCase();
-      if (
-        !fileExtension ||
-        !['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'].includes(fileExtension)
-      ) {
-        setErrors((prev) => ({
-          ...prev,
-          filename: t('bookRequests.form.invalidFileFormat'),
-        }));
-        setIsLoading(false);
-        return;
-      }
+      // Only send file if changed
       const data = new FormData();
       for (const [key, value] of Object.entries(validatedData)) {
         if (key !== 'file' && value) {
@@ -111,6 +105,18 @@ export const CreateBookRequestScreen = () => {
         }
       }
       if (file) {
+        const fileExtension = file.name.split('.').pop()?.toUpperCase();
+        if (
+          !fileExtension ||
+          !['PDF', 'EPUB', 'FB2', 'MOBI', 'AZW3'].includes(fileExtension)
+        ) {
+          setErrors((prev) => ({
+            ...prev,
+            filename: t('bookRequests.form.invalidFileFormat'),
+          }));
+          setIsLoading(false);
+          return;
+        }
         data.append('file', {
           uri: file.uri,
           type: file.mimeType,
@@ -118,7 +124,7 @@ export const CreateBookRequestScreen = () => {
         } as unknown as File);
         data.append('fileFormat', fileExtension);
       }
-      await axiosInstance.post('book-requests', data, {
+      await axiosInstance.patch(`book-requests/${bookRequest.id}`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       navigation.goBack();
@@ -130,11 +136,24 @@ export const CreateBookRequestScreen = () => {
           fieldErrors[field] = err.message;
         });
         setErrors(fieldErrors);
+      } else {
+        Alert.alert('Error', t('common.error'));
       }
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (bookRequest.status !== 'PENDING') {
+    return (
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>{t('bookRequests.createRequest')}</Text>
+        <Text style={{ color: '#ff6b6b', textAlign: 'center', marginTop: 20 }}>
+          {t('bookRequests.form.editNotAllowed')}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -212,7 +231,15 @@ export const CreateBookRequestScreen = () => {
             onPress={handlePickDocument}
           >
             <Text style={styles.fileButtonText}>
-              {file ? file.name : t('bookRequests.form.selectFile')}
+              {file
+                ? file.name
+                : formData.filename
+                  ? formData.filename
+                  : bookRequest.files &&
+                      bookRequest.files.length > 0 &&
+                      bookRequest.files[0].filename
+                    ? bookRequest.files[0].filename
+                    : t('bookRequests.form.selectFile')}
             </Text>
           </TouchableOpacity>
           {errors.filename && (
