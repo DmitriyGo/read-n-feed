@@ -1,3 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as React from 'react';
 import {
   StyleSheet,
@@ -10,12 +13,16 @@ import {
 } from 'react-native';
 
 import { axiosInstance } from '../lib/axios';
+import { RootStackParamList } from '../types/navigation';
 import { validateRegisterForm, RegisterFormData } from '../utils/validation';
 
-export default function HomeRegister({ navigation }: { navigation: any }) {
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function HomeRegister() {
+  const navigation = useNavigation<NavigationProp>();
   const [formData, setFormData] = React.useState<RegisterFormData>({
-    email: '',
     username: '',
+    email: '',
     password: '',
   });
   const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -31,9 +38,12 @@ export default function HomeRegister({ navigation }: { navigation: any }) {
       try {
         const response = await axiosInstance.post('/auth/register', formData);
 
-        if (response.status === 201) {
-          alert('Registration successful! Please check your email.');
-          navigation.navigate('HomeLogin');
+        if (response.data.accessToken) {
+          await AsyncStorage.setItem('token', response.data.accessToken);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
         }
       } catch (err: any) {
         const errorMessage =
@@ -46,12 +56,13 @@ export default function HomeRegister({ navigation }: { navigation: any }) {
   };
 
   const goToLogin = (): void => {
-    navigation.navigate('HomeLogin');
+    AsyncStorage.clear();
+    navigation.navigate('Auth', { screen: 'HomeLogin' });
   };
 
   const handleInputChange = (field: keyof RegisterFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Remove the error for the field being changed
+
     setErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors[field];
@@ -62,11 +73,11 @@ export default function HomeRegister({ navigation }: { navigation: any }) {
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome - Register</Text>
+        <Text style={styles.title}>Ласкаво просимо - Зареєструйтеся</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Username"
+            placeholder="Імʼя користувача"
             autoCapitalize="none"
             value={formData.username}
             style={[styles.input, errors.username && styles.inputError]}
@@ -86,7 +97,7 @@ export default function HomeRegister({ navigation }: { navigation: any }) {
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
           <TextInput
-            placeholder="Password"
+            placeholder="Пароль"
             autoCapitalize="none"
             secureTextEntry
             value={formData.password}
@@ -105,12 +116,12 @@ export default function HomeRegister({ navigation }: { navigation: any }) {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Register</Text>
+              <Text style={styles.buttonText}>Зареєструватися</Text>
             )}
           </TouchableOpacity>
         </View>
 
-        <Button title="Already have an account? Login" onPress={goToLogin} />
+        <Button title="Вже маєте акаунт? Увійти" onPress={goToLogin} />
       </View>
     </View>
   );

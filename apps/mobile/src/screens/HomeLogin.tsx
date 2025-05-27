@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as React from 'react';
 import {
   StyleSheet,
@@ -11,9 +13,13 @@ import {
 } from 'react-native';
 
 import { axiosInstance } from '../lib/axios';
+import { RootStackParamList } from '../types/navigation';
 import { validateLoginForm, LoginFormData } from '../utils/validation';
 
-export default function HomeLogin({ navigation }: { navigation: any }) {
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function HomeLogin() {
+  const navigation = useNavigation<NavigationProp>();
   const [formData, setFormData] = React.useState<LoginFormData>({
     email: '',
     password: '',
@@ -48,7 +54,7 @@ export default function HomeLogin({ navigation }: { navigation: any }) {
 
   const goToRegister = (): void => {
     AsyncStorage.clear();
-    navigation.navigate('HomeRegister');
+    navigation.navigate('Auth', { screen: 'HomeRegister' });
   };
 
   const handleInputChange = (field: keyof LoginFormData, value: string) => {
@@ -63,7 +69,7 @@ export default function HomeLogin({ navigation }: { navigation: any }) {
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.title}>Ласкаво просимо</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -76,7 +82,7 @@ export default function HomeLogin({ navigation }: { navigation: any }) {
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
           <TextInput
-            placeholder="Password"
+            placeholder="Пароль"
             autoCapitalize="none"
             secureTextEntry
             value={formData.password}
@@ -95,15 +101,12 @@ export default function HomeLogin({ navigation }: { navigation: any }) {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={styles.buttonText}>Увійти</Text>
             )}
           </TouchableOpacity>
         </View>
 
-        <Button
-          title="Don't have an account? Register"
-          onPress={goToRegister}
-        />
+        <Button title="Немає акаунту? Зареєструватися" onPress={goToRegister} />
       </View>
     </View>
   );

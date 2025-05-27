@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   StyleSheet,
   Text,
@@ -25,6 +26,8 @@ interface UserProfile {
 }
 
 export default function HomeProfile({ navigation }: { navigation: any }) {
+  const { t } = useTranslation();
+
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [isUpdating, setIsUpdating] = React.useState<boolean>(false);
@@ -62,26 +65,26 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
 
   const handleUpdateProfile = async (): Promise<void> => {
     Alert.prompt(
-      'Update Profile',
-      'Enter your first name',
+      t('profile.updateProfile'),
+      t('profile.enterFirstName'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Next',
+          text: t('profile.next'),
           onPress: async (firstName) => {
             Alert.prompt(
-              'Update Profile',
-              'Enter your last name',
+              t('profile.updateProfile'),
+              t('profile.enterLastName'),
               [
                 {
-                  text: 'Cancel',
+                  text: t('common.cancel'),
                   style: 'cancel',
                 },
                 {
-                  text: 'Update',
+                  text: t('profile.updateProfile'),
                   onPress: async (lastName) => {
                     try {
                       setIsUpdating(true);
@@ -90,12 +93,14 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
                         lastName,
                       });
                       await getProfile();
-                      Alert.alert('Success', 'Profile updated successfully');
+                      Alert.alert(
+                        t('common.success'),
+                        t('profile.updateProfile'),
+                      );
                     } catch (err: any) {
                       const errorMessage =
-                        err.response?.data?.message ||
-                        'Failed to update profile';
-                      Alert.alert('Error', errorMessage);
+                        err.response?.data?.message || t('common.error');
+                      Alert.alert(t('common.error'), errorMessage);
                     } finally {
                       setIsUpdating(false);
                     }
@@ -129,7 +134,7 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
     <ScrollView style={styles.container} scrollIndicatorInsets={{ right: 1 }}>
       <View style={styles.profileContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Your Profile</Text>
+          <Text style={styles.title}>{t('yourProfile')}</Text>
         </View>
 
         <View style={styles.avatarContainer}>
@@ -145,32 +150,36 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.sectionTitle}>Essential Data</Text>
+          <Text style={styles.sectionTitle}>{t('profile.essentialData')}</Text>
           <View style={styles.infoRow}>
             <Text style={styles.label}>Email</Text>
             <Text style={styles.value}>{profile?.email}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.label}>Username</Text>
+            <Text style={styles.label}>{t('profile.username')}</Text>
             <Text style={styles.value}>{profile?.username}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.label}>First Name</Text>
-            <Text style={styles.value}>{profile?.firstName || 'Not set'}</Text>
+            <Text style={styles.label}>{t('profile.firstName')}</Text>
+            <Text style={styles.value}>
+              {profile?.firstName || t('profile.notSet')}
+            </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.label}>Last Name</Text>
-            <Text style={styles.value}>{profile?.lastName || 'Not set'}</Text>
+            <Text style={styles.label}>{t('profile.lastName')}</Text>
+            <Text style={styles.value}>
+              {profile?.lastName || t('profile.notSet')}
+            </Text>
           </View>
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.sectionTitle}>Additional Data</Text>
+          <Text style={styles.sectionTitle}>{t('profile.additionalData')}</Text>
           <View style={styles.infoRow}>
-            <Text style={styles.label}>Status</Text>
+            <Text style={styles.label}>{t('profile.status')}</Text>
             <View
               style={[
                 styles.statusBadge,
@@ -178,13 +187,15 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
               ]}
             >
               <Text style={styles.statusText}>
-                {profile?.isBlocked ? 'Blocked' : 'Active'}
+                {profile?.isBlocked
+                  ? t('profile.blocked')
+                  : t('profile.active')}
               </Text>
             </View>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.label}>Roles</Text>
+            <Text style={styles.label}>{t('profile.roles')}</Text>
             <View style={styles.rolesContainer}>
               {profile?.roles.map((role) => (
                 <View key={role} style={styles.roleBadge}>
@@ -195,7 +206,7 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.label}>Member Since</Text>
+            <Text style={styles.label}>{t('profile.memberSince')}</Text>
             <Text style={styles.value}>
               {profile?.createdAt
                 ? new Date(profile.createdAt).toLocaleDateString()
@@ -211,7 +222,7 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
             disabled={isUpdating}
           >
             <Text style={styles.buttonText}>
-              {isUpdating ? 'Updating...' : 'Update Profile'}
+              {isUpdating ? t('profile.updating') : t('profile.updateProfile')}
             </Text>
           </TouchableOpacity>
 
@@ -219,7 +230,7 @@ export default function HomeProfile({ navigation }: { navigation: any }) {
             style={[styles.button, styles.warningButton]}
             onPress={handleLogout}
           >
-            <Text style={styles.buttonText}>Logout</Text>
+            <Text style={styles.buttonText}>{t('profile.logout')}</Text>
           </TouchableOpacity>
         </View>
       </View>
