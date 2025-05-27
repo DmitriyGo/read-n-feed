@@ -4,6 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { Image } from 'react-native';
 
+import { BookReaderScreen } from './screens/BookReaderScreen';
+import { BookRequestsScreen } from './screens/BookRequestsScreen';
+import { CreateBookRequestScreen } from './screens/CreateBookRequestScreen';
 import HomeLogin from './screens/HomeLogin';
 import HomeProfile from './screens/HomeProfile';
 import HomeRegister from './screens/HomeRegister';
@@ -55,6 +58,13 @@ function DrawerNavigator() {
           title: 'Profile',
         }}
       />
+      <Drawer.Screen
+        name="BookRequests"
+        component={BookRequestsScreen}
+        options={{
+          title: 'My Book Requests',
+        }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -69,6 +79,30 @@ function App() {
       >
         <Stack.Screen name="Auth" component={AuthNavigator} />
         <Stack.Screen name="Main" component={DrawerNavigator} />
+        <Stack.Screen
+          name="CreateBookRequest"
+          component={CreateBookRequestScreen}
+          options={{
+            headerShown: true,
+            title: 'Create Book Request',
+            headerStyle: {
+              backgroundColor: '#4a90e2',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <Stack.Screen
+          name="BookReader"
+          component={BookReaderScreen}
+          options={{
+            headerShown: true,
+            title: 'Book Reader',
+            headerStyle: {
+              backgroundColor: '#4a90e2',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

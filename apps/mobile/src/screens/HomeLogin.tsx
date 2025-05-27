@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as React from 'react';
 import {
   StyleSheet,
@@ -11,9 +13,13 @@ import {
 } from 'react-native';
 
 import { axiosInstance } from '../lib/axios';
+import { RootStackParamList } from '../types/navigation';
 import { validateLoginForm, LoginFormData } from '../utils/validation';
 
-export default function HomeLogin({ navigation }: { navigation: any }) {
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function HomeLogin() {
+  const navigation = useNavigation<NavigationProp>();
   const [formData, setFormData] = React.useState<LoginFormData>({
     email: '',
     password: '',
@@ -48,7 +54,7 @@ export default function HomeLogin({ navigation }: { navigation: any }) {
 
   const goToRegister = (): void => {
     AsyncStorage.clear();
-    navigation.navigate('HomeRegister');
+    navigation.navigate('Auth', { screen: 'HomeRegister' });
   };
 
   const handleInputChange = (field: keyof LoginFormData, value: string) => {
