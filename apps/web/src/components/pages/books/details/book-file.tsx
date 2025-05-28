@@ -41,6 +41,13 @@ export const BookFile = ({ bookFile }: { bookFile: BookFileResponseDto }) => {
           {t('format')}: {bookFile.format}
         </span>
       </p>
+      {isDefined(bookFile.language) && (
+        <p className="text-center">
+          <span>
+            {t('language')}: {t(bookFile.language ?? '')}
+          </span>
+        </p>
+      )}
 
       <div className="flex justify-end gap-2 items-center">
         {isAdmin && (

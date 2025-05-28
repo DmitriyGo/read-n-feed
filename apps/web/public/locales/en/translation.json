@@ -134,5 +134,8 @@
   "age": "Age",
   "agePlaceholder": "Your age (optional)",
   "invalidAge": "Invalid age",
-  "width": "Width"
+  "width": "Width",
+  "language": "Language",
+  "ua": "Ukrainian",
+  "en": "English"
 }

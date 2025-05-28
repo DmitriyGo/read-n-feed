@@ -141,6 +141,11 @@ export const FileRequestItem = ({
             </DialogTitle>
 
             <PartiallyLoadedContent
+              label={t('language')}
+              content={t(fileRequest?.language ?? '')}
+            />
+
+            <PartiallyLoadedContent
               label={t('requestedOn')}
               content={formatDate(fileRequest?.createdAt)}
             />
