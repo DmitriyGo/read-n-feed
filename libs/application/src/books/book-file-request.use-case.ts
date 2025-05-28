@@ -205,6 +205,11 @@ export class BookFileRequestUseCase {
           throw new NotFoundException(`Associated file not found`);
         }
 
+        // Propagate language if missing on file
+        if (!file.language && request.language) {
+          file.update({ language: request.language });
+        }
+
         // Associate the file with the book
         file.update({
           bookId: request.bookId,

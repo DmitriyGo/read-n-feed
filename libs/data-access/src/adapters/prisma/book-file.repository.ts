@@ -27,6 +27,7 @@ export class PrismaBookFileRepository implements IBookFileRepository {
           : null,
         isValidated: data.isValidated,
         checksum: data.checksum,
+        language: data.language,
       },
     });
   }
@@ -49,6 +50,7 @@ export class PrismaBookFileRepository implements IBookFileRepository {
           : null,
         isValidated: data.isValidated,
         checksum: data.checksum,
+        language: data.language,
       },
     });
   }
@@ -120,6 +122,7 @@ export class PrismaBookFileRepository implements IBookFileRepository {
       metadata: record.metadata
         ? (record.metadata as Record<string, any>)
         : null,
+      language: record.language,
     });
   }
 }
