@@ -44,6 +44,10 @@ export const ShowProfileInfo = () => {
               label={t('lastName')}
               content={profileData?.lastName}
             />
+            <PartiallyLoadedContent
+              label={t('age')}
+              content={profileData?.age ?? null}
+            />
           </CardContent>
         </Card>
 

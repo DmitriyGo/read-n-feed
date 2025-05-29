@@ -128,5 +128,14 @@
   "viewDetails": "Переглянути деталі",
   "recommendations": "Рекомендації",
   "yourLikedBooks": "Ваші вподобані книги",
-  "favorites": "Улюблені"
+  "favorites": "Улюблені",
+  "submitRequest": "Надіслати запит",
+  "age": "Вік",
+  "agePlaceholder": "Ваш вік (необов'язково)",
+  "width": "Ширина",
+  "language": "Мова",
+  "ua": "Українська",
+  "en": "Англійська",
+  "allRightsReserved": "Всі права захищено",
+  "contactAdminPrompt": "У разі виникнення проблем, будь ласка, зв'яжіться з нашою адміністрацією: "
 }

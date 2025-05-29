@@ -92,6 +92,7 @@
     "react-native-web": "^0.20.0",
     "react-native-webview": "^13.13.5",
     "react-pdf": "^9.2.1",
+    "react-reader": "^2.0.13",
     "react-router-dom": "6.11.2",
     "react-toastify": "^11.0.3",
     "reflect-metadata": "^0.1.13",

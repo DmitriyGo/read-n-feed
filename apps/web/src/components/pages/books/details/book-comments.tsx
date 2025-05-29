@@ -14,6 +14,7 @@ import {
   FormItem,
   Textarea,
 } from '@/components/ui';
+import { useHasRole } from '@/hooks';
 import { useGetProfile, useCommentsForBook } from '@/hooks/read';
 import {
   useCreateComment,
@@ -138,6 +139,8 @@ const CommentItem = ({
   onStartEditing,
   onCancelEditing,
 }: CommentItemProps) => {
+  const { hasRole: isAdmin } = useHasRole('ADMIN');
+
   const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutate: deleteComment } = useDeleteComment(comment.id, bookId);
   const { mutate: updateComment } = useUpdateComment(comment.id, bookId);
@@ -198,11 +201,13 @@ const CommentItem = ({
                 {comment.createdAt !== comment.updatedAt && t('edited')}
               </p>
             </div>
-            {isOwner && (
-              <div className="flex space-x-2">
+            <div className="flex space-x-2">
+              {isOwner && (
                 <Button variant="ghost" size="sm" onClick={onStartEditing}>
                   {t('edit')}
                 </Button>
+              )}
+              {(isOwner || isAdmin) && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -211,8 +216,8 @@ const CommentItem = ({
                 >
                   {t('delete')}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           <p className="mt-2">{comment.content}</p>
         </>

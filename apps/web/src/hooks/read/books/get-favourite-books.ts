@@ -11,7 +11,7 @@ export const useGetFavouriteBooks = () => {
   const { accessToken } = useAuth();
 
   return useQuery({
-    queryKey: [QueryKey.Books.Liked, accessToken],
+    queryKey: [QueryKey.Books.Favoured, accessToken],
     queryFn: async () => {
       return axiosSecure.get<BookResponseDto[]>(ApiRoute.Books.Favorites);
     },

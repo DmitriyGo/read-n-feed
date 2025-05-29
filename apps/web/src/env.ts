@@ -8,6 +8,7 @@ export const env = createEnv({
       .string()
       .optional()
       .default('http://localhost:3001/api/v1/'),
+    VITE_ADMIN_EMAIL: z.string().optional().default('yaroslav.syvukha@nure.ua'),
   },
   runtimeEnv: import.meta.env,
 });
