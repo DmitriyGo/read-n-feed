@@ -13,7 +13,7 @@ export const Header = () => {
 
   return (
     <nav className="w-full flex flex-row items-center border-b-2 border-border bg-card py-3 px-12 mb-4">
-      <ul className="flex w-full justify-evenly flex-row gap-4">
+      <ul className="flex w-full justify-evenly flex-row gap-4 max-md:text-xs">
         <li>
           <Link to={Route.Home}>{t('home')}</Link>
         </li>

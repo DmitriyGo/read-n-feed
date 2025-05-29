@@ -17,7 +17,7 @@ export const Layout = () => {
 
       <ModalManager />
 
-      <div className="container min-h-[85vh]">
+      <div className="container w-[90%] md:w-3/4 min-h-[85vh]">
         <Outlet />
       </div>
 
