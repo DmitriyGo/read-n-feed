@@ -137,5 +137,7 @@
   "width": "Width",
   "language": "Language",
   "ua": "Ukrainian",
-  "en": "English"
+  "en": "English",
+  "allRightsReserved": "All rights reserved",
+  "contactAdminPrompt": "In case of any problems, please contact our administration: "
 }
