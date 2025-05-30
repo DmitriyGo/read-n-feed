@@ -11,7 +11,8 @@ export const BookDetailsPage = () => {
   const { data } = useBookById(id);
 
   if (!id) {
-    return navigate(Route.Book.Search);
+    navigate(Route.Book.Search);
+    return null;
   }
 
   return (

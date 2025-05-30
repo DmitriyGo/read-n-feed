@@ -27,7 +27,7 @@ export const BookFile = ({ bookFile }: { bookFile: BookFileResponseDto }) => {
   return (
     <div
       onClick={() => handleOpen(bookFile.id)}
-      className="border p-2 flex flex-row items-center [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
+      className="border p-2 flex flex-col md:flex-row items-center [&>*]:w-full cursor-pointer hover:scale-[1.01] duration-100 transition-all"
     >
       <p>
         {t('fileName')}:&nbsp;

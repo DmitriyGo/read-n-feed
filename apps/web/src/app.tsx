@@ -79,19 +79,16 @@ export function App() {
       <RouteComponent path={Route.Home} element={<Layout />}>
         <RouteComponent index element={<HomePage />} />
 
+        <RouteComponent
+          path={`${Route.Book.Details}/:id`}
+          element={<BookDetailsPage />}
+        />
+        <RouteComponent path={Route.Book.Search} element={<BookSearchPage />} />
+        <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
+
         {/* User */}
         <RouteComponent element={<RequiresRoleLayout userRole="USER" />}>
           <RouteComponent path={Route.Profile} element={<ProfilePage />} />
-
-          <RouteComponent
-            path={`${Route.Book.Details}/:id`}
-            element={<BookDetailsPage />}
-          />
-          <RouteComponent
-            path={Route.Book.Search}
-            element={<BookSearchPage />}
-          />
-          <RouteComponent path={Route.Book.ReadString} element={<ReadPage />} />
 
           {/* Requests */}
           <RouteComponent element={<RequestsLayout />}>
