@@ -33,7 +33,7 @@ export const Profile = () => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Avatar src={data?.data.avatarUrl} />
+        <Avatar src={data?.data.avatarUrl} className="max-md:size-8" />
       </PopoverTrigger>
 
       <PopoverContent className="flex flex-col gap-4" align="end">

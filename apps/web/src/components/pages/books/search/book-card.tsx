@@ -38,7 +38,7 @@ export const BookCard = ({
         <TooltipTrigger asChild>
           <Link
             to={`${Route.Book.Details}/${book.id}`}
-            className="w-min h-fit p-4"
+            className="w-min h-fit p-4 mx-auto"
           >
             <BookCover book={book} />
 

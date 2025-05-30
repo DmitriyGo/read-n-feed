@@ -1,5 +1,5 @@
 import type { NavItem, Rendition } from 'epubjs';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactReader } from 'react-reader';
 
@@ -15,7 +15,13 @@ export const EpubReader = ({
   const toc = useRef<NavItem[]>([]);
   const [location, setLocation] = useState<string | number>(0);
   const { t } = useTranslation(['translation', 'validation', 'badges']);
-  const [scale, setScale] = useState<number>(75);
+  const [scale, setScale] = useState<number>(
+    +(localStorage.getItem('scale') ?? 75),
+  );
+
+  useEffect(() => {
+    localStorage.setItem('scale', String(scale));
+  }, [scale]);
 
   return (
     <div className="select-none flex-col flex">

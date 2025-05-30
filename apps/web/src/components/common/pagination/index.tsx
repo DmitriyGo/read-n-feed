@@ -101,8 +101,8 @@ export const Pagination = ({
         </Select>
       </div>
 
-      <BasePagination className="flex justify-end">
-        <PaginationContent>
+      <BasePagination className="flex justify-center sm:justify-end">
+        <PaginationContent className="flex flex-col sm:flex-row">
           <PaginationItem
             onClick={() => {
               if (currentPage > 1) {
@@ -113,9 +113,41 @@ export const Pagination = ({
             <PaginationPrevious />
           </PaginationItem>
 
-          {mode === 'start' && (
-            <>
-              {pages.map((page) => (
+          <div className="flex flex-row">
+            {mode === 'start' && (
+              <>
+                {pages.map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => {
+                        setCurrentPage(page);
+                      }}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationLink
+                    onClick={() => {
+                      setCurrentPage(maxPages);
+                    }}
+                    isActive={currentPage === maxPages}
+                  >
+                    {maxPages}
+                  </PaginationLink>
+                </PaginationItem>
+              </>
+            )}
+
+            {mode === 'middle' &&
+              pages.map((page) => (
                 <PaginationItem key={page}>
                   <PaginationLink
                     onClick={() => {
@@ -128,55 +160,40 @@ export const Pagination = ({
                 </PaginationItem>
               ))}
 
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
+            {mode === 'end' && (
+              <>
+                <PaginationItem>
+                  <PaginationLink
+                    onClick={() => {
+                      setCurrentPage(1);
+                    }}
+                    isActive={currentPage === 1}
+                  >
+                    1
+                  </PaginationLink>
+                </PaginationItem>
 
-              <PaginationItem>
-                <PaginationLink
-                  onClick={() => {
-                    setCurrentPage(maxPages);
-                  }}
-                  isActive={currentPage === maxPages}
-                >
-                  {maxPages}
-                </PaginationLink>
-              </PaginationItem>
-            </>
-          )}
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
 
-          {mode === 'middle' &&
-            pages.map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  onClick={() => {
-                    setCurrentPage(page);
-                  }}
-                  isActive={currentPage === page}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
+                {pages.map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => {
+                        setCurrentPage(page);
+                      }}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+              </>
+            )}
 
-          {mode === 'end' && (
-            <>
-              <PaginationItem>
-                <PaginationLink
-                  onClick={() => {
-                    setCurrentPage(1);
-                  }}
-                  isActive={currentPage === 1}
-                >
-                  1
-                </PaginationLink>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-
-              {pages.map((page) => (
+            {mode === 'not-enough' &&
+              pages.map((page) => (
                 <PaginationItem key={page}>
                   <PaginationLink
                     onClick={() => {
@@ -188,22 +205,7 @@ export const Pagination = ({
                   </PaginationLink>
                 </PaginationItem>
               ))}
-            </>
-          )}
-
-          {mode === 'not-enough' &&
-            pages.map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  onClick={() => {
-                    setCurrentPage(page);
-                  }}
-                  isActive={currentPage === page}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
+          </div>
 
           <PaginationItem
             onClick={() => {

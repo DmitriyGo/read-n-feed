@@ -98,7 +98,7 @@ export const BookDetails = ({ book }: { book?: BookResponseDto }) => {
         </div>
       </CardHeader>
 
-      <CardContent className="flex flex-row gap-4">
+      <CardContent className="flex flex-col sm:flex-row gap-4">
         <div className="flex-[0_1_0%]">
           <BookCover book={book} />
         </div>

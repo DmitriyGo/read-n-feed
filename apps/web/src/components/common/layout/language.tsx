@@ -18,7 +18,10 @@ export const ChangeLanguage = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="mr-4 rounded-full p-3">
+        <Button
+          variant="outline"
+          className="mr-1 md:mr-4 max-md:size-4 rounded-full md:p-3"
+        >
           <Globe />
         </Button>
       </PopoverTrigger>
