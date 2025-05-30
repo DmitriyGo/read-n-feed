@@ -67,7 +67,7 @@ export const BookRequestItem = ({
           content={bookRequest?.title}
         />
 
-        <div className="gap-4 items-center flex justify-center">
+        <div className="gap-4 items-center flex max-md:flex-col justify-center">
           <Badge
             variant={
               bookRequest.status === 'APPROVED'
