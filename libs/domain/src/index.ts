@@ -25,6 +25,10 @@ export * from './books/book-file-request.props';
 export * from './books/book-file-request.entity';
 export * from './books/book-file-request.repository.port';
 
+export * from './books/book-image-request.props';
+export * from './books/book-image-request.entity';
+export * from './books/book-image-request.repository.port';
+
 export * from './books/book-format.value-object';
 export * from './books/file-storage.port';
 

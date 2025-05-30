@@ -59,4 +59,16 @@ export class UserController {
     const user = await this.userUseCase.unblockUser(userId);
     return toUserResponseDto(user);
   }
+
+  @Patch('me/avatar')
+  @ApiOperation({ summary: 'Update my avatar' })
+  @ApiOkResponse({ type: UserResponseDto })
+  async updateMyAvatar(
+    @Req() req: Request,
+    @Body('avatarUrl') avatarUrl: string,
+  ): Promise<UserResponseDto> {
+    const userId = req.user['id'];
+    const updated = await this.userUseCase.updateUserProfile(userId, { avatarUrl });
+    return toUserResponseDto(updated);
+  }
 }

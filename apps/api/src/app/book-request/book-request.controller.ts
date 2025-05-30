@@ -10,12 +10,12 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -29,18 +29,22 @@ import {
 import {
   AdminReviewDto,
   BookFileUseCase,
+  BookFormatDto,
   BookRequestResponseDto,
   BookRequestUseCase,
   CreateBookFileDto,
   CreateBookRequestDto,
   PaginatedBookRequestResponseDto,
   UpdateBookRequestDto,
-  toBookRequestResponseDto,
 } from '@read-n-feed/application';
 import { JwtPayload } from '@read-n-feed/domain';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
 import { AdminOnly } from '../auth/guards/roles.decorator';
+import {
+  FileUploadService,
+  ImageType,
+} from '../file-upload/file-upload.service';
 
 @ApiBearerAuth()
 @ApiTags('book-requests')
@@ -49,12 +53,21 @@ export class BookRequestController {
   constructor(
     private readonly bookRequestUseCase: BookRequestUseCase,
     private readonly bookFileUseCase: BookFileUseCase,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new book request with required file' })
+  @ApiOperation({
+    summary:
+      'Create a new book request with required file and optional cover image',
+  })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'file', maxCount: 1 },
+      { name: 'coverImage', maxCount: 1 },
+    ]),
+  )
   @ApiBody({
     schema: {
       type: 'object',
@@ -64,6 +77,11 @@ export class BookRequestController {
           format: 'binary',
           description: 'The book file to upload (required)',
         },
+        coverImage: {
+          type: 'string',
+          format: 'binary',
+          description: 'Cover image file (optional)',
+        },
         title: {
           type: 'string',
           description: 'The title of the book',
@@ -71,10 +89,6 @@ export class BookRequestController {
         description: {
           type: 'string',
           description: 'Short description or synopsis',
-        },
-        coverImageUrl: {
-          type: 'string',
-          description: 'Cover image URL',
         },
         publicationDate: {
           type: 'string',
@@ -129,15 +143,19 @@ export class BookRequestController {
   })
   async createBookRequest(
     @Body() dto: CreateBookRequestDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    files: { file: Express.Multer.File[]; coverImage?: Express.Multer.File[] },
     @CurrentUser() user: JwtPayload,
   ): Promise<BookRequestResponseDto> {
-    // Validate file is provided
-    if (!file) {
+    // Validate book file is provided
+    if (!files.file?.[0]) {
       throw new BadRequestException(
-        'File is required when creating a book request',
+        'Book file is required when creating a book request',
       );
     }
+
+    const bookFile = files.file[0];
+    const coverImage = files.coverImage?.[0];
 
     // Extract file-related props and book request props
     const { fileFormat, fileLanguage, filename, ...bookRequestDto } = dto;
@@ -146,22 +164,39 @@ export class BookRequestController {
       throw new BadRequestException('File format is required');
     }
 
-    // First create the book request
+    // If cover image is provided, upload it first
+    let coverImageUrl: string | undefined;
+    if (coverImage) {
+      try {
+        // We'll use a temporary ID for the cover image, since we don't have the book request ID yet
+        const tempId = `temp_${Date.now()}`;
+        coverImageUrl = await this.fileUploadService.uploadImage(
+          coverImage,
+          ImageType.BOOK_COVER,
+          tempId,
+        );
+        bookRequestDto.coverImageUrl = coverImageUrl;
+      } catch {
+        throw new BadRequestException('Failed to upload cover image');
+      }
+    }
+
+    // Create the book request
     const request = await this.bookRequestUseCase.createBookRequest(
       user.id,
       bookRequestDto,
     );
 
     try {
-      // Upload the file and associate it with the book request
+      // Upload the book file and associate it with the book request
       const fileDto: CreateBookFileDto = {
         bookRequestId: request.id,
         filename: filename,
-        format: fileFormat as any,
+        format: fileFormat as BookFormatDto,
       };
 
       // Add language to metadata if provided
-      const metadata: Record<string, any> = {};
+      const metadata: Record<string, unknown> = {};
       if (fileLanguage || dto.language) {
         metadata.language = fileLanguage || dto.language;
       }
@@ -171,22 +206,24 @@ export class BookRequestController {
 
       await this.bookFileUseCase.uploadBookFile(
         fileDto,
-        file.buffer,
-        file.mimetype,
-        file.originalname,
+        bookFile.buffer,
+        bookFile.mimetype,
+        bookFile.originalname,
       );
 
       // Get the updated request with files
       return this.bookRequestUseCase.getBookRequestWithFiles(request.id);
     } catch (error) {
-      // If file upload fails, we should clean up by deleting the book request we just created
+      // If file upload fails, clean up the cover image and book request
       try {
+        if (coverImageUrl) {
+          await this.fileUploadService.deleteImage(coverImageUrl);
+        }
         await this.bookRequestUseCase.deleteBookRequest(request.id);
-      } catch (deleteError) {
-        // Log the error but don't expose it to the user
+      } catch (cleanupError) {
         console.error(
-          'Failed to clean up book request after file upload failure:',
-          deleteError,
+          'Failed to clean up after file upload failure:',
+          cleanupError,
         );
       }
 
@@ -299,7 +336,12 @@ export class BookRequestController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update a book request' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'file', maxCount: 1 },
+      { name: 'coverImage', maxCount: 1 },
+    ]),
+  )
   @ApiParam({ name: 'id', description: 'Book request ID' })
   @ApiBody({
     schema: {
@@ -310,6 +352,11 @@ export class BookRequestController {
           format: 'binary',
           description: 'New book file to upload (optional)',
         },
+        coverImage: {
+          type: 'string',
+          format: 'binary',
+          description: 'New cover image file to upload (optional)',
+        },
         title: {
           type: 'string',
           description: 'Updated title of the book',
@@ -317,10 +364,6 @@ export class BookRequestController {
         description: {
           type: 'string',
           description: 'Updated description',
-        },
-        coverImageUrl: {
-          type: 'string',
-          description: 'Updated cover image URL',
         },
         publicationDate: {
           type: 'string',
@@ -372,67 +415,75 @@ export class BookRequestController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body()
     dto: UpdateBookRequestDto & { fileFormat?: string; fileLanguage?: string },
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    files: { file?: Express.Multer.File[]; coverImage?: Express.Multer.File[] },
     @CurrentUser() user: JwtPayload,
   ): Promise<BookRequestResponseDto> {
-    // First, check that the request exists and user has permission
+    // Get the existing request to check permissions
     const existingRequest = await this.bookRequestUseCase.getBookRequest(id);
-
-    if (existingRequest.status !== 'PENDING') {
-      throw new BadRequestException(
-        'Only pending book requests can be updated',
-      );
+    if (!existingRequest) {
+      throw new NotFoundException('Book request not found');
     }
 
-    // If not admin, check ownership
-    if (!user.roles.includes('ADMIN') && existingRequest.userId !== user.id) {
+    if (existingRequest.userId !== user.id && !user.roles.includes('ADMIN')) {
       throw new ForbiddenException(
-        'You can only update your own book requests',
+        'Not authorized to update this book request',
       );
     }
 
-    // Extract file-related props
-    const { fileFormat, fileLanguage, ...updateDto } = dto;
+    // Handle cover image upload if provided
+    if (files.coverImage?.[0]) {
+      try {
+        // Delete existing cover image if any
+        if (existingRequest.coverImageUrl) {
+          await this.fileUploadService.deleteImage(
+            existingRequest.coverImageUrl,
+          );
+        }
 
-    // Update the book request
-    const updatedRequest = await this.bookRequestUseCase.updateBookRequest(
-      id,
-      existingRequest.userId,
-      updateDto,
-    );
+        // Upload new cover image
+        const coverImageUrl = await this.fileUploadService.uploadImage(
+          files.coverImage[0],
+          ImageType.BOOK_COVER,
+          id,
+        );
+        dto.coverImageUrl = coverImageUrl;
+      } catch {
+        throw new BadRequestException('Failed to upload cover image');
+      }
+    }
 
-    // If a file was uploaded, process it
-    if (file) {
+    // Handle book file upload if provided
+    if (files.file?.[0]) {
+      const { fileFormat, fileLanguage } = dto;
       if (!fileFormat) {
         throw new BadRequestException(
-          'File format is required when uploading a file',
+          'File format is required when uploading a new file',
         );
       }
 
       const fileDto: CreateBookFileDto = {
         bookRequestId: id,
-        format: fileFormat as any,
+        format: fileFormat as BookFormatDto,
       };
 
       // Add language to metadata if provided
-      const metadata: Record<string, any> = {};
       if (fileLanguage || dto.language) {
-        metadata.language = fileLanguage || dto.language;
+        fileDto.metadata = {
+          language: fileLanguage || dto.language,
+        };
       }
-
-      // Update the fileDto to include metadata
-      fileDto.metadata = metadata;
 
       await this.bookFileUseCase.uploadBookFile(
         fileDto,
-        file.buffer,
-        file.mimetype,
-        file.originalname,
+        files.file[0].buffer,
+        files.file[0].mimetype,
+        files.file[0].originalname,
       );
     }
 
-    // Get the updated request with files
-    return this.bookRequestUseCase.getBookRequestWithFiles(id);
+    // Update the book request
+    return this.bookRequestUseCase.updateBookRequest(id, user.id, dto);
   }
 
   @Post(':id/review')
@@ -450,11 +501,7 @@ export class BookRequestController {
     @Body() dto: AdminReviewDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<BookRequestResponseDto> {
-    const request = await this.bookRequestUseCase.reviewBookRequest(
-      id,
-      user.id,
-      dto,
-    );
+    await this.bookRequestUseCase.reviewBookRequest(id, user.id, dto);
 
     // Get files for the request if it was approved
     const bookRequestWithFiles =

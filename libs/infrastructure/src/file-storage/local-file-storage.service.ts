@@ -20,6 +20,16 @@ export class LocalFileStorageService implements IFileStorageService {
       this.logger.log(`Creating upload directory: ${this.uploadDir}`);
       fs.mkdirSync(this.uploadDir, { recursive: true });
     }
+
+    // Create subdirectories for different file types
+    const subdirs = ['book-covers', 'user-avatars'];
+    for (const subdir of subdirs) {
+      const dirPath = path.join(this.uploadDir, subdir);
+      if (!fs.existsSync(dirPath)) {
+        this.logger.log(`Creating subdirectory: ${dirPath}`);
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+    }
   }
 
   private generateSecureFilename(originalName: string): string {
@@ -43,8 +53,22 @@ export class LocalFileStorageService implements IFileStorageService {
     filename: string,
     mimeType: string,
   ): Promise<string> {
-    // If filename already includes path info, extract just the filename
-    const basename = path.basename(filename);
+    // Check if filename includes a subdirectory
+    let subdir = '';
+    let basename = filename;
+
+    if (filename.includes(path.sep)) {
+      const parts = filename.split(path.sep);
+      subdir = parts[0];
+      basename = parts[parts.length - 1];
+
+      // Ensure the subdirectory exists
+      const dirPath = path.join(this.uploadDir, subdir);
+      if (!fs.existsSync(dirPath)) {
+        this.logger.log(`Creating subdirectory: ${dirPath}`);
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+    }
 
     // Encode filename to handle Unicode characters properly
     const encodedFilename = encodeURIComponent(basename).replace(
@@ -52,7 +76,9 @@ export class LocalFileStorageService implements IFileStorageService {
       (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
     );
 
-    const filePath = path.join(this.uploadDir, encodedFilename);
+    const filePath = subdir
+      ? path.join(this.uploadDir, subdir, encodedFilename)
+      : path.join(this.uploadDir, encodedFilename);
 
     try {
       await fs.promises.writeFile(filePath, fileBuffer);
@@ -94,9 +120,19 @@ export class LocalFileStorageService implements IFileStorageService {
       'FILES_BASE_URL',
       'http://localhost:3001/files',
     );
-    const filename = path.basename(filePath);
 
-    const encodedFilename = encodeURIComponent(filename);
-    return `${baseUrl}/${encodedFilename}`;
+    // Remove the uploads directory prefix if it exists
+    const uploadDir = this.configService.get<string>('UPLOAD_DIR', 'uploads');
+    const normalizedPath = filePath
+      .replace(`${uploadDir}${path.sep}`, '')
+      .replace(`${uploadDir}/`, '');
+
+    // Ensure proper URL path formatting
+    const urlPath = normalizedPath
+      .split(path.sep)
+      .map(encodeURIComponent)
+      .join('/');
+
+    return `${baseUrl}/${urlPath}`;
   }
 }

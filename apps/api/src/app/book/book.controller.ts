@@ -788,6 +788,71 @@ export class BookController {
     await this.bookUseCase.removeFromFavorites(id, user.id);
   }
 
+  @Put(':id/cover-image')
+  @AdminOnly()
+  @ApiOperation({ summary: 'Update book cover image URL' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        coverImageUrl: {
+          type: 'string',
+          description: 'URL of the uploaded cover image',
+        },
+      },
+      required: ['coverImageUrl'],
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated book',
+    type: BookResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'Book not found' })
+  async updateBookCoverImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('coverImageUrl') coverImageUrl: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BookResponseDto> {
+    // Update only the coverImageUrl field
+    const updated = await this.bookUseCase.updateBook(
+      id,
+      { coverImageUrl },
+      undefined,
+      undefined,
+      undefined,
+    );
+
+    if (!updated) throw new NotFoundException(`Book with id=${id} not found`);
+
+    // Get updated book with relationship information
+    const result = await this.bookUseCase.getBookWithRelationships(id);
+    if (!result) throw new NotFoundException(`Book with id=${id} not found`);
+
+    // Check if the book is liked and in favorites
+    let liked = false;
+    let favoured = false;
+    if (user?.id) {
+      const likedMap = await this.bookUseCase.getBatchLikedStatus(
+        [id],
+        user.id,
+      );
+      liked = likedMap.has(id);
+
+      // Check if the book is in the user's favorites
+      favoured = await this.bookUseCase.isInFavorites(id, user.id);
+    }
+
+    return {
+      ...this.toResponseDto(result.book),
+      liked,
+      favoured,
+      authors: result.authors,
+      genres: result.genres,
+      tags: result.tags,
+    };
+  }
+
   private toResponseDto(book: any): BookResponseDto {
     const props = book.toPrimitives();
     return {

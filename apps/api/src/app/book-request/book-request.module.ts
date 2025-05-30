@@ -12,9 +12,10 @@ import {
 
 import { BookRequestController } from './book-request.controller';
 import { BookFileModule } from '../book-file/book-file.module';
+import { FileUploadModule } from '../file-upload/file-upload.module';
 
 @Module({
-  imports: [BookFileModule],
+  imports: [BookFileModule, FileUploadModule],
   controllers: [BookRequestController],
   providers: [
     // Application Use Cases
