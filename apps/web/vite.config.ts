@@ -16,6 +16,7 @@ import { defineConfig, normalizePath } from 'vite';
 export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/web',
+  base: '/read-n-feed/',
   server: {
     port: 4200,
     host: 'localhost',
