@@ -7,6 +7,9 @@ import {
   IAuthorRepository,
   IGenreRepository,
   ITagRepository,
+  IBookLikeRepository,
+  IBookFavoriteRepository,
+  BookFavorite,
 } from '@read-n-feed/domain';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -34,6 +37,12 @@ export class BookUseCase {
 
     @Inject('ITagRepository')
     private readonly tagRepo: ITagRepository,
+
+    @Inject('IBookLikeRepository')
+    private readonly bookLikeRepo: IBookLikeRepository,
+
+    @Inject('IBookFavoriteRepository')
+    private readonly bookFavoriteRepo: IBookFavoriteRepository,
   ) {}
 
   async createBook(
@@ -387,6 +396,99 @@ export class BookUseCase {
     likes.forEach((like) => likedMap.set(like.bookId, true));
 
     return likedMap;
+  }
+
+  async getLikedBooks(userId: string): Promise<Book[]> {
+    if (!userId) {
+      return [];
+    }
+
+    const likes = await this.bookLikeRepo.findByUser(userId);
+    const bookIds = likes.map((like) => like.bookId);
+
+    if (bookIds.length === 0) {
+      return [];
+    }
+
+    // Fetch the actual book objects
+    const books: Book[] = [];
+    for (const bookId of bookIds) {
+      const book = await this.bookRepo.findById(bookId);
+      if (book) {
+        books.push(book);
+      }
+    }
+
+    return books;
+  }
+
+  async addToFavorites(bookId: string, userId: string): Promise<void> {
+    const book = await this.bookRepo.findById(bookId);
+    if (!book) {
+      throw new NotFoundException(`Book with id=${bookId} not found`);
+    }
+
+    // Check if already in favorites
+    const existing = await this.bookFavoriteRepo.find(userId, bookId);
+    if (existing) {
+      return; // Already in favorites, no need to add again
+    }
+
+    const favorite = new BookFavorite({
+      userId,
+      bookId,
+      addedAt: new Date(),
+    });
+
+    await this.bookFavoriteRepo.add(favorite);
+  }
+
+  async removeFromFavorites(bookId: string, userId: string): Promise<void> {
+    const book = await this.bookRepo.findById(bookId);
+    if (!book) {
+      throw new NotFoundException(`Book with id=${bookId} not found`);
+    }
+
+    // Check if in favorites
+    const existing = await this.bookFavoriteRepo.find(userId, bookId);
+    if (!existing) {
+      return; // Not in favorites, nothing to remove
+    }
+
+    await this.bookFavoriteRepo.remove(userId, bookId);
+  }
+
+  async isInFavorites(bookId: string, userId: string): Promise<boolean> {
+    if (!userId) {
+      return false;
+    }
+
+    const favorite = await this.bookFavoriteRepo.find(userId, bookId);
+    return !!favorite;
+  }
+
+  async getFavoriteBooks(userId: string): Promise<Book[]> {
+    if (!userId) {
+      return [];
+    }
+
+    const favorites = await this.bookFavoriteRepo.findByUser(userId);
+    const bookIds = favorites.map((favorite) => favorite.bookId);
+
+    if (bookIds.length === 0) {
+      return [];
+    }
+
+    // Fetch the actual book objects
+    const books: Book[] = [];
+    for (const bookId of bookIds) {
+      const book = await this.bookRepo.findById(bookId);
+      if (book) {
+        books.push(book);
+      }
+    }
+
+    return books;
   }
 
   // Validation and helper methods

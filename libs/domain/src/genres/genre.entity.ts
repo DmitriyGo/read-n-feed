@@ -15,14 +15,6 @@ export class Genre {
     return this.props.name;
   }
 
-  get description() {
-    return this.props.description;
-  }
-
-  updateDescription(newDesc: string) {
-    this.props.description = newDesc;
-  }
-
   toPrimitives(): GenreProps {
     return { ...this.props };
   }

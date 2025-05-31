@@ -1,0 +1,67 @@
+{
+  "welcomeText": "Ласкаво просимо до Read-n-Feed",
+  "welcomeSubtitle": "Ваш читацький компаньйон",
+  "yourProfile": "Ваш профіль",
+  "language": "Мова",
+  "common": {
+    "loading": "Завантаження...",
+    "error": "Помилка",
+    "success": "Успішно",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "home": "Головна",
+    "profile": "Профіль",
+    "bookRequests": "Мої запити на книги"
+  },
+  "profile": {
+    "updateProfile": "Оновити профіль",
+    "enterFirstName": "Введіть ваше ім'я",
+    "enterLastName": "Введіть ваше прізвище",
+    "next": "Далі",
+    "essentialData": "Основні дані",
+    "username": "Ім'я користувача",
+    "firstName": "Ім'я",
+    "lastName": "Прізвище",
+    "notSet": "Не встановлено",
+    "additionalData": "Додаткові дані",
+    "status": "Статус",
+    "blocked": "Заблоковано",
+    "active": "Активний",
+    "roles": "Ролі",
+    "memberSince": "Учасник з",
+    "updating": "Оновлення...",
+    "logout": "Вийти"
+  },
+  "bookRequests": {
+    "status": {
+      "all": "Всі",
+      "pending": "В очікуванні",
+      "approved": "Затверджено",
+      "rejected": "Відхилено"
+    },
+    "createRequest": "Створити запит",
+    "noRequests": "Запитів не знайдено",
+    "read": "Читати",
+    "authors": "Автори",
+    "genres": "Жанри",
+    "form": {
+      "title": "Назва книги",
+      "titlePlaceholder": "Введіть назву книги",
+      "description": "Опис",
+      "descriptionPlaceholder": "Введіть опис книги",
+      "authors": "Автори",
+      "authorsPlaceholder": "Введіть імена авторів через кому",
+      "genres": "Жанри",
+      "genresPlaceholder": "Введіть жанри через кому",
+      "publicationDate": "Дата публікації",
+      "publicationDatePlaceholder": "РРРР-ММ-ДД",
+      "publisher": "Видавець",
+      "publisherPlaceholder": "Введіть назву видавця",
+      "tags": "Теги",
+      "tagsPlaceholder": "Введіть теги через кому",
+      "selectFile": "Вибрати файл",
+      "submit": "Відправити запит"
+    }
+  }
+}

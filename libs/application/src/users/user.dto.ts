@@ -22,6 +22,10 @@ export class UpdateUserProfileDto {
   @IsString()
   @IsOptional()
   avatarUrl?: string;
+
+  @ApiPropertyOptional({ example: 30 })
+  @IsOptional()
+  age?: number;
 }
 
 export class UserResponseDto {
@@ -72,6 +76,9 @@ export class UserResponseDto {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiPropertyOptional({ example: 30 })
+  age?: number | null;
 }
 
 export function toUserResponseDto(user: User): UserResponseDto {
@@ -93,5 +100,6 @@ export function toUserResponseDto(user: User): UserResponseDto {
     metadata: props.metadata,
     createdAt: props.createdAt,
     updatedAt: props.updatedAt,
+    age: props.age,
   };
 }

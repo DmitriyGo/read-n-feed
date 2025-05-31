@@ -1,0 +1,16 @@
+{
+  "firstNameTooShort": "First name is too short",
+  "lastNameTooShort": "Last name is too short",
+  "titleCannotBeEmpty": "Title cannot be empty",
+  "emailCannotBeEmpty": "Email cannot be empty",
+  "incorrectEmail": "Incorrect email",
+  "usernameCannotBeEmpty": "Username cannot be empty",
+  "usernameTooShort": "Length of the username cannot be less than 3",
+  "usernameTooLong": "Length of the username cannot be more than 20",
+  "passwordCannotBeEmpty": "Password cannot be empty",
+  "passwordTooShort": "Length of the password cannot be less than 8",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "rejectionReasonRequired": "Rejection reason is required",
+  "fileNameTooShort": "File name must be at least 5 characters long",
+  "invalidAge": "Age must be between 13 and 120"
+}

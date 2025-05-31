@@ -26,7 +26,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  BookLikeResponseDto,
   BookResponseDto,
   BookUseCase,
   CreateBookDto,
@@ -37,6 +36,7 @@ import {
 import { JwtPayload } from '@read-n-feed/domain';
 
 import { CurrentUser } from '../auth/guards/current-user.decorator';
+import { Public } from '../auth/guards/public.decorator';
 import { AdminOnly } from '../auth/guards/roles.decorator';
 
 @ApiBearerAuth()
@@ -69,6 +69,7 @@ export class BookController {
     description: 'Paginated books with metadata',
     type: PaginatedBooksResponseDto,
   })
+  @Public()
   async searchBooks(
     @Query() query: SearchBooksDto,
     @CurrentUser() user: JwtPayload,
@@ -93,9 +94,16 @@ export class BookController {
             book.id,
           );
 
+          // Check if the book is in the user's favorites
+          let favoured = false;
+          if (user?.id) {
+            favoured = await this.bookUseCase.isInFavorites(book.id, user.id);
+          }
+
           return {
             ...this.toResponseDto(book),
             liked: likedStatusMap.has(book.id),
+            favoured,
             authors: relationships?.authors || [],
             genres: relationships?.genres || [],
             tags: relationships?.tags || [],
@@ -109,6 +117,8 @@ export class BookController {
 
           return {
             ...this.toResponseDto(book),
+            liked: false,
+            favoured: false,
             authors: [],
             genres: [],
             tags: [],
@@ -124,6 +134,177 @@ export class BookController {
       limit: result.limit,
       totalPages: result.totalPages,
     };
+  }
+
+  @Get('most-liked/:limit')
+  @ApiOperation({ summary: 'Get the most liked books' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns top N books by totalLikes',
+    type: BookResponseDto,
+    isArray: true,
+  })
+  async getMostLikedBooks(
+    @Param('limit', ParseIntPipe) limit: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BookResponseDto[]> {
+    const results = await this.bookUseCase.getMostLikedBooks(limit);
+    const bookIds = results.map((book) => book.id);
+
+    // Get liked status for all books
+    const likedStatusMap = await this.bookUseCase.getBatchLikedStatus(
+      bookIds,
+      user?.id,
+    );
+
+    // Get relationship information for each book
+    return await Promise.all(
+      results.map(async (book) => {
+        try {
+          const relationships = await this.bookUseCase.getBookWithRelationships(
+            book.id,
+          );
+
+          // Check if the book is in the user's favorites
+          let favoured = false;
+          if (user?.id) {
+            favoured = await this.bookUseCase.isInFavorites(book.id, user.id);
+          }
+
+          return {
+            ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured,
+            authors: relationships?.authors || [],
+            genres: relationships?.genres || [],
+            tags: relationships?.tags || [],
+          };
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `Error getting relationships for book ${book.id}: ${errorMessage}`,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: false,
+            authors: [],
+            genres: [],
+            tags: [],
+          };
+        }
+      }),
+    );
+  }
+
+  @Get('liked')
+  @ApiOperation({ summary: 'Get all books liked by the current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of books liked by the user',
+    type: [BookResponseDto],
+  })
+  async getLikedBooks(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BookResponseDto[]> {
+    const books = await this.bookUseCase.getLikedBooks(user.id);
+
+    return await Promise.all(
+      books.map(async (book) => {
+        try {
+          const relationships = await this.bookUseCase.getBookWithRelationships(
+            book.id,
+          );
+
+          // Check if the book is in the user's favorites
+          const favoured = await this.bookUseCase.isInFavorites(
+            book.id,
+            user.id,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: true,
+            favoured,
+            authors: relationships?.authors || [],
+            genres: relationships?.genres || [],
+            tags: relationships?.tags || [],
+          };
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `Error getting relationships for book ${book.id}: ${errorMessage}`,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: true,
+            favoured: false,
+            authors: [],
+            genres: [],
+            tags: [],
+          };
+        }
+      }),
+    );
+  }
+
+  @Get('favorites')
+  @ApiOperation({ summary: "Get all books in the current user's favorites" })
+  @ApiResponse({
+    status: 200,
+    description: "Returns a list of books in the user's favorites",
+    type: [BookResponseDto],
+  })
+  async getFavoriteBooks(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BookResponseDto[]> {
+    const books = await this.bookUseCase.getFavoriteBooks(user.id);
+    const bookIds = books.map((book) => book.id);
+
+    // Get liked status for all books
+    const likedStatusMap = await this.bookUseCase.getBatchLikedStatus(
+      bookIds,
+      user.id,
+    );
+
+    // Get relationship information for each book
+    return await Promise.all(
+      books.map(async (book) => {
+        try {
+          const relationships = await this.bookUseCase.getBookWithRelationships(
+            book.id,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: true, // These are books in the user's favorites
+            authors: relationships?.authors || [],
+            genres: relationships?.genres || [],
+            tags: relationships?.tags || [],
+          };
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `Error getting relationships for book ${book.id}: ${errorMessage}`,
+          );
+
+          return {
+            ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: true,
+            authors: [],
+            genres: [],
+            tags: [],
+          };
+        }
+      }),
+    );
   }
 
   @Get(':id')
@@ -142,17 +323,22 @@ export class BookController {
     if (!result) throw new NotFoundException(`Book with id=${id} not found`);
 
     let liked = false;
+    let favoured = false;
     if (user?.id) {
       const likedMap = await this.bookUseCase.getBatchLikedStatus(
         [id],
         user.id,
       );
       liked = likedMap.has(id);
+
+      // Check if the book is in the user's favorites
+      favoured = await this.bookUseCase.isInFavorites(id, user.id);
     }
 
     return {
       ...this.toResponseDto(result.book),
       liked,
+      favoured,
       authors: result.authors,
       genres: result.genres,
       tags: result.tags,
@@ -175,7 +361,20 @@ export class BookController {
       genreIds,
       tagIds,
     );
-    return this.toResponseDto(book);
+
+    // Get relationship information for the book
+    const relationships = await this.bookUseCase.getBookWithRelationships(
+      book.id,
+    );
+
+    return {
+      ...this.toResponseDto(book),
+      liked: false, // Newly created book is not liked by anyone
+      favoured: false, // Newly created book is not in anyone's favorites
+      authors: relationships?.authors || [],
+      genres: relationships?.genres || [],
+      tags: relationships?.tags || [],
+    };
   }
 
   @Put(':id')
@@ -191,6 +390,7 @@ export class BookController {
   async updateBook(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateBookDto,
+    @CurrentUser() user: JwtPayload,
   ): Promise<BookResponseDto> {
     const { authorIds, genreIds, tagIds, ...bookData } = dto;
     const updated = await this.bookUseCase.updateBook(
@@ -207,8 +407,24 @@ export class BookController {
     const result = await this.bookUseCase.getBookWithRelationships(id);
     if (!result) throw new NotFoundException(`Book with id=${id} not found`);
 
+    // Check if the book is liked and in favorites
+    let liked = false;
+    let favoured = false;
+    if (user?.id) {
+      const likedMap = await this.bookUseCase.getBatchLikedStatus(
+        [id],
+        user.id,
+      );
+      liked = likedMap.has(id);
+
+      // Check if the book is in the user's favorites
+      favoured = await this.bookUseCase.isInFavorites(id, user.id);
+    }
+
     return {
       ...this.toResponseDto(result.book),
+      liked,
+      favoured,
       authors: result.authors,
       genres: result.genres,
       tags: result.tags,
@@ -223,51 +439,6 @@ export class BookController {
   @ApiNotFoundResponse({ description: 'Book not found' })
   async deleteBook(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.bookUseCase.deleteBook(id);
-  }
-
-  @Get('most-liked/:limit')
-  @ApiOperation({ summary: 'Get the most liked books' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns top N books by totalLikes',
-    type: BookResponseDto,
-    isArray: true,
-  })
-  async getMostLikedBooks(
-    @Param('limit', ParseIntPipe) limit: number,
-  ): Promise<BookResponseDto[]> {
-    const results = await this.bookUseCase.getMostLikedBooks(limit);
-
-    // Get relationship information for each book
-    return await Promise.all(
-      results.map(async (book) => {
-        try {
-          const relationships = await this.bookUseCase.getBookWithRelationships(
-            book.id,
-          );
-
-          return {
-            ...this.toResponseDto(book),
-            authors: relationships?.authors || [],
-            genres: relationships?.genres || [],
-            tags: relationships?.tags || [],
-          };
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : String(error);
-          this.logger.error(
-            `Error getting relationships for book ${book.id}: ${errorMessage}`,
-          );
-
-          return {
-            ...this.toResponseDto(book),
-            authors: [],
-            genres: [],
-            tags: [],
-          };
-        }
-      }),
-    );
   }
 
   @Get(':id/related')
@@ -286,10 +457,18 @@ export class BookController {
   })
   @ApiNotFoundResponse({ description: 'Book not found' })
   async getRelatedBooks(
+    @CurrentUser() user: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ): Promise<BookResponseDto[]> {
     const relatedBooks = await this.bookUseCase.getRelatedBooks(id, limit || 5);
+    const bookIds = relatedBooks.map((book) => book.id);
+
+    // Get liked status for all books
+    const likedStatusMap = await this.bookUseCase.getBatchLikedStatus(
+      bookIds,
+      user?.id,
+    );
 
     // Get relationship information for each book
     return await Promise.all(
@@ -299,8 +478,16 @@ export class BookController {
             book.id,
           );
 
+          // Check if the book is in the user's favorites
+          let favoured = false;
+          if (user?.id) {
+            favoured = await this.bookUseCase.isInFavorites(book.id, user.id);
+          }
+
           return {
             ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured,
             authors: relationships?.authors || [],
             genres: relationships?.genres || [],
             tags: relationships?.tags || [],
@@ -314,6 +501,8 @@ export class BookController {
 
           return {
             ...this.toResponseDto(book),
+            liked: likedStatusMap.has(book.id),
+            favoured: false,
             authors: [],
             genres: [],
             tags: [],
@@ -569,6 +758,101 @@ export class BookController {
     await this.bookUseCase.unlikeBook(id, user.id);
   }
 
+  @Post(':id/favorite')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Add a book to favorites' })
+  @ApiResponse({
+    status: 204,
+    description: 'Book added to favorites successfully',
+  })
+  @ApiNotFoundResponse({ description: 'Book not found' })
+  async addToFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<void> {
+    await this.bookUseCase.addToFavorites(id, user.id);
+  }
+
+  @Delete(':id/favorite')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remove a book from favorites' })
+  @ApiResponse({
+    status: 204,
+    description: 'Book removed from favorites successfully',
+  })
+  @ApiNotFoundResponse({ description: 'Book not found' })
+  async removeFromFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<void> {
+    await this.bookUseCase.removeFromFavorites(id, user.id);
+  }
+
+  @Put(':id/cover-image')
+  @AdminOnly()
+  @ApiOperation({ summary: 'Update book cover image URL' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        coverImageUrl: {
+          type: 'string',
+          description: 'URL of the uploaded cover image',
+        },
+      },
+      required: ['coverImageUrl'],
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated book',
+    type: BookResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'Book not found' })
+  async updateBookCoverImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('coverImageUrl') coverImageUrl: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<BookResponseDto> {
+    // Update only the coverImageUrl field
+    const updated = await this.bookUseCase.updateBook(
+      id,
+      { coverImageUrl },
+      undefined,
+      undefined,
+      undefined,
+    );
+
+    if (!updated) throw new NotFoundException(`Book with id=${id} not found`);
+
+    // Get updated book with relationship information
+    const result = await this.bookUseCase.getBookWithRelationships(id);
+    if (!result) throw new NotFoundException(`Book with id=${id} not found`);
+
+    // Check if the book is liked and in favorites
+    let liked = false;
+    let favoured = false;
+    if (user?.id) {
+      const likedMap = await this.bookUseCase.getBatchLikedStatus(
+        [id],
+        user.id,
+      );
+      liked = likedMap.has(id);
+
+      // Check if the book is in the user's favorites
+      favoured = await this.bookUseCase.isInFavorites(id, user.id);
+    }
+
+    return {
+      ...this.toResponseDto(result.book),
+      liked,
+      favoured,
+      authors: result.authors,
+      genres: result.genres,
+      tags: result.tags,
+    };
+  }
+
   private toResponseDto(book: any): BookResponseDto {
     const props = book.toPrimitives();
     return {
@@ -580,6 +864,8 @@ export class BookController {
       publisher: props.publisher ?? undefined,
       averageRating: props.averageRating ?? undefined,
       totalLikes: props.totalLikes,
+      language: props.language ?? undefined,
+      ageRestriction: props.ageRestriction ?? undefined,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
     };

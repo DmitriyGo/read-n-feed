@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsString,
@@ -12,6 +13,21 @@ import {
   IsUUID,
 } from 'class-validator';
 
+const transformToArray = (value: string | string[]): string[] => {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== 'string') return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [value];
+  } catch {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+};
+
 export class CreateBookDto {
   @ApiProperty({ description: 'The title of the book', maxLength: 200 })
   @IsString()
@@ -23,7 +39,10 @@ export class CreateBookDto {
   @IsString()
   description?: string | null;
 
-  @ApiPropertyOptional({ description: 'Cover image URL' })
+  @ApiPropertyOptional({
+    description: 'Cover image URL',
+    example: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0',
+  })
   @IsOptional()
   @IsUrl()
   coverImageUrl?: string | null;
@@ -51,6 +70,7 @@ export class CreateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   authorIds?: string[];
 
   @ApiPropertyOptional({
@@ -61,6 +81,7 @@ export class CreateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   genreIds?: string[];
 
   @ApiPropertyOptional({
@@ -71,7 +92,22 @@ export class CreateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   tagIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Book language (e.g., en, fr, es)' })
+  @IsOptional()
+  @IsString()
+  language?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Age restriction (minimum age)',
+    example: 12,
+  })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  ageRestriction?: number | null;
 }
 
 export class UpdateBookDto {
@@ -121,6 +157,7 @@ export class UpdateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   authorIds?: string[];
 
   @ApiPropertyOptional({
@@ -132,6 +169,7 @@ export class UpdateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   genreIds?: string[];
 
   @ApiPropertyOptional({
@@ -143,7 +181,19 @@ export class UpdateBookDto {
   @IsOptional()
   @IsArray()
   @IsUUID(4, { each: true })
+  @Transform(({ value }) => transformToArray(value))
   tagIds?: string[];
+
+  @ApiPropertyOptional({ description: 'Book language (e.g., en, fr, es)' })
+  @IsOptional()
+  @IsString()
+  language?: string | null;
+
+  @ApiPropertyOptional({ description: 'Age restriction (minimum age)' })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  ageRestriction?: number | null;
 }
 
 export class SearchBooksDto {
@@ -267,6 +317,12 @@ export class BookResponseDto {
   })
   liked?: boolean;
 
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Whether the current user has added this book to favorites',
+  })
+  favoured?: boolean;
+
   @ApiProperty()
   createdAt: Date;
 
@@ -281,4 +337,15 @@ export class BookResponseDto {
 
   @ApiPropertyOptional({ type: [TagInfo] })
   tags?: TagInfo[];
+
+  @ApiPropertyOptional({ description: 'Book language (e.g., en, fr, es)' })
+  @IsOptional()
+  @IsString()
+  language?: string | null;
+
+  @ApiPropertyOptional({ description: 'Age restriction (minimum age)' })
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  ageRestriction?: number | null;
 }

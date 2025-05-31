@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
@@ -16,30 +17,34 @@ import {
 import { useSignIn } from '@/hooks/write';
 import { useModalStore } from '@/store';
 
-const formSchema = z.object({
-  email: z.string().nonempty('Email cannot be empty').email('Incorrect email'),
-  password: z
-    .string()
-    .nonempty('Password cannot be empty')
-    .min(8, 'Length of the password cannot be less than 8'),
-});
+const formSchema = (t: (key: string) => string) =>
+  z.object({
+    email: z
+      .string()
+      .nonempty(t('emailCannotBeEmpty'))
+      .email(t('incorrectEmail')),
+    password: z
+      .string()
+      .nonempty(t('passwordCannotBeEmpty'))
+      .min(8, t('passwordTooShort')),
+  });
 
-type SingInFormSchema = z.infer<typeof formSchema>;
+type SignInFormSchema = z.infer<ReturnType<typeof formSchema>>;
 
 export function SignInModal() {
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const { mutateAsync: signIn } = useSignIn();
-
   const { setMode } = useModalStore();
 
-  const form = useForm<SingInFormSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<SignInFormSchema>({
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  const onSubmit = async (values: SingInFormSchema) => {
+  const onSubmit = async (values: SignInFormSchema) => {
     try {
       await signIn({
         email: values.email,
@@ -60,9 +65,9 @@ export function SignInModal() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('email')}</FormLabel>
               <FormControl>
-                <Input placeholder="your@email.com" {...field} />
+                <Input placeholder={t('emailPlaceholder')} {...field} />
               </FormControl>
 
               <FormMessage />
@@ -75,9 +80,13 @@ export function SignInModal() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('password')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="asdASD123!" {...field} />
+                <Input
+                  type="password"
+                  placeholder={t('passwordPlaceholder')}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,7 +94,7 @@ export function SignInModal() {
         />
 
         <Button type="submit" className="w-full">
-          Log In
+          {t('logIn')}
         </Button>
       </form>
     </Form>

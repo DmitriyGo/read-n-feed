@@ -5,19 +5,25 @@ model Book {
   coverImageUrl   String?   @map("cover_image_url")
   publicationDate DateTime? @map("publication_date")
   publisher       String?
+  language        String?
   averageRating   Float?    @map("average_rating")
   totalLikes      Int?      @default(0) @map("total_likes")
+  ageRestriction  Int?      @default(0) @map("age_restriction")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  authors   BookAuthor[]
-  genres    BookGenre[]
-  tags      BookTag[]
-  likes     BookLike[]
-  comments  BookComment[]
-  progress  ReadingProgress[]
-  bookFiles BookFile[]
+  authors          BookAuthor[]
+  genres           BookGenre[]
+  tags             BookTag[]
+  likes            BookLike[]
+  favorites        BookFavorite[]
+  comments         BookComment[]
+  progress         ReadingProgress[]
+  bookFiles        BookFile[]
+  BookRequest      BookRequest[]
+  BookFileRequest  BookFileRequest[]
+  BookImageRequest BookImageRequest[]
 
   @@index([title])
   @@map("book")

@@ -3,18 +3,29 @@ enum BookFormat {
   EPUB
   FB2
   MOBI
+  AZW3
 }
 
 model BookFile {
-  id       String     @id @default(uuid())
-  bookId   String     @map("book_id")
-  format   BookFormat
-  filePath String     @map("file_path")
-  fileSize Int?       @map("file_size")
+  id        String     @id @default(uuid())
+  bookId    String?    @map("book_id")
+  format    BookFormat
+  filePath  String     @map("file_path")
+  fileSize  Int?       @map("file_size")
+  createdAt DateTime   @default(now()) @map("created_at")
 
-  createdAt DateTime @default(now()) @map("created_at")
+  filename      String? @map("filename")
+  mimeType      String? @map("mime_type")
+  metadata      Json?   @map("metadata")
+  isValidated   Boolean @default(false) @map("is_validated")
+  checksum      String? @map("checksum")
+  bookRequestId String? @map("book_request_id")
+  language      String? @map("language")
 
-  book Book @relation(fields: [bookId], references: [id])
+  // Relations
+  book            Book?             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookRequest     BookRequest?      @relation(fields: [bookRequestId], references: [id], onDelete: SetNull)
+  BookFileRequest BookFileRequest[]
 
   @@map("book_file")
 }

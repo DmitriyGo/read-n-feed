@@ -31,12 +31,20 @@ export class Book {
     return this.props.publisher;
   }
 
+  get language() {
+    return this.props.language;
+  }
+
   get averageRating() {
     return this.props.averageRating;
   }
 
   get totalLikes() {
     return this.props.totalLikes;
+  }
+
+  get ageRestriction() {
+    return this.props.ageRestriction;
   }
 
   updateTitle(newTitle: string) {
@@ -61,6 +69,11 @@ export class Book {
 
   updateRating(newRating: number) {
     this.props.averageRating = newRating;
+    this.props.updatedAt = new Date();
+  }
+
+  update(props: Partial<Omit<BookProps, 'id' | 'createdAt'>>) {
+    Object.assign(this.props, props);
     this.props.updatedAt = new Date();
   }
 

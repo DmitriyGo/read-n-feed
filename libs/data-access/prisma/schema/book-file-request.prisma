@@ -1,0 +1,33 @@
+enum BookFileRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model BookFileRequest {
+  id              String                @id @default(uuid())
+  bookId          String                @map("book_id")
+  userId          String                @map("user_id")
+  fileId          String?               @map("file_id")
+  format          String
+  status          BookFileRequestStatus @default(PENDING)
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+  approvedAt      DateTime?             @map("approved_at")
+  rejectedAt      DateTime?             @map("rejected_at")
+  approvedBy      String?               @map("approved_by")
+  rejectedBy      String?               @map("rejected_by")
+  rejectionReason String?               @map("rejection_reason")
+  adminNotes      String?               @map("admin_notes")
+  language        String?               @map("language")
+
+  // Relations
+  book Book      @relation(fields: [bookId], references: [id])
+  user User      @relation(fields: [userId], references: [id])
+  file BookFile? @relation(fields: [fileId], references: [id])
+
+  @@index([bookId])
+  @@index([userId])
+  @@index([status])
+  @@map("book_file_request")
+}

@@ -27,6 +27,10 @@ export class User {
     return this.props.isBlocked;
   }
 
+  get age() {
+    return this.props.age;
+  }
+
   blockUser() {
     this.props.isBlocked = true;
     this.props.updatedAt = new Date();
@@ -47,7 +51,7 @@ export class User {
     this.props.preferredReadingFormats =
       partial.preferredReadingFormats ?? this.props.preferredReadingFormats;
     this.props.metadata = partial.metadata ?? this.props.metadata;
-
+    if (partial.age !== undefined) this.props.age = partial.age;
     this.props.updatedAt = new Date();
   }
 

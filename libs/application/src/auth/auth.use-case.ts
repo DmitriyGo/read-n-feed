@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { IUserRepository, JwtPayload, User } from '@read-n-feed/domain';
 import { ISessionRepository, Session } from '@read-n-feed/domain';
 import { ITokenGenerator } from '@read-n-feed/domain';
-import { lookupLocation, parseUserAgent } from '@read-n-feed/shared';
+import { lookupLocation, parseUserAgent } from '@read-n-feed/infrastructure';
 import { compareSync, hashSync } from 'bcrypt';
 import { add } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,6 +28,7 @@ export class AuthUseCase {
 
   async register(dto: RegisterDto): Promise<User> {
     await this.ensureEmailIsUnique(dto.email);
+    await this.ensureUsernameIsUnique(dto.username);
 
     const hashedPassword = hashSync(dto.password, 12);
     const user = new User({
@@ -38,7 +39,7 @@ export class AuthUseCase {
       firstName: dto.firstName ?? null,
       lastName: dto.lastName ?? null,
       avatarUrl: dto.avatarUrl ?? null,
-
+      age: dto.age ?? null,
       provider: 'LOCAL',
       roles: ['USER'],
       isBlocked: false,
@@ -90,6 +91,15 @@ export class AuthUseCase {
     if (existing) {
       throw new UnauthorizedException(
         `User with email "${email}" already exists.`,
+      );
+    }
+  }
+
+  private async ensureUsernameIsUnique(username: string) {
+    const existing = await this.userRepo.findByUsername(username);
+    if (existing) {
+      throw new UnauthorizedException(
+        `User with username "${username}" already exists.`,
       );
     }
   }

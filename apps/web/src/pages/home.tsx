@@ -1,22 +1,12 @@
-import { Section, BaseTooltip, ComponentLoader } from '@/components/common';
-import { Button } from '@/components/ui';
+import { useTranslation } from 'react-i18next';
 
 export const HomePage = () => {
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
+
   return (
     <div>
-      <p>HomePage</p>
-
-      <Section>
-        <Section.Header>Header</Section.Header>
-        <Section.Content>Content</Section.Content>
-        <Section.Footer>Footer</Section.Footer>
-      </Section>
-
-      <BaseTooltip content="Loading...">
-        <Button className="mx-8" variant="secondary">
-          <ComponentLoader />
-        </Button>
-      </BaseTooltip>
+      <p>{t('hello')}</p>
+      <p>{t('welcome')}</p>
     </div>
   );
 };

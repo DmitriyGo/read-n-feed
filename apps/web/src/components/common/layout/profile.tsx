@@ -1,7 +1,6 @@
 import { isDefined } from '@read-n-feed/shared';
-import { useNavigate } from 'react-router-dom';
-
-import { Conditional } from '../conditional';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
   Avatar,
@@ -17,6 +16,7 @@ import { useLogout } from '@/hooks/write';
 import { useModalStore } from '@/store';
 
 export const Profile = () => {
+  const { t } = useTranslation(['translation', 'validation', 'badges']);
   const navigate = useNavigate();
 
   const { setMode } = useModalStore();
@@ -30,33 +30,37 @@ export const Profile = () => {
     logout();
   };
 
-  const handleSeeProfile = () => {
-    navigate(Route.Profile);
-  };
-
   return (
     <Popover>
       <PopoverTrigger>
-        <Avatar src={data?.data.avatarUrl} />
+        <Avatar src={data?.data.avatarUrl} className="max-md:size-8" />
       </PopoverTrigger>
+
       <PopoverContent className="flex flex-col gap-4" align="end">
-        <Conditional condition={isDefined(accessToken)}>
-          <Conditional.True>
-            <Button onClick={handleSeeProfile}>See Profile</Button>
+        {isDefined(accessToken) ? (
+          <>
+            <Link to={Route.Profile}>
+              <Button className="w-full">{t('seeProfile')}</Button>
+            </Link>
+            <Link to={Route.Requests.MyBookRequests}>
+              <Button className="w-full" variant="outline">
+                {t('myRequests')}
+              </Button>
+            </Link>
 
             <Button onClick={handleLogout} variant="destructive">
-              LogOut
+              {t('logout')}
             </Button>
-          </Conditional.True>
-
-          <Conditional.False>
+          </>
+        ) : (
+          <>
             <Button
               variant="secondary"
               onClick={() => {
                 setMode('SignIn');
               }}
             >
-              SignIn
+              {t('signIn')}
             </Button>
             <Button
               variant="secondary"
@@ -64,10 +68,10 @@ export const Profile = () => {
                 setMode('SignUp');
               }}
             >
-              SignUp
+              {t('signUp')}
             </Button>
-          </Conditional.False>
-        </Conditional>
+          </>
+        )}
       </PopoverContent>
     </Popover>
   );

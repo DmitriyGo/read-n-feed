@@ -10,6 +10,8 @@ import {
   ParseUUIDPipe,
   UsePipes,
   ValidationPipe,
+  Logger,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -26,14 +28,24 @@ import {
   CommentUseCase,
   CreateCommentDto,
   UpdateCommentDto,
+  UserUseCase,
 } from '@read-n-feed/application';
 import { BookComment } from '@read-n-feed/domain';
+import { JwtPayload } from '@read-n-feed/domain';
+
+import { CurrentUser } from '../auth/guards/current-user.decorator';
+import { Public } from '../auth/guards/public.decorator';
 
 @ApiBearerAuth()
 @ApiTags('comments')
 @Controller('comments')
 export class CommentController {
-  constructor(private readonly commentUseCase: CommentUseCase) {}
+  private readonly logger = new Logger(CommentController.name);
+
+  constructor(
+    private readonly commentUseCase: CommentUseCase,
+    private readonly userUseCase: UserUseCase,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new comment' })
@@ -70,6 +82,7 @@ export class CommentController {
   }
 
   @Get('book/:bookId')
+  @Public()
   @ApiOperation({ summary: 'Get all comments for a given book' })
   @ApiParam({ name: 'bookId', description: 'Book ID' })
   @ApiResponse({
@@ -81,8 +94,24 @@ export class CommentController {
   async getCommentsForBook(
     @Param('bookId', ParseUUIDPipe) bookId: string,
   ): Promise<CommentResponseDto[]> {
-    const results = await this.commentUseCase.getCommentsForBook(bookId);
-    return results.map((c) => this.toResponseDto(c));
+    const comments = await this.commentUseCase.getCommentsForBook(bookId);
+
+    const enhancedComments = await Promise.all(
+      comments.map(async (comment) => {
+        const dto = this.toResponseDto(comment);
+        try {
+          const user = await this.userUseCase.getUserProfile(dto.userId);
+          dto.username = user.toPrimitives().username;
+        } catch (error) {
+          this.logger.warn(
+            `Could not get username for user ${dto.userId}: ${error.message}`,
+          );
+        }
+        return dto;
+      }),
+    );
+
+    return enhancedComments;
   }
 
   @Put(':id')
@@ -105,11 +134,21 @@ export class CommentController {
   @ApiOperation({ summary: 'Delete a comment by ID' })
   @ApiResponse({ status: 204, description: 'Comment deleted successfully' })
   @ApiNotFoundResponse({ description: 'Comment not found' })
-  async deleteComment(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async deleteComment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<void> {
     // check existence first
     const existing = await this.commentUseCase.getCommentById(id);
     if (!existing)
       throw new NotFoundException(`Comment with id=${id} not found`);
+
+    // Only allow the comment's author or an admin to delete
+    if (existing.userId !== user.id && !user.roles.includes('ADMIN')) {
+      throw new ForbiddenException(
+        'You are not allowed to delete this comment',
+      );
+    }
 
     await this.commentUseCase.deleteComment(id);
   }

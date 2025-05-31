@@ -64,4 +64,4 @@ RUN yarn remove bcrypt && yarn add bcrypt
 RUN chown -R nestjs:nestjs /app
 USER nestjs
 
-CMD ["sh", "-c", "yarn prisma migrate deploy --schema=libs/data-access/prisma/schema && node dist/apps/api/main.js"]
+CMD ["sh", "-c", "node dist/apps/api/main.js"]

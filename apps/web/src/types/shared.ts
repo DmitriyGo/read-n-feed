@@ -12,3 +12,10 @@ export type Leaves<T> = T extends object
   : never;
 
 export type StringRecord<T> = Record<string, T>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RouteFunction = (...args: any[]) => string;
+
+export type RouteValue =
+  | StringRecord<string | RouteFunction | StringRecord<string | RouteFunction>>
+  | string;

@@ -29,17 +29,21 @@ export class PrismaBookRepository implements IBookRepository {
   }
 
   async delete(bookId: string): Promise<void> {
-    // Delete associated records first
-    await this.prisma.bookAuthor.deleteMany({ where: { bookId } });
-    await this.prisma.bookGenre.deleteMany({ where: { bookId } });
-    await this.prisma.bookTag.deleteMany({ where: { bookId } });
-    await this.prisma.bookLike.deleteMany({ where: { bookId } });
-    await this.prisma.bookComment.deleteMany({ where: { bookId } });
-    await this.prisma.bookFile.deleteMany({ where: { bookId } });
-    await this.prisma.readingProgress.deleteMany({ where: { bookId } });
-
-    // Then delete the book
-    await this.prisma.book.delete({ where: { id: bookId } });
+    await this.prisma.$transaction(async (tx) => {
+      // Remove all relations first
+      await tx.bookAuthor.deleteMany({ where: { bookId } });
+      await tx.bookGenre.deleteMany({ where: { bookId } });
+      await tx.bookTag.deleteMany({ where: { bookId } });
+      await tx.bookLike.deleteMany({ where: { bookId } });
+      await tx.bookFavorite.deleteMany({ where: { bookId } });
+      await tx.bookComment.deleteMany({ where: { bookId } });
+      await tx.readingProgress.deleteMany({ where: { bookId } });
+      await tx.bookFile.deleteMany({ where: { bookId } });
+      await tx.bookFileRequest.deleteMany({ where: { bookId } });
+      await tx.bookRequest.deleteMany({ where: { resultingBookId: bookId } });
+      // Now delete the book itself
+      await tx.book.delete({ where: { id: bookId } });
+    });
   }
 
   async findById(bookId: string): Promise<Book | null> {

@@ -4,14 +4,19 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     ports:
-      - "3001:3001"
+      - '3001:3001'
     env_file:
       - apps/api/.env
     depends_on:
       - database
     environment:
+      - PORT=3001
       - JWT_PRIVATE_KEY_PATH=/run/secrets/jwt_private_key
       - JWT_PUBLIC_KEY_PATH=/run/secrets/jwt_public_key
+      - UPLOAD_DIR=uploads
+      - DATABASE_URL=postgresql://api:password@database:5432/read-n-feed?schema=public
+    volumes:
+      - ./uploads:/app/uploads
     secrets:
       - source: jwt_private_key
         target: jwt_private_key
@@ -28,16 +33,18 @@ services:
     volumes:
       - read_n_feed:/bitnami/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 10s
       retries: 10
+    ports:
+      - '5432:5432'
 
 secrets:
   jwt_private_key:
-    file: ./secrets/jwtRS256.key
+    file: apps/api/secrets/jwtRS256.key
   jwt_public_key:
-    file: ./secrets/jwtRS256.key.pub
+    file: apps/api/secrets/jwtRS256.key.pub
 
 volumes:
   read_n_feed:
