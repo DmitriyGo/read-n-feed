@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { ToastContainer, Bounce } from 'react-toastify';
 
 import './i18n';
@@ -16,7 +16,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <QueryClientProvider client={queryClient}>
         <ToastContainer
           position="bottom-left"
@@ -34,6 +34,6 @@ root.render(
 
         <App />
       </QueryClientProvider>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 );
