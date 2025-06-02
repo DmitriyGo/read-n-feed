@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "heroku-postbuild": "sh ./heroku-build.sh",
+    "serve-deployed:api": "node dist/apps/api/main.js",
     "serve:web": "nx serve web",
     "build:web": "nx build web",
     "serve:api": "nx serve api",
