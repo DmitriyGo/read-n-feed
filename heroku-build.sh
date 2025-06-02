@@ -10,7 +10,14 @@ if [ "$BUILD_APP" = "api" ]; then
     fi
     
     # Run regular build process
-    yarn db:generate && yarn build:api
+    echo "Generating database schema..."
+    yarn db:generate
+    
+    echo "Applying database migrations..."
+    yarn db:migrate:deploy
+    
+    echo "Building API..."
+    yarn build:api
 else 
     echo "Invalid env detected, please set BUILD_APP"
 fi
