@@ -234,15 +234,7 @@ async function createAuthors() {
       name: 'F. Scott Fitzgerald',
       bio: 'American fiction writer, Jazz Age novelist',
     },
-    {
-      name: 'Leo Tolstoy',
-      bio: 'Russian author of War and Peace and Anna Karenina',
-    },
     { name: 'Charles Dickens', bio: 'English novelist and social critic' },
-    {
-      name: 'Fyodor Dostoevsky',
-      bio: 'Russian novelist, author of Crime and Punishment',
-    },
     { name: 'Emily Brontë', bio: 'English novelist and poet' },
     { name: 'Neil Gaiman', bio: 'English author of novels and graphic novels' },
     {
@@ -430,7 +422,7 @@ async function createBooks(authors: any[], genres: any[], tags: any[]) {
       title: 'The Catcher in the Rye',
       description:
         "A teenage boy's experiences in New York City, dealing with themes of alienation and rebellion.",
-      authorIndexes: [18],
+      authorIndexes: [16],
       genreIndexes: [0, 10],
       tagIndexes: [1, 19, 7],
       publishedYear: 1951,
@@ -439,25 +431,16 @@ async function createBooks(authors: any[], genres: any[], tags: any[]) {
       title: 'The Hobbit',
       description:
         'The journey of Bilbo Baggins to help a group of dwarves reclaim their mountain home from a dragon.',
-      authorIndexes: [19],
+      authorIndexes: [17],
       genreIndexes: [5],
       tagIndexes: [17, 16, 6],
       publishedYear: 1937,
     },
     {
-      title: 'Crime and Punishment',
-      description:
-        'A novel about a poor ex-student who murders a pawnbroker for her money, dealing with themes of guilt and redemption.',
-      authorIndexes: [12],
-      genreIndexes: [0],
-      tagIndexes: [1, 7, 14],
-      publishedYear: 1866,
-    },
-    {
       title: 'One Hundred Years of Solitude',
       description:
         'The multi-generational story of the Buendía family in the fictional Colombian town of Macondo.',
-      authorIndexes: [16],
+      authorIndexes: [13],
       genreIndexes: [0],
       tagIndexes: [1, 23, 7],
       publishedYear: 1967,
@@ -475,7 +458,7 @@ async function createBooks(authors: any[], genres: any[], tags: any[]) {
       title: 'The Lord of the Rings',
       description:
         "An epic fantasy adventure about a hobbit's quest to destroy a powerful ring and defeat the Dark Lord Sauron.",
-      authorIndexes: [19],
+      authorIndexes: [17],
       genreIndexes: [5],
       tagIndexes: [17, 16, 6],
       publishedYear: 1954,
@@ -484,7 +467,7 @@ async function createBooks(authors: any[], genres: any[], tags: any[]) {
       title: 'Wuthering Heights',
       description:
         'A passionate and turbulent story of love, revenge, and social conflict set on the Yorkshire moors.',
-      authorIndexes: [12],
+      authorIndexes: [11],
       genreIndexes: [0, 6],
       tagIndexes: [1, 11, 12],
       publishedYear: 1847,
@@ -508,19 +491,10 @@ async function createBooks(authors: any[], genres: any[], tags: any[]) {
       publishedYear: 1851,
     },
     {
-      title: 'Anna Karenina',
-      description:
-        'A complex novel about family, society, and the tragic consequences of an affair in Russian high society.',
-      authorIndexes: [9],
-      genreIndexes: [0, 6],
-      tagIndexes: [1, 7, 12],
-      publishedYear: 1877,
-    },
-    {
       title: "The Handmaid's Tale",
       description:
         'A dystopian novel set in a near-future totalitarian state where fertile women are forced into reproductive servitude.',
-      authorIndexes: [17],
+      authorIndexes: [14],
       genreIndexes: [0, 4, 5],
       tagIndexes: [15, 7, 21],
       publishedYear: 1985,
@@ -529,7 +503,7 @@ async function createBooks(authors: any[], genres: any[], tags: any[]) {
       title: 'The Picture of Dorian Gray',
       description:
         'A philosophical novel about a man whose portrait ages while he remains young and beautiful.',
-      authorIndexes: [20],
+      authorIndexes: [18],
       genreIndexes: [0, 7],
       tagIndexes: [1, 7, 14],
       publishedYear: 1890,
