@@ -7,7 +7,7 @@ export const env = createEnv({
     VITE_API_URL: z
       .string()
       .optional()
-      .default('http://localhost:3001/api/v1/'),
+      .default('https://read-n-feed-39b9ab54176b.herokuapp.com/api/v1/'),
     VITE_ADMIN_EMAIL: z.string().optional().default('yaroslav.syvukha@nure.ua'),
   },
   runtimeEnv: import.meta.env,
