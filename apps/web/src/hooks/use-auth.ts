@@ -17,6 +17,8 @@ export const useAuth = () => {
   const clearAccessToken = useCallback(() => {
     setAccessToken(null);
     localStorage.removeItem('accessToken');
+    console.log('Access token cleared');
+    console.log(localStorage.getItem('accessToken'));
   }, [setAccessToken]);
 
   return {
