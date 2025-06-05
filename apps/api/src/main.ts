@@ -50,7 +50,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: 'https://dmitriygo.github.io/read-n-feed/',
+    origin: 'https://dmitriygo.github.io',
     credentials: true,
   });
 
