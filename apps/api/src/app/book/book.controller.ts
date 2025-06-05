@@ -314,6 +314,7 @@ export class BookController {
     description: 'Returns the book with relationship information',
     type: BookResponseDto,
   })
+  @Public()
   @ApiNotFoundResponse({ description: 'Book not found' })
   async getBook(
     @Param('id', ParseUUIDPipe) id: string,
