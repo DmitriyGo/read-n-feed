@@ -10,9 +10,9 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: async () => {
-      await axiosSecure.post(ApiRoute.Auth.Logout);
-
       clearAccessToken();
+
+      await axiosSecure.post(ApiRoute.Auth.Logout);
     },
     onError: (error) => {
       console.error(error);
