@@ -68,7 +68,9 @@ export class UserController {
     @Body('avatarUrl') avatarUrl: string,
   ): Promise<UserResponseDto> {
     const userId = req.user['id'];
-    const updated = await this.userUseCase.updateUserProfile(userId, { avatarUrl });
+    const updated = await this.userUseCase.updateUserProfile(userId, {
+      avatarUrl,
+    });
     return toUserResponseDto(updated);
   }
 }

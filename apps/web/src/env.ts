@@ -12,3 +12,5 @@ export const env = createEnv({
   },
   runtimeEnv: import.meta.env,
 });
+
+console.log(env, import.meta.env);
