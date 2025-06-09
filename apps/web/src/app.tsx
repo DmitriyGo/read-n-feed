@@ -49,11 +49,13 @@ export function App() {
 
           await axiosSecure.get(ApiRoute.Users.Me);
 
-          return setIsReady(true);
+          setIsReady(true);
+          return;
         } catch {
           clearAccessToken();
           localStorage.removeItem('accessToken');
           console.error('Access token is invalid!');
+          setIsReady(true);
         }
       }
 
@@ -66,11 +68,11 @@ export function App() {
         );
 
         setAccessToken(accessToken);
-
-        setIsReady(true);
       } catch {
         clearAccessToken();
       }
+
+      setIsReady(true);
     })();
   }, [isReady]);
 
