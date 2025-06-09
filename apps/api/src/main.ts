@@ -50,8 +50,10 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    // origin: 'http://localhost:4200',
-    origin: 'https://dmitriygo.github.io',
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? 'https://dmitriygo.github.io'
+        : ['http://localhost:4200', 'http://localhost:4300'],
     credentials: true,
   });
 
@@ -94,7 +96,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 3001;
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,

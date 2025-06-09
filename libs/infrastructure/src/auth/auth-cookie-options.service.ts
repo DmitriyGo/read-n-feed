@@ -17,12 +17,20 @@ export class AuthCookieOptionsService {
     );
     this.cookieMaxAge = days * 24 * 60 * 60 * 1000;
 
+    let cookieDomain: string | undefined;
+    if (this.isDev) {
+      cookieDomain = 'localhost';
+    } else {
+      cookieDomain = 'dmitriygo.github.io';
+    }
+
     this.cookieOptions = {
       httpOnly: true,
       secure: !this.isDev,
-      sameSite: 'strict',
+      sameSite: this.isDev ? 'lax' : 'strict',
       maxAge: this.cookieMaxAge,
       path: '/',
+      domain: cookieDomain,
     };
   }
 
