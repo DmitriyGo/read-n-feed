@@ -5,13 +5,13 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
-import { useAuth } from './hooks';
-import { axiosSecure } from './lib';
+import { authApi } from './api/auth.api';
+import { useAuth, useCurrentUser } from './hooks';
 import { RequestsLayout } from './pages/requests/layout';
-import { useAuthStore, useFilterStore } from './store';
+import { useFilterStore } from './store';
 
 import { Layout, RequiresRoleLayout } from '@/components/common';
-import { ApiRoute, Route } from '@/constants';
+import { Route } from '@/constants';
 import {
   HomePage,
   ProfilePage,
@@ -27,11 +27,19 @@ import {
 } from '@/pages';
 
 export function App() {
-  const { isReady, setIsReady, clearAccessToken } = useAuth();
-  const { setAccessToken } = useAuthStore();
+  const {
+    isReady,
+    setIsReady,
+    clearAuthData,
+    handleSetAccessToken,
+    handleSetUser,
+  } = useAuth();
   const { init } = useFilterStore();
   const [searchParams] = useSearchParams();
   const hasStarted = useRef(false);
+
+  // This will automatically fetch user data when accessToken is available
+  useCurrentUser();
 
   useLayoutEffect(() => {
     (async () => {
@@ -39,42 +47,30 @@ export function App() {
         return;
       }
 
+      hasStarted.current = true;
       init(searchParams);
 
-      const accessToken = localStorage.getItem('accessToken');
-
-      if (accessToken) {
-        try {
-          setAccessToken(accessToken);
-
-          await axiosSecure.get(ApiRoute.Users.Me);
-
-          setIsReady(true);
-          return;
-        } catch {
-          clearAccessToken();
-          localStorage.removeItem('accessToken');
-          console.error('Access token is invalid!');
-          setIsReady(true);
-        }
-      }
-
       try {
-        hasStarted.current = true;
-        const {
-          data: { accessToken },
-        } = await axiosSecure.get<{ accessToken: string }>(
-          ApiRoute.Auth.Refresh,
-        );
+        const { accessToken: newToken } = await authApi.refresh();
+        handleSetAccessToken(newToken);
 
-        setAccessToken(accessToken);
+        const userData = await authApi.getCurrentUser();
+        handleSetUser(userData);
       } catch {
-        clearAccessToken();
+        clearAuthData();
       }
 
       setIsReady(true);
     })();
-  }, [isReady]);
+  }, [
+    isReady,
+    handleSetAccessToken,
+    handleSetUser,
+    clearAuthData,
+    setIsReady,
+    init,
+    searchParams,
+  ]);
 
   return (
     <Routes>

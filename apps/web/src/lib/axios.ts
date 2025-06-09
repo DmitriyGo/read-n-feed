@@ -1,52 +1,136 @@
-import Axios from 'axios';
+import Axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 import { ApiRoute } from '@/constants';
 import { env } from '@/env';
 import { useAuthStore } from '@/store/auth-store';
+import { AuthTokens } from '@/types/auth.types';
 
 export const axiosBase = Axios.create({
   baseURL: env.VITE_API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 export const axiosSecure = Axios.create({
   baseURL: env.VITE_API_URL,
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-axiosSecure.interceptors.request.use((config) => {
-  const accessToken = useAuthStore.getState().accessToken;
+axiosSecure.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const accessToken = useAuthStore.getState().accessToken;
 
-  if (accessToken) {
-    config.headers.Authorization = accessToken;
-  }
+    if (accessToken && config.headers) {
+      config.headers.Authorization = accessToken;
+    }
 
-  return config;
-});
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+const subscribeTokenRefresh = (cb: (token: string) => void) => {
+  refreshSubscribers.push(cb);
+};
+
+const onTokenRefreshed = (token: string) => {
+  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers = [];
+};
+
+const clearAuth = () => {
+  useAuthStore.getState().clearAuth();
+};
 
 axiosSecure.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    // Check if error is 401 and we haven't already tried to refresh
     if (
       error.response?.status === 401 &&
-      [
+      !originalRequest._retry &&
+      // Don't retry for auth endpoints to prevent infinite loops
+      ![
         ApiRoute.Auth.Refresh,
         ApiRoute.Auth.Register,
         ApiRoute.Auth.Login,
-      ].every((route) => route !== error.response.config.url)
+      ].some((route) => originalRequest.url?.includes(route))
     ) {
-      useAuthStore.getState().setAccessToken(null);
+      originalRequest._retry = true;
 
-      const {
-        data: { accessToken },
-      } = await axiosSecure.get<{ accessToken: string }>(ApiRoute.Auth.Refresh);
+      if (!isRefreshing) {
+        isRefreshing = true;
 
-      useAuthStore.getState().setAccessToken(accessToken);
+        try {
+          const response = await axiosSecure.get<AuthTokens>(
+            ApiRoute.Auth.Refresh,
+          );
+          const { accessToken } = response.data;
 
-      error.config.headers.Authorization = accessToken;
+          // Update auth store with new token
+          useAuthStore.getState().setAccessToken(accessToken);
 
-      return axiosSecure.request(error.config);
+          // Notify all queued requests
+          onTokenRefreshed(accessToken);
+
+          // Retry the original request with new token
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = accessToken;
+          }
+
+          return axiosSecure.request(originalRequest);
+        } catch (refreshError) {
+          // Refresh failed, clear auth state
+          clearAuth();
+
+          // Notify queued requests of failure
+          refreshSubscribers.forEach((cb) => cb(''));
+          refreshSubscribers = [];
+
+          return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
+        }
+      } else {
+        // If refresh is already in progress, queue this request
+        return new Promise((resolve, reject) => {
+          subscribeTokenRefresh((token: string) => {
+            if (token) {
+              if (originalRequest.headers) {
+                originalRequest.headers.Authorization = token;
+              }
+              resolve(axiosSecure.request(originalRequest));
+            } else {
+              reject(new Error('Token refresh failed'));
+            }
+          });
+        });
+      }
     }
 
-    return Promise.reject(error.response.data.message);
+    // For other errors, reject with the error message or the full error
+    if (
+      error.response?.data &&
+      typeof error.response.data === 'object' &&
+      'message' in error.response.data
+    ) {
+      return Promise.reject(
+        (error.response.data as { message: string }).message,
+      );
+    }
+
+    return Promise.reject(error);
   },
 );

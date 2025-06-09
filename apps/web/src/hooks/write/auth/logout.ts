@@ -1,21 +1,26 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '../../use-auth';
 
-import { ApiRoute } from '@/constants';
-import { axiosSecure } from '@/lib';
+import { authApi } from '@/api/auth.api';
 
 export const useLogout = () => {
-  const { clearAccessToken } = useAuth();
+  const { clearAuthData } = useAuth();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      clearAccessToken();
-
-      await axiosSecure.post(ApiRoute.Auth.Logout);
+      await authApi.logout();
     },
-    onError: (error) => {
-      console.error(error);
+    onSuccess: () => {
+      clearAuthData();
+      queryClient.clear();
+    },
+    onError: (error: any) => {
+      // Even if logout fails on server, clear local state
+      clearAuthData();
+      queryClient.clear();
+      console.error('Logout error:', error);
     },
   });
 };

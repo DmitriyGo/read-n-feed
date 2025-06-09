@@ -1,11 +1,9 @@
-import { UserResponseDto } from '@read-n-feed/application';
 import { isDefined } from '@read-n-feed/shared';
 import { useQuery } from '@tanstack/react-query';
 
-import { ApiRoute } from '@/constants';
-import { QueryKey } from '@/constants/query-key';
+import { authApi } from '@/api/auth.api';
+import { QueryKey } from '@/constants';
 import { useAuth } from '@/hooks/use-auth';
-import { axiosSecure } from '@/lib';
 
 export const useGetProfile = () => {
   const { accessToken } = useAuth();
@@ -13,8 +11,11 @@ export const useGetProfile = () => {
   return useQuery({
     queryKey: [QueryKey.Users.Profile, accessToken],
     queryFn: async () => {
-      return axiosSecure.get<UserResponseDto>(ApiRoute.Users.Me);
+      const userData = await authApi.getCurrentUser();
+      return { data: userData };
     },
     enabled: isDefined(accessToken),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 };
