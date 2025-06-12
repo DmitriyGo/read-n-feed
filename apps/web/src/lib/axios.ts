@@ -8,17 +8,11 @@ import { AuthTokens } from '@/types/auth.types';
 export const axiosBase = Axios.create({
   baseURL: env.VITE_API_URL,
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 export const axiosSecure = Axios.create({
   baseURL: env.VITE_API_URL,
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 axiosSecure.interceptors.request.use(
