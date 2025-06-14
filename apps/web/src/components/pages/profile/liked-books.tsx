@@ -1,3 +1,4 @@
+import { isDefined } from '@read-n-feed/shared';
 import { useTranslation } from 'react-i18next';
 
 import { BookCard } from '../books';
@@ -12,14 +13,17 @@ export const LikedBooks = () => {
 
   const likedBooks = data?.data;
 
+  if (!isDefined(likedBooks) || likedBooks.length === 0) {
+    return null;
+  }
+
   return (
     <Card>
       <CardHeader>{t('yourLikedBooks')}:</CardHeader>
       <CardContent className="flex flex-row gap-4 p-0 overflow-auto">
-        {likedBooks?.length &&
-          likedBooks.map((book) => (
-            <BookCard key={book.id} isSimplified book={book} />
-          ))}
+        {likedBooks.map((book) => (
+          <BookCard key={book.id} isSimplified book={book} />
+        ))}
       </CardContent>
     </Card>
   );

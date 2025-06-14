@@ -14,6 +14,7 @@ enum ApiControllers {
   FileRequests = 'book-file-requests',
   FileRequestsAdmin = 'admin/book-file-requests',
   Recommendations = 'recommendations',
+  FileUpload = 'file-upload',
 }
 
 export const ApiRoute = {
@@ -30,6 +31,7 @@ export const ApiRoute = {
   Users: {
     Me: `${ApiControllers.Users}/me`,
     UpdateMe: `${ApiControllers.Users}/me`,
+    UpdateAvatar: `${ApiControllers.Users}/me/avatar`,
     Get: (userId: string) => `${ApiControllers.Users}/${userId}`,
     Block: (userId: string) => `${ApiControllers.Users}/${userId}/block`,
     Unblock: (userId: string) => `${ApiControllers.Users}/${userId}/unblock`,
@@ -155,5 +157,9 @@ export const ApiRoute = {
     GetByAuthor: (authorId: string) =>
       `${ApiControllers.Recommendations}/author/${authorId}`,
     SaveFeedback: `${ApiControllers.Recommendations}/feedback`,
+  },
+  FileUpload: {
+    UserAvatar: 'file-upload/user-avatar',
+    BookCover: (bookId: string) => `file-upload/book-cover/${bookId}`,
   },
 } as const satisfies Record<keyof typeof ApiControllers, RouteValue>;

@@ -13,16 +13,17 @@ model Book {
   updatedAt       DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  authors         BookAuthor[]
-  genres          BookGenre[]
-  tags            BookTag[]
-  likes           BookLike[]
-  favorites       BookFavorite[]
-  comments        BookComment[]
-  progress        ReadingProgress[]
-  bookFiles       BookFile[]
-  BookRequest     BookRequest[]
-  BookFileRequest BookFileRequest[]
+  authors          BookAuthor[]
+  genres           BookGenre[]
+  tags             BookTag[]
+  likes            BookLike[]
+  favorites        BookFavorite[]
+  comments         BookComment[]
+  progress         ReadingProgress[]
+  bookFiles        BookFile[]
+  BookRequest      BookRequest[]
+  BookFileRequest  BookFileRequest[]
+  BookImageRequest BookImageRequest[]
 
   @@index([title])
   @@map("book")

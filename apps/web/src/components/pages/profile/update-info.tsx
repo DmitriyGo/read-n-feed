@@ -47,6 +47,22 @@ const formSchema = z.object({
     .transform((value) => {
       return value === '' ? undefined : value.trim();
     }),
+  age: z
+    .string()
+    .refine(
+      (age) => {
+        if (age === '') return true;
+        const ageNum = parseInt(age, 10);
+        return !isNaN(ageNum) && ageNum >= 13 && ageNum <= 120;
+      },
+      {
+        message: 'invalidAge',
+      },
+    )
+    .transform((value) => {
+      if (value === '') return undefined;
+      return parseInt(value, 10);
+    }),
 });
 
 type UpdateProfileFormSchema = z.infer<typeof formSchema>;
@@ -62,12 +78,14 @@ export const UpdateProfileInfo = () => {
     defaultValues: {
       firstName: '',
       lastName: '',
+      age: 18,
     },
   });
 
   const clearForm = async () => {
     form.resetField('firstName');
     form.resetField('lastName');
+    form.resetField('age');
   };
 
   const onSubmit = async (values: UpdateProfileFormSchema) => {
@@ -75,6 +93,7 @@ export const UpdateProfileInfo = () => {
       await updateProfile({
         ...(values.firstName && { firstName: values.firstName }),
         ...(values.lastName && { lastName: values.lastName }),
+        ...(values.age && { age: values.age }),
       });
 
       clearForm();
@@ -117,6 +136,24 @@ export const UpdateProfileInfo = () => {
                   <FormLabel>{t('lastName')}</FormLabel>
                   <FormControl>
                     <Input placeholder={t('doe')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('age')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder={t('agePlaceholder')}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

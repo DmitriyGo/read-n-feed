@@ -5,6 +5,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Header } from './header';
 import { FullPageLoader } from '../loader';
 import { ModalManager } from '../modal-manager';
+import { Footer } from './footer';
 
 import { Route } from '@/constants';
 import { useHasRole } from '@/hooks';
@@ -16,9 +17,11 @@ export const Layout = () => {
 
       <ModalManager />
 
-      <div className="container">
+      <div className="custom-container w-[90%] md:w-3/4 min-h-[85vh]">
         <Outlet />
       </div>
+
+      <Footer />
     </>
   );
 };

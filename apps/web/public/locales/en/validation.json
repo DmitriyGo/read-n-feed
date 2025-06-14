@@ -10,5 +10,7 @@
   "passwordCannotBeEmpty": "Password cannot be empty",
   "passwordTooShort": "Length of the password cannot be less than 8",
   "passwordsDoNotMatch": "Passwords do not match",
-  "rejectionReasonRequired": "Rejection reason is required"
+  "rejectionReasonRequired": "Rejection reason is required",
+  "fileNameTooShort": "File name must be at least 5 characters long",
+  "invalidAge": "Age must be between 13 and 120"
 }

@@ -25,7 +25,7 @@ export const AdminRequestsLayout = () => {
 
   return (
     <div>
-      <nav className="flex gap-4 mb-4">
+      <nav className="flex gap-4 mb-4 max-md:flex-col">
         {RequestsRoutes.map((route) => (
           <Link key={route.name} to={route.href}>
             <Button

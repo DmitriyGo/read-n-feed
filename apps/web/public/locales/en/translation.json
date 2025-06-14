@@ -130,5 +130,20 @@
   "viewDetails": "View Details",
   "recommendations": "Recommendations",
   "yourLikedBooks": "Your Liked Books",
-  "favorites": "Favorites"
+  "favorites": "Favorites",
+  "age": "Age",
+  "agePlaceholder": "Your age (optional)",
+  "invalidAge": "Invalid age",
+  "width": "Width",
+  "language": "Language",
+  "ua": "Ukrainian",
+  "en": "English",
+  "allRightsReserved": "All rights reserved",
+  "contactAdminPrompt": "In case of any problems, please contact our administration: ",
+  "updateYourAvatar": "Update Your Avatar",
+  "onlyImagesAllowed": "Only image files are allowed",
+  "imageTooLarge": "Image must be less than 5MB",
+  "imageRequirements": "Select an image file (max 5MB). Supported formats: JPG, PNG, GIF, WebP",
+  "avatarUpdated": "Avatar updated successfully",
+  "failedToUpdateAvatar": "Failed to update avatar"
 }

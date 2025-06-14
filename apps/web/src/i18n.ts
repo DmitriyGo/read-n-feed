@@ -9,7 +9,7 @@ i18next
     lng: localStorage.getItem('i18nextLng') ?? undefined,
     supportedLngs: ['en', 'ua'],
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/read-n-feed/locales/{{lng}}/{{ns}}.json',
     },
     fallbackLng: 'en',
     interpolation: {

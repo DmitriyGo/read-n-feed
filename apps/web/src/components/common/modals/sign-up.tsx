@@ -67,6 +67,22 @@ const formSchema = (t: (key: string) => string) =>
         .transform((value) => {
           return value === '' ? undefined : value.trim();
         }),
+      age: z.coerce
+        .string()
+        .refine(
+          (age) => {
+            if (age === '') return true;
+            const ageNum = parseInt(age, 10);
+            return !isNaN(ageNum) && ageNum >= 13 && ageNum <= 120;
+          },
+          {
+            message: t('invalidAge'),
+          },
+        )
+        .transform((value) => {
+          if (value === '') return undefined;
+          return parseInt(value, 10);
+        }),
     })
     .refine((data) => data.password === data.passwordRepeat, {
       message: t('passwordsDoNotMatch'),
@@ -89,6 +105,7 @@ export function SignUpModal() {
       passwordRepeat: '',
       firstName: '',
       lastName: '',
+      age: 18,
     },
   });
 
@@ -100,6 +117,7 @@ export function SignUpModal() {
         username: values.username,
         ...(values.firstName && { firstName: values.firstName }),
         ...(values.lastName && { lastName: values.lastName }),
+        ...(values.age && { age: values.age }),
       });
 
       setMode(null);
@@ -200,6 +218,24 @@ export function SignUpModal() {
               <FormLabel>{t('lastName')}</FormLabel>
               <FormControl>
                 <Input placeholder={t('doe')} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="age"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('age')}</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder={t('agePlaceholder')}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

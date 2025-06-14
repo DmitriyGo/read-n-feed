@@ -1,3 +1,4 @@
+import { isDefined } from '@read-n-feed/shared';
 import { useTranslation } from 'react-i18next';
 
 import { BookCard } from '../books';
@@ -11,6 +12,10 @@ export const FavouriteBooks = () => {
   const { data } = useGetFavouriteBooks();
 
   const favouriteBooks = data?.data;
+
+  if (!isDefined(favouriteBooks) || favouriteBooks.length === 0) {
+    return null;
+  }
 
   return (
     <Card>

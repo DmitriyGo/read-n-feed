@@ -3,6 +3,7 @@ import {
   LikedBooks,
   ShowProfileInfo,
   UpdateProfileInfo,
+  UpdateProfileAvatar,
 } from '@/components/pages';
 
 export const ProfilePage = () => {
@@ -10,6 +11,7 @@ export const ProfilePage = () => {
     <>
       <ShowProfileInfo />
 
+      <UpdateProfileAvatar />
       <UpdateProfileInfo />
 
       <LikedBooks />

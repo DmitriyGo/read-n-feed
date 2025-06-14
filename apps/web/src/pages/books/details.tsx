@@ -1,16 +1,19 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import {
-  BookComments,
-  BookDetails,
-  BookFiles,
-} from '@/components/pages/books/details';
-import { useBookById } from '@/hooks/read/books/get-book';
+import { BookComments, BookDetails, BookFiles } from '@/components/pages';
+import { Route } from '@/constants';
+import { useBookById } from '@/hooks';
 
 export const BookDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const { data } = useBookById(id);
+
+  if (!id) {
+    navigate(Route.Book.Search);
+    return null;
+  }
 
   return (
     <div className="space-y-4">

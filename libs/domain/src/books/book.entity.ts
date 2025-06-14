@@ -72,6 +72,11 @@ export class Book {
     this.props.updatedAt = new Date();
   }
 
+  update(props: Partial<Omit<BookProps, 'id' | 'createdAt'>>) {
+    Object.assign(this.props, props);
+    this.props.updatedAt = new Date();
+  }
+
   toPrimitives(): BookProps {
     return { ...this.props };
   }
