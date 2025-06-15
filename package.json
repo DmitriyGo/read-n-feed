@@ -71,6 +71,7 @@
     "i18next": "^25.2.1",
     "i18next-http-backend": "^3.0.2",
     "lucide-react": "^0.473.0",
+    "metro-react-native-babel-transformer": "^0.77.0",
     "multer": "^1.4.5-lts.1",
     "nestjs-pino": "^4.2.0",
     "passport": "^0.7.0",

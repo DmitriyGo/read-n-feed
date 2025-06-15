@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BookResponseDto, BookFileResponseDto } from '@read-n-feed/application';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -14,9 +15,6 @@ import {
   RefreshControl,
   TextInput,
   Button,
-  Modal,
-  Pressable,
-  Platform,
   ScrollView,
 } from 'react-native';
 
@@ -35,6 +33,8 @@ export function HomeScreen() {
   const [bookFiles, setBookFiles] = useState<
     Record<string, BookFileResponseDto[]>
   >({});
+
+  const { t } = useTranslation();
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -223,7 +223,7 @@ export function HomeScreen() {
                 }
               }}
             >
-              <Text style={styles.readButtonText}>Read</Text>
+              <Text style={styles.readButtonText}>{t('homeScreen.read')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -233,7 +233,7 @@ export function HomeScreen() {
 
   const renderEmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No books available</Text>
+      <Text style={styles.emptyText}>{t('homeScreen.noBooks')}</Text>
     </View>
   );
 
@@ -251,30 +251,30 @@ export function HomeScreen() {
         style={styles.filterButton}
         onPress={() => setShowFilters((v) => !v)}
       >
-        <Text style={styles.filterButtonText}>Filters</Text>
+        <Text style={styles.filterButtonText}>{t('homeScreen.filters')}</Text>
       </TouchableOpacity>
       {showFilters && (
         <ScrollView
           style={styles.filterPanel}
           contentContainerStyle={{ paddingBottom: 16 }}
         >
-          <Text style={styles.filterLabel}>Title</Text>
+          <Text style={styles.filterLabel}>{t('homeScreen.title')}</Text>
           <TextInput
-            placeholder="Title"
+            placeholder={t('homeScreen.title')}
             value={filters.title}
             onChangeText={(text) => setFilters((f) => ({ ...f, title: text }))}
             style={styles.input}
           />
-          <Text style={styles.filterLabel}>Author</Text>
+          <Text style={styles.filterLabel}>{t('homeScreen.author')}</Text>
           <TextInput
-            placeholder="Author"
+            placeholder={t('homeScreen.author')}
             value={filters.authorName}
             onChangeText={(text) =>
               setFilters((f) => ({ ...f, authorName: text }))
             }
             style={styles.input}
           />
-          <Text style={styles.filterLabel}>Genre</Text>
+          <Text style={styles.filterLabel}>{t('homeScreen.genre')}</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={filters.genreId}
@@ -283,13 +283,13 @@ export function HomeScreen() {
               }
               style={styles.picker}
             >
-              <Picker.Item label="All Genres" value="" />
+              <Picker.Item label={t('homeScreen.allGenres')} value="" />
               {genres.map((g) => (
                 <Picker.Item key={g.id} label={g.name} value={g.id} />
               ))}
             </Picker>
           </View>
-          <Text style={styles.filterLabel}>Tag</Text>
+          <Text style={styles.filterLabel}>{t('homeScreen.tag')}</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={filters.tagId}
@@ -298,13 +298,13 @@ export function HomeScreen() {
               }
               style={styles.picker}
             >
-              <Picker.Item label="All Tags" value="" />
+              <Picker.Item label={t('homeScreen.allTags')} value="" />
               {tags.map((t) => (
                 <Picker.Item key={t.id} label={t.label} value={t.id} />
               ))}
             </Picker>
           </View>
-          <Text style={styles.filterLabel}>Sort By</Text>
+          <Text style={styles.filterLabel}>{t('homeScreen.sortBy')}</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={filters.sortBy}
@@ -313,12 +313,15 @@ export function HomeScreen() {
               }
               style={styles.picker}
             >
-              <Picker.Item label="Newest" value="createdAt" />
-              <Picker.Item label="Title" value="title" />
-              <Picker.Item label="Publication Date" value="publicationDate" />
+              <Picker.Item label={t('homeScreen.newest')} value="createdAt" />
+              <Picker.Item label={t('homeScreen.title')} value="title" />
+              <Picker.Item
+                label={t('homeScreen.publicationDate')}
+                value="publicationDate"
+              />
             </Picker>
           </View>
-          <Text style={styles.filterLabel}>Sort Order</Text>
+          <Text style={styles.filterLabel}>{t('homeScreen.sortOrder')}</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={filters.sortOrder}
@@ -327,13 +330,17 @@ export function HomeScreen() {
               }
               style={styles.picker}
             >
-              <Picker.Item label="Descending" value="desc" />
-              <Picker.Item label="Ascending" value="asc" />
+              <Picker.Item label={t('homeScreen.descending')} value="desc" />
+              <Picker.Item label={t('homeScreen.ascending')} value="asc" />
             </Picker>
           </View>
           <View style={styles.filterActions}>
-            <Button title="Apply" onPress={applyFilters} />
-            <Button title="Clear" onPress={clearFilters} color="red" />
+            <Button title={t('homeScreen.apply')} onPress={applyFilters} />
+            <Button
+              title={t('homeScreen.clear')}
+              onPress={clearFilters}
+              color="red"
+            />
           </View>
         </ScrollView>
       )}
@@ -445,6 +452,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     padding: 12,
     borderRadius: 8,
+    margin: 8,
     alignSelf: 'flex-end',
   },
   filterButtonText: {

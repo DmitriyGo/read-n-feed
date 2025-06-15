@@ -1,6 +1,5 @@
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BookRequestResponseDto } from '@read-n-feed/application';
 import * as DocumentPicker from 'expo-document-picker';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +64,7 @@ export const EditBookRequestScreen = () => {
       ? bookRequest.genreNames.join(', ')
       : bookRequest.genreNames || '',
     publicationDate: bookRequest.publicationDate
-      ? String(bookRequest.publicationDate)
+      ? String(bookRequest.publicationDate).split('T')[0]
       : '',
     publisher: bookRequest.publisher || '',
     tagLabels: Array.isArray(bookRequest.tagLabels)
