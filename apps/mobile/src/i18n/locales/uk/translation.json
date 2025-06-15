@@ -63,5 +63,24 @@
       "selectFile": "Вибрати файл",
       "submit": "Відправити запит"
     }
+  },
+  "homeScreen": {
+    "noBooks": "Книг немає",
+    "read": "Читати",
+    "filters": "Фільтри",
+    "title": "Назва",
+    "author": "Автор",
+    "genre": "Жанр",
+    "allGenres": "Всі жанри",
+    "tag": "Тег",
+    "allTags": "Всі теги",
+    "sortBy": "Сортувати за",
+    "newest": "Найновіші",
+    "publicationDate": "Дата публікації",
+    "sortOrder": "Порядок сортування",
+    "ascending": "За зростанням",
+    "descending": "За спаданням",
+    "apply": "Застосувати",
+    "clear": "Очистити"
   }
 }

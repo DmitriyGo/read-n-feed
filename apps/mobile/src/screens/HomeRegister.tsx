@@ -36,15 +36,9 @@ export default function HomeRegister() {
     if (isValid) {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.post('/auth/register', formData);
+        await axiosInstance.post('/auth/register', formData);
 
-        if (response.data.accessToken) {
-          await AsyncStorage.setItem('token', response.data.accessToken);
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Main' }],
-          });
-        }
+        navigation.navigate('Auth', { screen: 'HomeLogin' });
       } catch (err: any) {
         const errorMessage =
           err.response?.data?.message || 'Registration failed';
