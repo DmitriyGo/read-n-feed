@@ -63,5 +63,24 @@
       "selectFile": "Select File",
       "submit": "Submit Request"
     }
+  },
+  "homeScreen": {
+    "noBooks": "No books available",
+    "read": "Read",
+    "filters": "Filters",
+    "title": "Title",
+    "author": "Author",
+    "genre": "Genre",
+    "allGenres": "All Genres",
+    "tag": "Tag",
+    "allTags": "All Tags",
+    "sortBy": "Sort By",
+    "newest": "Newest",
+    "publicationDate": "Publication Date",
+    "sortOrder": "Sort Order",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "apply": "Apply",
+    "clear": "Clear"
   }
 }
