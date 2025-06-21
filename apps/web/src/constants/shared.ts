@@ -17,6 +17,15 @@ export const FileFormats = [
   'MOBI',
 ] as const satisfies FileFormat[];
 
+export type ImageFormat = 'JPG' | 'JPEG' | 'PNG' | 'WEBP' | 'GIF';
+export const ImageFormats = [
+  'JPG',
+  'JPEG',
+  'PNG',
+  'WEBP',
+  'GIF',
+] as const satisfies ImageFormat[];
+
 export const AcceptedStatuses = [
   'APPROVED',
   'PENDING',

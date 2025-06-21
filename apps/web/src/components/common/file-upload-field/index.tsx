@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 type FileUploadFieldProps<TFieldValues extends FieldValues> = {
   field: ControllerRenderProps<TFieldValues, Path<TFieldValues>>;
   label: string;
-  acceptedFormats?: FileFormat[];
+  acceptedFormats?: readonly string[];
   className?: string;
   required?: boolean;
 };

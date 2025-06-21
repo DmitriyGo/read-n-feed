@@ -18,7 +18,7 @@ import {
   FormMessage,
   Textarea,
 } from '@/components/ui';
-import { SupportedLanguages } from '@/constants';
+import { SupportedLanguages, ImageFormats } from '@/constants';
 import { useCreateBookRequest } from '@/hooks';
 import { clearObject, validateFile, getFileExtension } from '@/lib';
 import { useModalStore } from '@/store';
@@ -38,6 +38,12 @@ const formSchema = (t: (key: string) => string) =>
     file: z.any().refine((file) => file instanceof File, {
       message: t('fileIsRequired'),
     }),
+    coverImage: z
+      .any()
+      .optional()
+      .refine((file) => !file || file instanceof File, {
+        message: t('invalidCoverImage'),
+      }),
   });
 
 type CreateRequestSchema = z.infer<ReturnType<typeof formSchema>>;
@@ -67,11 +73,28 @@ export function CreateBookRequestModal() {
     try {
       const data = clearObject(values) as CreateRequestSchema;
       const file = data.file as File;
+      const coverImage = data.coverImage as File | undefined;
 
       const fileValidation = validateFile(file);
       if (!fileValidation.valid) {
         toast.error(fileValidation.error);
         return;
+      }
+
+      // Validate cover image if provided
+      if (coverImage) {
+        // Check if it's an image file
+        if (!coverImage.type.startsWith('image/')) {
+          toast.error(t('coverImageMustBeImage'));
+          return;
+        }
+
+        // Check file size (max 5MB for images)
+        const fileSizeInMB = coverImage.size / (1024 * 1024);
+        if (fileSizeInMB > 5) {
+          toast.error(t('coverImageTooLarge'));
+          return;
+        }
       }
 
       const fileFormat = getFileExtension(file);
@@ -83,6 +106,7 @@ export function CreateBookRequestModal() {
         tagLabels: data.tagLabels?.split(',').map((name) => name.trim()),
         fileFormat: fileFormat,
         file: file,
+        coverImage: coverImage,
       });
 
       toast.success(t('requestCreatedSuccessfully'));
@@ -233,6 +257,19 @@ export function CreateBookRequestModal() {
               </FormControl>
               <FormMessage />
             </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="coverImage"
+          render={({ field }) => (
+            <FileUploadField
+              field={field}
+              label={t('uploadCoverImage')}
+              acceptedFormats={ImageFormats}
+              required={false}
+            />
           )}
         />
 
