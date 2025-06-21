@@ -432,7 +432,7 @@ export class BookRequestController {
     }
 
     // Handle cover image upload if provided
-    if (files.coverImage?.[0]) {
+    if (files?.coverImage?.[0]) {
       try {
         // Delete existing cover image if any
         if (existingRequest.coverImageUrl) {
@@ -454,7 +454,7 @@ export class BookRequestController {
     }
 
     // Handle book file upload if provided
-    if (files.file?.[0]) {
+    if (files?.file?.[0]) {
       const { fileFormat, fileLanguage } = dto;
       if (!fileFormat) {
         throw new BadRequestException(

@@ -12,6 +12,10 @@ export const BookRecommendations = () => {
 
   const forYouRecommendations = data?.data.forYou.books;
 
+  if (!((forYouRecommendations?.length ?? 0) > 0)) {
+    return null;
+  }
+
   return (
     <Card>
       <CardHeader>{t('recommendations')}:</CardHeader>
