@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { ApiRoute } from '@/constants';
@@ -7,6 +8,7 @@ import { axiosSecure } from '@/lib';
 
 export const useDeleteFileRequest = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async ({ fileRequestId }: { fileRequestId: string }) => {
@@ -23,11 +25,10 @@ export const useDeleteFileRequest = () => {
           }),
         500,
       );
-
-      toast.success('File request deleted successfully');
     },
     onError: (error) => {
       console.error(error);
+      toast.error(t('errorDeleteFileRequest'));
     },
   });
 };

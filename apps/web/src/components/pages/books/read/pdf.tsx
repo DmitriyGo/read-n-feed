@@ -49,7 +49,7 @@ export const PDFReader = ({
       />
       <p>
         {t('scale')}: {scale}
-        <span className="text-gray-400"> (0.8 - 1.5)</span>
+        <span className="text-gray-400"> (0.5 - 1.0)</span>
       </p>
 
       <p className="text-center text-lg font-bold">{filename}</p>

@@ -73,11 +73,10 @@ export function UpdateRequestBookModal() {
         },
       });
 
-      toast.success(t('requestUpdatedSuccessfully'));
       clearParams();
       setMode(null);
     } catch (error) {
-      toast.error(error as string);
+      console.log(error as string);
     }
   };
 

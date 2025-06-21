@@ -1,4 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
@@ -6,6 +8,7 @@ import { axiosSecure } from '@/lib';
 
 export const useUpdateAvatar = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (file: File) => {
@@ -30,6 +33,11 @@ export const useUpdateAvatar = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QueryKey.Users.Profile] });
+      toast.success(t('avatarUpdated'));
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error(t('errorUpdateAvatar'));
     },
   });
 };

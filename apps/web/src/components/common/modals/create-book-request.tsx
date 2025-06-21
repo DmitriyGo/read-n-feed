@@ -109,10 +109,9 @@ export function CreateBookRequestModal() {
         coverImage: coverImage,
       });
 
-      toast.success(t('requestCreatedSuccessfully'));
       setMode(null);
     } catch (error: any) {
-      toast.error(error.message ?? (error as string));
+      console.log(error as string);
     }
   };
 

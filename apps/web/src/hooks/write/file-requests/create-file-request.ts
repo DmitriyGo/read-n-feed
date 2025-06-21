@@ -3,6 +3,8 @@ import {
   CreateBookFileRequestDto,
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 import { ApiRoute } from '@/constants';
 import { QueryKey } from '@/constants/query-key';
@@ -10,6 +12,7 @@ import { axiosSecure } from '@/lib';
 
 export const useCreateFileRequest = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async (data: CreateBookFileRequestDto & { file: File }) => {
@@ -40,6 +43,7 @@ export const useCreateFileRequest = () => {
     },
     onError: (error) => {
       console.error(error);
+      toast.error(t('errorCreateFileRequest'));
     },
   });
 };

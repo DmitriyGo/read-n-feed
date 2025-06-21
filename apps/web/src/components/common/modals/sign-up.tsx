@@ -122,7 +122,7 @@ export function SignUpModal() {
 
       setMode(null);
     } catch (error) {
-      toast.error(error as string);
+      console.log(error as string);
     }
   };
 

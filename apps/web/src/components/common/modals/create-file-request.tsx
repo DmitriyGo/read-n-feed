@@ -55,7 +55,7 @@ export function CreateFileRequestModal() {
 
       const fileValidation = validateFile(file);
       if (!fileValidation.valid) {
-        toast.error(fileValidation.error);
+        console.log(fileValidation);
         return;
       }
 
@@ -68,11 +68,10 @@ export function CreateFileRequestModal() {
         file: file,
       });
 
-      toast.success(t('requestCreatedSuccessfully'));
       clearParams();
       setMode(null);
     } catch (error: any) {
-      toast.error(error.message ?? (error as string));
+      console.log(error as string);
     }
   };
 

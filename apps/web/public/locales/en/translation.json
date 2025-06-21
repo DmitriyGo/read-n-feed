@@ -149,5 +149,23 @@
   "imageTooLarge": "Image must be less than 5MB",
   "imageRequirements": "Select an image file (max 5MB). Supported formats: JPG, PNG, GIF, WebP",
   "avatarUpdated": "Avatar updated successfully",
-  "failedToUpdateAvatar": "Failed to update avatar"
+  "failedToUpdateAvatar": "Failed to update avatar",
+  
+  "errorLogin": "Failed to log in",
+  "errorLogout": "Failed to log out",
+  "errorSignUp": "Failed to sign up",
+  "errorUpdateProfile": "Failed to update profile",
+  "errorCreateBookRequest": "Failed to create book request",
+  "errorUpdateBookRequest": "Failed to update book request",
+  "errorDeleteBook": "Failed to delete book",
+  "errorFavouriteBook": "Failed to update favorite status",
+  "errorLikeBook": "Failed to update like status",
+  "errorCreateComment": "Failed to create comment",
+  "errorUpdateComment": "Failed to update comment",
+  "errorDeleteComment": "Failed to delete comment",
+  "errorCreateFileRequest": "Failed to create file request",
+  "errorDeleteFileRequest": "Failed to delete file request",
+  "errorDeleteFile": "Failed to delete file",
+  "errorVerifyRequest": "Failed to verify request",
+  "errorUpdateAvatar": "Failed to update avatar"
 }

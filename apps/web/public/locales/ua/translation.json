@@ -147,5 +147,23 @@
   "imageTooLarge": "Розмір зображення має бути менше 5МБ",
   "imageRequirements": "Оберіть файл зображення (макс. 5МБ). Підтримувані формати: JPG, PNG, GIF, WebP",
   "avatarUpdated": "Аватар успішно оновлено",
-  "failedToUpdateAvatar": "Не вдалося оновити аватар"
+  "failedToUpdateAvatar": "Не вдалося оновити аватар",
+
+  "errorLogin": "Не вдалося увійти в систему",
+  "errorLogout": "Не вдалося вийти з системи",
+  "errorSignUp": "Не вдалося зареєструватися",
+  "errorUpdateProfile": "Не вдалося оновити профіль",
+  "errorCreateBookRequest": "Не вдалося створити запит книги",
+  "errorUpdateBookRequest": "Не вдалося оновити запит книги",
+  "errorDeleteBook": "Не вдалося видалити книгу",
+  "errorFavouriteBook": "Не вдалося оновити статус улюбленої книги",
+  "errorLikeBook": "Не вдалося оновити статус вподобання",
+  "errorCreateComment": "Не вдалося створити коментар",
+  "errorUpdateComment": "Не вдалося оновити коментар",
+  "errorDeleteComment": "Не вдалося видалити коментар",
+  "errorCreateFileRequest": "Не вдалося створити запит файлу",
+  "errorDeleteFileRequest": "Не вдалося видалити запит файлу",
+  "errorDeleteFile": "Не вдалося видалити файл",
+  "errorVerifyRequest": "Не вдалося перевірити запит",
+  "errorUpdateAvatar": "Не вдалося оновити аватар"
 }

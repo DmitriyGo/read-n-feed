@@ -3,6 +3,7 @@ import {
   BookRequestResponseDto,
 } from '@read-n-feed/application';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 import { ApiRoute } from '@/constants';
@@ -11,6 +12,7 @@ import { axiosSecure } from '@/lib';
 
 export const useVerifyRequest = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: async ({
@@ -57,11 +59,11 @@ export const useVerifyRequest = () => {
         });
       }, 500);
 
-      toast.success('Book request verified successfully');
+      toast.success(t('requestVerifiedSuccessfully'));
     },
     onError: (error) => {
-      toast.error(String(error));
       console.error(error);
+      toast.error(t('errorVerifyRequest'));
     },
   });
 };
